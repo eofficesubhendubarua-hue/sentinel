@@ -1,0 +1,21 @@
+{
+  "name": "sentinel-intelligence-brief",
+  "version": "1.0.0",
+  "description": "Automated daily intelligence news aggregator — 8 AM & 10 PM IST briefings",
+  "type": "module",
+  "scripts": {
+    "aggregate": "node scripts/aggregate.mjs",
+    "generate": "node scripts/generate-html.mjs",
+    "email": "node scripts/email.mjs",
+    "build": "node scripts/aggregate.mjs && node scripts/generate-html.mjs",
+    "publish": "node scripts/aggregate.mjs && node scripts/generate-html.mjs && node scripts/email.mjs",
+    "dev": "npx http-server public -p 3000 -o"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.0",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {},
+  "author": "SENTINEL System",
+  "license": "MIT"
+}

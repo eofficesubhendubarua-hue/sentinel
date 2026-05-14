@@ -1,0 +1,68 @@
+name: SENTINEL Intelligence Brief — Publish
+
+on:
+  schedule:
+    # 8:00 AM IST = 2:30 AM UTC
+    - cron: '30 2 * * *'
+    # 10:00 PM IST = 4:30 PM UTC
+    - cron: '30 16 * * *'
+  workflow_dispatch: # Manual trigger for testing
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 📡 Aggregate RSS feeds
+        run: node scripts/aggregate.mjs
+
+      - name: 🏗️ Generate website
+        run: node scripts/generate-html.mjs
+
+      - name: 📧 Send email briefing
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GMAIL_RECIPIENT: ${{ secrets.GMAIL_RECIPIENT }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: node scripts/email.mjs
+
+      - name: 💾 Commit updated data & archive
+        run: |
+          git config user.name "SENTINEL Bot"
+          git config user.email "sentinel-bot@users.noreply.github.com"
+          git add data/ archive/ public/index.html
+          git diff --quiet --cached || git commit -m "📡 SENTINEL Briefing $(date -u +%Y-%m-%d_%H%M)UTC"
+          git push
+
+      - name: 📄 Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
