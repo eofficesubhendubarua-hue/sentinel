@@ -80,8 +80,15 @@ function similarity(a, b) {
 // ─── Feed Fetching ────────────────────────────────────────
 
 async function fetchFeed(feedConfig) {
+  const absoluteTimeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Absolute timeout exceeded")), 20000)
+  );
+
   try {
-    const feed = await parser.parseURL(feedConfig.url);
+    const feed = await Promise.race([
+      parser.parseURL(feedConfig.url),
+      absoluteTimeout
+    ]);
     const articles = (feed.items || []).slice(0, 15).map((item) => ({
       title: cleanText(item.title) || "Untitled",
       link: item.link || item.guid || "#",
