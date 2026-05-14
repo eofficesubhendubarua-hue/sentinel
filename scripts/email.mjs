@@ -172,6 +172,17 @@ async function sendEmail() {
     return;
   }
 
+  // ─── Time Check: Only send at 8 AM and 10 PM IST ──────────
+  const now = new Date();
+  const ist = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+  const currentHour = ist.getUTCHours();
+  
+  if (currentHour !== 8 && currentHour !== 22) {
+    console.log(`⏰ Current IST hour is ${currentHour}:00. Emails are only dispatched at 08:00 and 22:00.`);
+    console.log("   Skipping email delivery for this run.\n");
+    return;
+  }
+
   const briefing = loadBriefing();
   const emailHTML = generateEmailHTML(briefing);
   const { meta } = briefing;

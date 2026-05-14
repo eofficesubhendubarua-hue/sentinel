@@ -3,8 +3,8 @@ name: SENTINEL Intelligence Brief — Publish
 
 on:
   schedule:
-    # Run continuously every hour to keep news 24x7 fresh
-    - cron: '0 * * * *'
+    # Run at exactly the top of the hour in IST (which is XX:30 in UTC)
+    - cron: '30 * * * *'
   workflow_dispatch: # Manual trigger for testing
 
 permissions:
@@ -46,8 +46,8 @@ jobs:
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-          GMAIL_RECIPIENT: ${{ secrets.GMAIL_RECIPIENT }}
-          SITE_URL: ${{ secrets.SITE_URL }}
+          GMAIL_RECIPIENT: "eoffice.subhendubarua@gmail.com"
+          SITE_URL: "https://eofficesubhendubarua-hue.github.io/sentinel"
         run: node scripts/email.mjs
 
       - name: 💾 Commit updated data & archive
