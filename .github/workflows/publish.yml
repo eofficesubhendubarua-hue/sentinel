@@ -55,6 +55,7 @@ jobs:
           git config user.email "sentinel-bot@users.noreply.github.com"
           git add data/ archive/ public/index.html
           git diff --quiet --cached || git commit -m "📡 SENTINEL Briefing $(date -u +%Y-%m-%d_%H%M)UTC"
+          git pull --rebase origin master
           git push
 
       - name: 📄 Upload Pages artifact
