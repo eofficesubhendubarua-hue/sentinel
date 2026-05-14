@@ -385,8 +385,8 @@ function generateHTML(briefing) {
                     <span class="meta-value">${meta.date}</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">BRIEFING</span>
-                    <span class="meta-value">${meta.period === "morning" ? "🌅 0800H" : "🌙 2200H"}</span>
+                    <span class="meta-label">LAST UPDATED</span>
+                    <span class="meta-value">⏱️ ${meta.time}</span>
                 </div>
                 <div class="meta-item status-live">
                     <span class="live-dot"></span>
@@ -433,7 +433,8 @@ function generateHTML(briefing) {
             </div>
             <div class="footer-info">
                 <p>Aggregated from ${meta.totalFeeds} OSINT sources</p>
-                <p>Published daily at 0800H & 2200H IST</p>
+                <p>News auto-refreshes every hour</p>
+                <p>Emails dispatched daily at 0800H & 2200H IST</p>
                 <p class="footer-disclaimer">All content sourced from publicly available RSS feeds.</p>
             </div>
         </div>
