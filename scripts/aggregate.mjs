@@ -231,7 +231,11 @@ async function aggregate() {
   return briefing;
 }
 
-aggregate().catch((err) => {
-  console.error("❌ Aggregation failed:", err);
-  process.exit(1);
-});
+aggregate()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error("❌ Aggregation failed:", err);
+    process.exit(1);
+  });
