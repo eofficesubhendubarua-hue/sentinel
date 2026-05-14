@@ -4,6 +4,15 @@
 
 // ─── Category Filtering ─────────────────────────────────
 function filterCategory(categoryId) {
+  // Reset search box when clicking a category
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput && searchInput.value) {
+    searchInput.value = "";
+    // Unhide all cards previously hidden by search
+    document.querySelectorAll(".news-card").forEach(c => c.classList.remove("hidden-article"));
+    document.querySelectorAll(".market-link-card").forEach(c => c.style.display = "");
+  }
+
   const buttons = document.querySelectorAll(".cat-btn");
   buttons.forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.category === categoryId);
@@ -37,11 +46,15 @@ function searchArticles(query) {
   if (!q) {
     newsCards.forEach((card) => card.classList.remove("hidden-article"));
     toolCards.forEach((card) => card.style.display = "");
-    sections.forEach((s) => s.classList.remove("hidden"));
+    
+    // Re-apply the currently active category filter
+    const activeBtn = document.querySelector(".cat-btn.active");
+    const cat = activeBtn ? activeBtn.dataset.category : "all";
+    filterCategory(cat);
     return;
   }
 
-  // Reset category filter visuals
+  // When searching, switch category button to 'All' because search is global
   document.querySelectorAll(".cat-btn").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.category === "all");
   });
@@ -67,14 +80,12 @@ function searchArticles(query) {
   sections.forEach((section) => {
     const visibleNews = section.querySelectorAll(".news-card:not(.hidden-article)");
     
-    // For sections without news cards, check if they have visible tool cards
     let visibleTools = 0;
     if (section.id === "section-market-tools" || section.id === "section-upsc-tools" || section.classList.contains("market-subsection")) {
        const tools = section.querySelectorAll(".market-link-card");
        tools.forEach(t => { if(t.style.display !== "none") visibleTools++; });
     }
 
-    // Hide if no news cards AND no tool cards are visible
     section.classList.toggle("hidden", visibleNews.length === 0 && visibleTools === 0);
   });
 }
