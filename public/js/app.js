@@ -30,34 +30,52 @@ function filterCategory(categoryId) {
 // ─── Search ─────────────────────────────────────────────
 function searchArticles(query) {
   const q = query.toLowerCase().trim();
-  const cards = document.querySelectorAll(".news-card");
+  const newsCards = document.querySelectorAll(".news-card");
+  const toolCards = document.querySelectorAll(".market-link-card");
   const sections = document.querySelectorAll(".category-section");
-  let anyVisible = false;
 
   if (!q) {
-    cards.forEach((card) => card.classList.remove("hidden-article"));
+    newsCards.forEach((card) => card.classList.remove("hidden-article"));
+    toolCards.forEach((card) => card.style.display = "");
     sections.forEach((s) => s.classList.remove("hidden"));
     return;
   }
 
-  // Reset category filter
+  // Reset category filter visuals
   document.querySelectorAll(".cat-btn").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.category === "all");
   });
 
-  cards.forEach((card) => {
+  // Filter News Cards
+  newsCards.forEach((card) => {
     const title = card.querySelector(".card-title")?.textContent?.toLowerCase() || "";
     const desc = card.querySelector(".card-desc")?.textContent?.toLowerCase() || "";
     const source = card.querySelector(".source-badge")?.textContent?.toLowerCase() || "";
     const match = title.includes(q) || desc.includes(q) || source.includes(q);
     card.classList.toggle("hidden-article", !match);
-    if (match) anyVisible = true;
   });
 
-  // Hide sections with no visible cards
+  // Filter Tool Cards (Market, UPSC, etc.)
+  toolCards.forEach((card) => {
+    const name = card.querySelector(".market-name")?.textContent?.toLowerCase() || "";
+    const desc = card.querySelector(".market-desc")?.textContent?.toLowerCase() || "";
+    const match = name.includes(q) || desc.includes(q);
+    card.style.display = match ? "" : "none";
+  });
+
+  // Hide sections with no visible content
   sections.forEach((section) => {
-    const visibleCards = section.querySelectorAll(".news-card:not(.hidden-article)");
-    section.classList.toggle("hidden", visibleCards.length === 0);
+    const visibleNews = section.querySelectorAll(".news-card:not(.hidden-article)");
+    
+    // For sections without news cards, check if they have visible tool cards
+    let visibleTools = 0;
+    if (section.id === "section-market-tools" || section.id === "section-upsc-tools" || section.classList.contains("market-subsection")) {
+       const tools = section.querySelectorAll(".market-link-card");
+       tools.forEach(t => { if(t.style.display !== "none") visibleTools++; });
+    }
+
+    // Hide if no news cards AND no tool cards are visible
+    section.classList.toggle("hidden", visibleNews.length === 0 && visibleTools === 0);
   });
 }
 
