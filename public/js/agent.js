@@ -10,7 +10,10 @@ const PROVIDERS = {
     gemini: {
         models: [
             { id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash (Fast, Free, Multimodal)" },
+            { id: "gemini-1.5-flash-8b-latest", name: "Google AI Edge: Gemini 1.5 Flash 8B" },
             { id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro (Advanced, Multimodal)" },
+            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Open Model via Google)" },
+            { id: "gemma-4-27b-it", name: "Gemma 4 27B IT (Open Model via Google)" },
             { id: "gemini-1.0-pro", name: "Gemini 1.0 Pro (Text Only)" }
         ],
         url: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
@@ -20,6 +23,7 @@ const PROVIDERS = {
         models: [
             { id: "llama3-70b-8192", name: "Llama 3 70B (Extremely Fast, Smart)" },
             { id: "llama3-8b-8192", name: "Llama 3 8B (Instant)" },
+            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Ultra-Fast via Groq)" },
             { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B (Large Context)" }
         ],
         url: "https://api.groq.com/openai/v1/chat/completions",
@@ -28,7 +32,7 @@ const PROVIDERS = {
     openrouter: {
         models: [
             { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" },
-            { id: "google/gemma-7b-it:free", name: "Google Gemma 7B (Free)" },
+            { id: "google/gemma-4-9b-it:free", name: "Google Gemma 4 9B (Free)" },
             { id: "meta-llama/llama-3-8b-instruct:free", name: "Llama 3 8B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions",
