@@ -475,8 +475,16 @@ function generateHTML(briefing) {
     <div id="ai-settings-modal">
         <div class="modal-content">
             <h3>⚙️ AI Configuration</h3>
-            <p>Enter your free Gemini API Key to activate the Sentinel AI. Your key is stored securely in your browser's local storage and is never sent to our servers.</p>
-            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+            <p>Enter your free Gemini API Key to activate the Sentinel AI. Your key is stored securely in your browser's local storage.</p>
+            <input type="password" id="api-key-input" placeholder="API Key (AIzaSy...)">
+            
+            <p style="margin-top: 10px; margin-bottom: 5px;">Select AI Model:</p>
+            <select id="ai-model-select" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; margin-bottom: 20px;">
+                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Fast, Free, Multimodal)</option>
+                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Advanced, Free limits, Multimodal)</option>
+                <option value="gemini-1.0-pro">Gemini 1.0 Pro (Legacy Text-Only)</option>
+            </select>
+
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAISettings()">Cancel</button>
                 <button class="btn-save" onclick="saveAPIKey()">Save Key</button>

@@ -1,11 +1,10 @@
 // ============================================================
 // SENTINEL AI AGENT
-// Client-side integration with Google Gemini 1.5 Flash API
+// Client-side integration with Google Gemini REST API
 // ============================================================
 
 let currentImageBase64 = null;
 let currentImageMime = null;
-const MODEL_NAME = "gemini-1.5-flash";
 
 // ─── UI CONTROLS ──────────────────────────────────────────
 
@@ -21,8 +20,15 @@ function toggleAIChat() {
 function openAISettings() {
     document.getElementById("ai-settings-modal").classList.add("active");
     const key = localStorage.getItem("gemini_api_key");
+    const model = localStorage.getItem("gemini_model") || "gemini-1.5-flash-latest";
+    
     if (key) {
         document.getElementById("api-key-input").value = key;
+    }
+    
+    const modelSelect = document.getElementById("ai-model-select");
+    if (modelSelect) {
+        modelSelect.value = model;
     }
 }
 
@@ -32,10 +38,14 @@ function closeAISettings() {
 
 function saveAPIKey() {
     const key = document.getElementById("api-key-input").value.trim();
+    const modelSelect = document.getElementById("ai-model-select");
+    const model = modelSelect ? modelSelect.value : "gemini-1.5-flash-latest";
+    
     if (key) {
         localStorage.setItem("gemini_api_key", key);
+        localStorage.setItem("gemini_model", model);
         closeAISettings();
-        addMessage("ai", "API Key saved securely in your browser! I am ready to assist.");
+        addMessage("ai", `API Key saved! Currently using **${model}**. I am ready to assist.`);
     } else {
         alert("Please enter a valid API key.");
     }
@@ -168,6 +178,7 @@ async function sendAIMessage() {
     const input = document.getElementById("ai-input");
     const text = input.value.trim();
     const apiKey = localStorage.getItem("gemini_api_key");
+    const modelName = localStorage.getItem("gemini_model") || "gemini-1.5-flash-latest";
 
     if (!text && !currentImageBase64) return;
     
@@ -209,18 +220,35 @@ async function sendAIMessage() {
         
         contents.push({ role: "user", parts: parts });
 
-        const requestBody = {
-            system_instruction: {
-                parts: [{ text: buildSystemContext() }]
-            },
-            contents: contents,
-            generationConfig: {
-                temperature: 0.2,
-                maxOutputTokens: 1000
-            }
-        };
+        let requestBody = {};
+        
+        // Gemini 1.0 Pro doesn't support system_instruction the same way, but it should ignore it or we handle it gracefully.
+        // We will pass it for 1.5 models.
+        if (modelName.includes("1.5")) {
+            requestBody = {
+                system_instruction: {
+                    parts: [{ text: buildSystemContext() }]
+                },
+                contents: contents,
+                generationConfig: {
+                    temperature: 0.2,
+                    maxOutputTokens: 1000
+                }
+            };
+        } else {
+            // For older models (1.0 pro) we inject system context into the first message
+            const firstPart = { text: buildSystemContext() + "\n\nUser Question:\n" + (text || "Analyze this image.") };
+            parts[0] = firstPart;
+            requestBody = {
+                contents: [{ role: "user", parts: parts }],
+                generationConfig: {
+                    temperature: 0.2,
+                    maxOutputTokens: 1000
+                }
+            };
+        }
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
