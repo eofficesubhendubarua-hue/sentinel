@@ -23,28 +23,19 @@ const PROVIDERS = {
         name: "Groq (Ultra-Fast)",
         models: [
             { id: "llama3-70b-8192", name: "Llama 3 70B" },
-            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT" },
-            { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B" }
+            { id: "llama3-8b-8192", name: "Llama 3 8B" },
+            { id: "gemma2-9b-it", name: "Gemma 2 9B IT" }
         ],
         url: "https://api.groq.com/openai/v1/chat/completions"
     },
     openrouter: {
         name: "OpenRouter (Community)",
         models: [
-            { id: "moonshotai/kimi-k2.6", name: "Kimi 2.6 Thinking" },
-            { id: "deepseek/deepseek-v4-pro", name: "DeepSeek V4-Pro" },
-            { id: "deepseek/deepseek-v4-flash", name: "DeepSeek V4-Flash" },
-            { id: "alibaba/qwen-3-max", name: "Alibaba Qwen3-Max" },
-            { id: "alibaba/qwen3.6-flash", name: "Alibaba Qwen 3.6 Flash" },
-            { id: "zhipuai/glm-5.1", name: "Zhipu AI GLM-5.1" },
-            { id: "zhipuai/glm-5", name: "Zhipu AI GLM-5" },
-            { id: "meta-llama/llama-4-maverick", name: "Meta Llama 4 Maverick" },
-            { id: "meta-llama/llama-4-scout", name: "Meta Llama 4 Scout" },
-            { id: "mistralai/ministral-8b", name: "Mistral Ministral 8B" },
-            { id: "mistralai/ministral-3b", name: "Mistral Ministral 3B" },
-            { id: "mistralai/devstral-2", name: "Mistral Devstral 2" },
-            { id: "google/gemma-4-9b-it", name: "Google Gemma 4 9B" },
-            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" }
+            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" },
+            { id: "meta-llama/llama-3-8b-instruct:free", name: "Llama 3 8B (Free)" },
+            { id: "microsoft/phi-3-mini-128k-instruct:free", name: "Microsoft Phi-3 Mini (Free)" },
+            { id: "google/gemma-7b-it:free", name: "Google Gemma 7B (Free)" },
+            { id: "qwen/qwen-2-7b-instruct:free", name: "Qwen 2 7B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions"
     }
