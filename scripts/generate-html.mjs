@@ -474,16 +474,24 @@ function generateHTML(briefing) {
     <!-- AI Settings Modal -->
     <div id="ai-settings-modal">
         <div class="modal-content">
-            <h3>⚙️ AI Configuration</h3>
-            <p>Enter your free Gemini API Key to activate the Sentinel AI. Your key is stored securely in your browser's local storage.</p>
-            <input type="password" id="api-key-input" placeholder="API Key (AIzaSy...)">
+            <h3>⚙️ Universal AI Configuration</h3>
+            <p style="margin-bottom: 10px;">Select your preferred AI provider. You must provide a free API key for the provider you select.</p>
             
-            <p style="margin-top: 10px; margin-bottom: 5px;">Select AI Model:</p>
-            <select id="ai-model-select" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; margin-bottom: 20px;">
-                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Fast, Free, Multimodal)</option>
-                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Advanced, Free limits, Multimodal)</option>
-                <option value="gemini-1.0-pro">Gemini 1.0 Pro (Legacy Text-Only)</option>
+            <p style="margin-top: 10px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted);">1. Select AI Provider:</p>
+            <select id="ai-provider-select" onchange="handleProviderChange()" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; margin-bottom: 15px;">
+                <option value="gemini">Google Gemini (Free Tier)</option>
+                <option value="groq">Groq (Ultra-Fast Free Tier)</option>
+                <option value="openrouter">OpenRouter (Free Community Models)</option>
             </select>
+
+            <p style="margin-top: 5px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted);">2. Select Model:</p>
+            <select id="ai-model-select" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; margin-bottom: 15px;">
+                <!-- Dynamically populated by JS -->
+            </select>
+
+            <p style="margin-top: 5px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted);">3. Enter API Key for this Provider:</p>
+            <input type="password" id="api-key-input" placeholder="API Key">
+            <p id="api-key-help" style="font-size: 11px; color: var(--primary); margin-top: -10px; margin-bottom: 20px;">Get a free key from aistudio.google.com</p>
 
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAISettings()">Cancel</button>

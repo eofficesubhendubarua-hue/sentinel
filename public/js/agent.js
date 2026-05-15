@@ -1,10 +1,40 @@
 // ============================================================
-// SENTINEL AI AGENT
-// Client-side integration with Google Gemini REST API
+// SENTINEL UNIVERSAL AI AGENT
+// Supports Gemini, Groq (Llama-3), and OpenRouter
 // ============================================================
 
 let currentImageBase64 = null;
 let currentImageMime = null;
+
+const PROVIDERS = {
+    gemini: {
+        models: [
+            { id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash (Fast, Free, Multimodal)" },
+            { id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro (Advanced, Multimodal)" },
+            { id: "gemini-1.0-pro", name: "Gemini 1.0 Pro (Text Only)" }
+        ],
+        url: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
+        helpText: "Get a free key from: aistudio.google.com"
+    },
+    groq: {
+        models: [
+            { id: "llama3-70b-8192", name: "Llama 3 70B (Extremely Fast, Smart)" },
+            { id: "llama3-8b-8192", name: "Llama 3 8B (Instant)" },
+            { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B (Large Context)" }
+        ],
+        url: "https://api.groq.com/openai/v1/chat/completions",
+        helpText: "Get a free key from: console.groq.com/keys"
+    },
+    openrouter: {
+        models: [
+            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" },
+            { id: "google/gemma-7b-it:free", name: "Google Gemma 7B (Free)" },
+            { id: "meta-llama/llama-3-8b-instruct:free", name: "Llama 3 8B (Free)" }
+        ],
+        url: "https://openrouter.ai/api/v1/chat/completions",
+        helpText: "Get a free key from: openrouter.ai/keys"
+    }
+};
 
 // ─── UI CONTROLS ──────────────────────────────────────────
 
@@ -19,16 +49,50 @@ function toggleAIChat() {
 
 function openAISettings() {
     document.getElementById("ai-settings-modal").classList.add("active");
-    const key = localStorage.getItem("gemini_api_key");
-    const model = localStorage.getItem("gemini_model") || "gemini-1.5-flash-latest";
     
-    if (key) {
-        document.getElementById("api-key-input").value = key;
-    }
+    // Load last used provider
+    const savedProvider = localStorage.getItem("ai_active_provider") || "gemini";
+    const providerSelect = document.getElementById("ai-provider-select");
+    if (providerSelect) providerSelect.value = savedProvider;
     
+    handleProviderChange();
+}
+
+function handleProviderChange() {
+    const provider = document.getElementById("ai-provider-select").value;
     const modelSelect = document.getElementById("ai-model-select");
-    if (modelSelect) {
-        modelSelect.value = model;
+    const helpText = document.getElementById("api-key-help");
+    const keyInput = document.getElementById("api-key-input");
+    const attachBtn = document.querySelector(".attach-btn");
+
+    // Populate models
+    modelSelect.innerHTML = "";
+    PROVIDERS[provider].models.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.name;
+        modelSelect.appendChild(opt);
+    });
+
+    // Load saved model for this provider if any
+    const savedModel = localStorage.getItem(`ai_model_${provider}`);
+    if (savedModel && PROVIDERS[provider].models.some(m => m.id === savedModel)) {
+        modelSelect.value = savedModel;
+    }
+
+    // Load saved key for this provider
+    const savedKey = localStorage.getItem(`ai_key_${provider}`);
+    keyInput.value = savedKey || "";
+    
+    // Update help text
+    helpText.textContent = PROVIDERS[provider].helpText;
+
+    // Toggle Image Attachment UI (Only Gemini supports it easily here right now)
+    if (provider === "gemini") {
+        attachBtn.style.display = "flex";
+    } else {
+        attachBtn.style.display = "none";
+        removeImage(); // clear if any
     }
 }
 
@@ -37,22 +101,24 @@ function closeAISettings() {
 }
 
 function saveAPIKey() {
+    const provider = document.getElementById("ai-provider-select").value;
+    const model = document.getElementById("ai-model-select").value;
     const key = document.getElementById("api-key-input").value.trim();
-    const modelSelect = document.getElementById("ai-model-select");
-    const model = modelSelect ? modelSelect.value : "gemini-1.5-flash-latest";
     
     if (key) {
-        localStorage.setItem("gemini_api_key", key);
-        localStorage.setItem("gemini_model", model);
+        localStorage.setItem(`ai_key_${provider}`, key);
+        localStorage.setItem(`ai_model_${provider}`, model);
+        localStorage.setItem("ai_active_provider", provider);
         closeAISettings();
-        addMessage("ai", `API Key saved! Currently using **${model}**. I am ready to assist.`);
+        addMessage("ai", `Settings saved! Using **${provider.toUpperCase()}** with model **${model}**.`);
     } else {
-        alert("Please enter a valid API key.");
+        alert("Please enter a valid API key for the selected provider.");
     }
 }
 
 function checkAPIKey() {
-    const key = localStorage.getItem("gemini_api_key");
+    const provider = localStorage.getItem("ai_active_provider") || "gemini";
+    const key = localStorage.getItem(`ai_key_${provider}`);
     if (!key) {
         openAISettings();
     }
@@ -84,8 +150,10 @@ function handleImageUpload(event) {
 function removeImage() {
     currentImageBase64 = null;
     currentImageMime = null;
-    document.getElementById("image-preview-area").innerHTML = '';
-    document.getElementById("ai-file-input").value = '';
+    const previewArea = document.getElementById("image-preview-area");
+    if(previewArea) previewArea.innerHTML = '';
+    const fileInput = document.getElementById("ai-file-input");
+    if(fileInput) fileInput.value = '';
 }
 
 // ─── CHAT LOGIC ───────────────────────────────────────────
@@ -105,7 +173,6 @@ function escapeHtmlText(str) {
 }
 
 function formatMarkdown(text) {
-    // Very basic markdown parsing for bold and line breaks
     let formatted = escapeHtmlText(text);
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -151,34 +218,32 @@ function hideTyping() {
     if (indicator) indicator.remove();
 }
 
-// ─── GEMINI API CALL ──────────────────────────────────────
+// ─── API CALL ROUTER ──────────────────────────────────────
 
 function buildSystemContext() {
-    // Provide the AI with the dashboard's current state
-    if (!window.briefingData) return "You are Sentinel AI, a super advanced intelligence analyst.";
+    if (!window.briefingData) return "You are Sentinel AI, an advanced analyst.";
     
     let context = "You are Sentinel AI, a highly advanced intelligence analyst embedded in a dashboard. You must be extremely concise, sharp, and accurate.\n\n";
-    context += "CURRENT DASHBOARD HEADLINES (To use as context if the user asks for news/summaries):\n";
+    context += "CURRENT DASHBOARD HEADLINES (Use as context if asked for news):\n";
     
-    const maxCategories = 5;
-    const cats = Object.values(window.briefingData.categories).slice(0, maxCategories);
-    
+    const cats = Object.values(window.briefingData.categories).slice(0, 5);
     for (const cat of cats) {
         context += `\n[${cat.name}]\n`;
-        const topArticles = cat.articles.slice(0, 5); // Limit context size
+        const topArticles = cat.articles.slice(0, 5);
         for (const article of topArticles) {
             context += `- ${article.title} (${article.source})\n`;
         }
     }
-    
     return context;
 }
 
 async function sendAIMessage() {
     const input = document.getElementById("ai-input");
     const text = input.value.trim();
-    const apiKey = localStorage.getItem("gemini_api_key");
-    const modelName = localStorage.getItem("gemini_model") || "gemini-1.5-flash-latest";
+    
+    const provider = localStorage.getItem("ai_active_provider") || "gemini";
+    const apiKey = localStorage.getItem(`ai_key_${provider}`);
+    const modelName = localStorage.getItem(`ai_model_${provider}`) || PROVIDERS[provider].models[0].id;
 
     if (!text && !currentImageBase64) return;
     
@@ -187,95 +252,116 @@ async function sendAIMessage() {
         return;
     }
 
-    // Capture image before clearing UI
     const previewSrc = currentImageBase64 ? `data:${currentImageMime};base64,${currentImageBase64}` : null;
     const payloadImageBase64 = currentImageBase64;
     const payloadImageMime = currentImageMime;
 
-    // Clear UI
     input.value = "";
     removeImage();
     
-    // Show User Message
     addMessage("user", text, previewSrc);
     showTyping();
 
     try {
-        // Build API Payload
-        const contents = [];
-        const parts = [];
-        
-        if (text) {
-            parts.push({ text: text });
-        }
-        
-        if (payloadImageBase64) {
-            parts.push({
-                inline_data: {
-                    mime_type: payloadImageMime,
-                    data: payloadImageBase64
-                }
-            });
-        }
-        
-        contents.push({ role: "user", parts: parts });
-
-        let requestBody = {};
-        
-        // Gemini 1.0 Pro doesn't support system_instruction the same way, but it should ignore it or we handle it gracefully.
-        // We will pass it for 1.5 models.
-        if (modelName.includes("1.5")) {
-            requestBody = {
-                system_instruction: {
-                    parts: [{ text: buildSystemContext() }]
-                },
-                contents: contents,
-                generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 1000
-                }
-            };
+        if (provider === "gemini") {
+            await fetchGemini(apiKey, modelName, text, payloadImageBase64, payloadImageMime);
         } else {
-            // For older models (1.0 pro) we inject system context into the first message
-            const firstPart = { text: buildSystemContext() + "\n\nUser Question:\n" + (text || "Analyze this image.") };
-            parts[0] = firstPart;
-            requestBody = {
-                contents: [{ role: "user", parts: parts }],
-                generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 1000
-                }
-            };
+            await fetchOpenAICompatible(provider, apiKey, modelName, text);
         }
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        const data = await response.json();
-        hideTyping();
-
-        if (!response.ok) {
-            console.error("Gemini Error:", data);
-            if (response.status === 400 && data.error && data.error.message.includes("API key not valid")) {
-                addMessage("ai", "❌ Your API key is invalid. Please check your settings.");
-                openAISettings();
-            } else {
-                addMessage("ai", `❌ API Error: ${data.error?.message || response.statusText}`);
-            }
-            return;
-        }
-
-        const aiText = data.candidates[0]?.content?.parts[0]?.text || "I have no response.";
-        addMessage("ai", aiText);
-
     } catch (error) {
         console.error("Network Error:", error);
         hideTyping();
         addMessage("ai", `❌ Network error: ${error.message}`);
     }
+}
+
+// ─── GEMINI SPECIFIC ──────────────────────────────────────
+async function fetchGemini(apiKey, modelName, text, imgB64, imgMime) {
+    const contents = [];
+    const parts = [];
+    
+    if (text) parts.push({ text: text });
+    if (imgB64) {
+        parts.push({
+            inline_data: { mime_type: imgMime, data: imgB64 }
+        });
+    }
+    
+    contents.push({ role: "user", parts: parts });
+
+    let requestBody = {};
+    if (modelName.includes("1.5")) {
+        requestBody = {
+            system_instruction: { parts: [{ text: buildSystemContext() }] },
+            contents: contents,
+            generationConfig: { temperature: 0.2, maxOutputTokens: 1000 }
+        };
+    } else {
+        const firstPart = { text: buildSystemContext() + "\n\nUser Question:\n" + (text || "") };
+        parts[0] = firstPart;
+        requestBody = {
+            contents: [{ role: "user", parts: parts }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 1000 }
+        };
+    }
+
+    const url = PROVIDERS.gemini.url.replace("{model}", modelName).replace("{key}", apiKey);
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+    });
+
+    const data = await response.json();
+    hideTyping();
+
+    if (!response.ok) {
+        addMessage("ai", `❌ Gemini API Error: ${data.error?.message || response.statusText}`);
+        return;
+    }
+
+    const aiText = data.candidates[0]?.content?.parts[0]?.text || "I have no response.";
+    addMessage("ai", aiText);
+}
+
+// ─── OPENAI COMPATIBLE (GROQ / OPENROUTER) ────────────────
+async function fetchOpenAICompatible(provider, apiKey, modelName, text) {
+    const requestBody = {
+        model: modelName,
+        messages: [
+            { role: "system", content: buildSystemContext() },
+            { role: "user", content: text }
+        ],
+        temperature: 0.2,
+        max_tokens: 1000
+    };
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+    };
+
+    if (provider === "openrouter") {
+        headers['HTTP-Referer'] = window.location.href;
+        headers['X-Title'] = "Sentinel Dashboard";
+    }
+
+    const url = PROVIDERS[provider].url;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(requestBody)
+    });
+
+    const data = await response.json();
+    hideTyping();
+
+    if (!response.ok) {
+        const errMsg = data.error?.message || data.error || response.statusText;
+        addMessage("ai", `❌ ${provider.toUpperCase()} API Error: ${errMsg}`);
+        return;
+    }
+
+    const aiText = data.choices[0]?.message?.content || "I have no response.";
+    addMessage("ai", aiText);
 }
