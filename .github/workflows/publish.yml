@@ -2,6 +2,9 @@ name: SENTINEL Intelligence Brief — Publish
 # Automation workflow
 
 on:
+  push:
+    branches:
+      - master
   schedule:
     # Run at exactly the top of the hour in IST (which is XX:30 in UTC)
     - cron: '30 * * * *'

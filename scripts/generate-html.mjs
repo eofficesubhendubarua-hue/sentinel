@@ -343,8 +343,8 @@ function generateHTML(briefing) {
                 <span class="stat-label">Sources</span>
             </div>
             <div class="stat">
-                <span class="stat-num">${meta.period === "morning" ? "8 AM" : "10 PM"}</span>
-                <span class="stat-label">Briefing</span>
+                <span class="stat-num">${meta.time.split(' ')[0]}</span>
+                <span class="stat-label">Live Update</span>
             </div>
         </div>`;
 
