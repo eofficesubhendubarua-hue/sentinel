@@ -449,9 +449,12 @@ function generateHTML(briefing) {
 
     <div id="ai-chat-panel">
         <div class="chat-header">
-            <h3>✨ Sentinel AI</h3>
+            <h3>✨ Sentinel</h3>
+            <select id="chat-model-select" onchange="handleModelChange()" style="flex: 1; margin: 0 10px; padding: 5px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 12px;">
+                <!-- Populated by JS -->
+            </select>
             <div class="chat-header-actions">
-                <button onclick="openAISettings()" title="Settings">⚙️</button>
+                <button onclick="openAISettings()" title="API Keys">🔑</button>
                 <button onclick="toggleAIChat()" title="Close">✕</button>
             </div>
         </div>
@@ -464,7 +467,7 @@ function generateHTML(briefing) {
             <div class="image-preview-area" id="image-preview-area"></div>
             <div class="chat-input-wrapper">
                 <input type="file" id="ai-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                <button class="attach-btn" onclick="document.getElementById('ai-file-input').click()" title="Attach Image">📎</button>
+                <button class="attach-btn" id="ai-attach-btn" onclick="document.getElementById('ai-file-input').click()" title="Attach Image">📎</button>
                 <textarea id="ai-input" placeholder="Ask about the news, or analyze an image..." rows="1" onkeydown="handleEnter(event)"></textarea>
                 <button class="send-btn" onclick="sendAIMessage()">➤</button>
             </div>
@@ -474,28 +477,21 @@ function generateHTML(briefing) {
     <!-- AI Settings Modal -->
     <div id="ai-settings-modal">
         <div class="modal-content">
-            <h3>⚙️ Universal AI Configuration</h3>
-            <p style="margin-bottom: 10px;">Select your preferred AI provider. You must provide a free API key for the provider you select.</p>
+            <h3>🔑 API Keys</h3>
+            <p style="margin-bottom: 15px; font-size: 13px; color: var(--text-muted);">To keep the dashboard 100% free, enter your keys below. The system automatically routes to the right key based on the model you select.</p>
             
-            <p style="margin-top: 10px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted);">1. Select AI Provider:</p>
-            <select id="ai-provider-select" onchange="handleProviderChange()" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; margin-bottom: 15px;">
-                <option value="gemini">Google Gemini (Free Tier)</option>
-                <option value="groq">Groq (Ultra-Fast Free Tier)</option>
-                <option value="openrouter">OpenRouter (Free Community Models)</option>
-            </select>
-
-            <p style="margin-top: 5px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted);">2. Select Model:</p>
-            <select id="ai-model-select" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; margin-bottom: 15px;">
-                <!-- Dynamically populated by JS -->
-            </select>
-
-            <p style="margin-top: 5px; margin-bottom: 5px; font-size: 12px; color: var(--text-muted);">3. Enter API Key for this Provider:</p>
-            <input type="password" id="api-key-input" placeholder="API Key">
-            <p id="api-key-help" style="font-size: 11px; color: var(--primary); margin-top: -10px; margin-bottom: 20px;">Get a free key from aistudio.google.com</p>
+            <label style="font-size: 12px; font-weight: bold; color: var(--primary);">Google Gemini (aistudio.google.com)</label>
+            <input type="password" id="key-gemini" placeholder="AIzaSy..." style="margin-bottom: 10px;">
+            
+            <label style="font-size: 12px; font-weight: bold; color: var(--primary);">Groq (console.groq.com/keys)</label>
+            <input type="password" id="key-groq" placeholder="gsk_..." style="margin-bottom: 10px;">
+            
+            <label style="font-size: 12px; font-weight: bold; color: var(--primary);">OpenRouter (openrouter.ai/keys)</label>
+            <input type="password" id="key-openrouter" placeholder="sk-or-v1-..." style="margin-bottom: 15px;">
 
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeAISettings()">Cancel</button>
-                <button class="btn-save" onclick="saveAPIKey()">Save Key</button>
+                <button class="btn-save" onclick="saveAPIKeys()">Save Keys</button>
             </div>
         </div>
     </div>

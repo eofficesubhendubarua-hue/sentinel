@@ -1,6 +1,6 @@
 // ============================================================
 // SENTINEL UNIVERSAL AI AGENT
-// Supports Gemini, Groq (Llama-3), and OpenRouter
+// Supports Gemini, Groq, and OpenRouter with Perplexity-style UX
 // ============================================================
 
 let currentImageBase64 = null;
@@ -8,48 +8,92 @@ let currentImageMime = null;
 
 const PROVIDERS = {
     gemini: {
+        name: "Google Gemini",
         models: [
-            { id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash (Fast, Free, Multimodal)" },
-            { id: "gemini-1.5-flash-8b-latest", name: "Google AI Edge: Gemini 1.5 Flash 8B" },
-            { id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro (Advanced, Multimodal)" },
-            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Open Model via Google)" },
-            { id: "gemma-4-27b-it", name: "Gemma 4 27B IT (Open Model via Google)" },
-            { id: "gemini-1.0-pro", name: "Gemini 1.0 Pro (Text Only)" }
+            { id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash (Fast, Multimodal)" },
+            { id: "gemini-1.5-flash-8b-latest", name: "Google AI Edge: Flash 8B" },
+            { id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro (Advanced)" },
+            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Open Model)" },
+            { id: "gemma-4-27b-it", name: "Gemma 4 27B IT (Open Model)" },
+            { id: "gemini-1.0-pro", name: "Gemini 1.0 Pro" }
         ],
-        url: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
-        helpText: "Get a free key from: aistudio.google.com"
+        url: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
     },
     groq: {
+        name: "Groq (Ultra-Fast)",
         models: [
-            { id: "llama-4-maverick", name: "Llama 4 Maverick (Ultra-Fast via Groq)" },
-            { id: "llama-4-scout", name: "Llama 4 Scout (Instant via Groq)" },
-            { id: "llama3-70b-8192", name: "Llama 3 70B (Extremely Fast, Smart)" },
-            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Ultra-Fast via Groq)" },
-            { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B (Large Context)" }
+            { id: "llama-4-maverick", name: "Llama 4 Maverick" },
+            { id: "llama-4-scout", name: "Llama 4 Scout" },
+            { id: "llama3-70b-8192", name: "Llama 3 70B" },
+            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT" },
+            { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B" }
         ],
-        url: "https://api.groq.com/openai/v1/chat/completions",
-        helpText: "Get a free key from: console.groq.com/keys"
+        url: "https://api.groq.com/openai/v1/chat/completions"
     },
     openrouter: {
+        name: "OpenRouter (Community)",
         models: [
-            { id: "moonshotai/kimi-2.6-thinking:free", name: "Kimi 2.6 Thinking (Free)" },
-            { id: "deepseek/deepseek-v4-pro:free", name: "DeepSeek V4-Pro (Free)" },
-            { id: "deepseek/deepseek-v4-flash:free", name: "DeepSeek V4-Flash (Free)" },
-            { id: "alibaba/qwen-3-max:free", name: "Alibaba Qwen3-Max (Free)" },
-            { id: "alibaba/qwen-3.6:free", name: "Alibaba Qwen 3.6 (Free)" },
-            { id: "zhipuai/glm-5.1:free", name: "Zhipu AI GLM-5.1 (Free)" },
-            { id: "zhipuai/glm-5:free", name: "Zhipu AI GLM-5 (Free)" },
-            { id: "meta-llama/llama-4-maverick:free", name: "Meta Llama 4 Maverick (Free)" },
-            { id: "meta-llama/llama-4-scout:free", name: "Meta Llama 4 Scout (Free)" },
-            { id: "mistralai/ministral-8b:free", name: "Mistral Ministral 8B (Free)" },
-            { id: "mistralai/ministral-3b:free", name: "Mistral Ministral 3B (Free)" },
-            { id: "mistralai/devstral-2:free", name: "Mistral Devstral 2 (Free)" },
-            { id: "google/gemma-4-9b-it:free", name: "Google Gemma 4 9B (Free)" }
+            { id: "moonshotai/kimi-2.6-thinking:free", name: "Kimi 2.6 Thinking" },
+            { id: "deepseek/deepseek-v4-pro:free", name: "DeepSeek V4-Pro" },
+            { id: "deepseek/deepseek-v4-flash:free", name: "DeepSeek V4-Flash" },
+            { id: "alibaba/qwen-3-max:free", name: "Alibaba Qwen3-Max" },
+            { id: "alibaba/qwen-3.6:free", name: "Alibaba Qwen 3.6" },
+            { id: "zhipuai/glm-5.1:free", name: "Zhipu AI GLM-5.1" },
+            { id: "zhipuai/glm-5:free", name: "Zhipu AI GLM-5" },
+            { id: "meta-llama/llama-4-maverick:free", name: "Meta Llama 4 Maverick" },
+            { id: "meta-llama/llama-4-scout:free", name: "Meta Llama 4 Scout" },
+            { id: "mistralai/ministral-8b:free", name: "Mistral Ministral 8B" },
+            { id: "mistralai/ministral-3b:free", name: "Mistral Ministral 3B" },
+            { id: "mistralai/devstral-2:free", name: "Mistral Devstral 2" },
+            { id: "google/gemma-4-9b-it:free", name: "Google Gemma 4 9B" },
+            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B" }
         ],
-        url: "https://openrouter.ai/api/v1/chat/completions",
-        helpText: "Get a free key from: openrouter.ai/keys"
+        url: "https://openrouter.ai/api/v1/chat/completions"
     }
 };
+
+// Map to easily find provider by model ID
+const MODEL_TO_PROVIDER = {};
+Object.keys(PROVIDERS).forEach(providerKey => {
+    PROVIDERS[providerKey].models.forEach(model => {
+        MODEL_TO_PROVIDER[model.id] = providerKey;
+    });
+});
+
+// ─── INITIALIZATION ───────────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", () => {
+    initModelDropdown();
+});
+
+function initModelDropdown() {
+    const select = document.getElementById("chat-model-select");
+    if (!select) return;
+    
+    select.innerHTML = "";
+    
+    // Group models by provider
+    Object.keys(PROVIDERS).forEach(providerKey => {
+        const group = document.createElement("optgroup");
+        group.label = PROVIDERS[providerKey].name;
+        
+        PROVIDERS[providerKey].models.forEach(model => {
+            const opt = document.createElement("option");
+            opt.value = model.id;
+            opt.textContent = model.name;
+            group.appendChild(opt);
+        });
+        select.appendChild(group);
+    });
+
+    // Restore last selected model
+    const savedModel = localStorage.getItem("ai_active_model");
+    if (savedModel && MODEL_TO_PROVIDER[savedModel]) {
+        select.value = savedModel;
+    }
+    
+    handleModelChange();
+}
 
 // ─── UI CONTROLS ──────────────────────────────────────────
 
@@ -57,86 +101,55 @@ function toggleAIChat() {
     const panel = document.getElementById("ai-chat-panel");
     panel.classList.toggle("active");
     if (panel.classList.contains("active")) {
-        checkAPIKey();
         document.getElementById("ai-input").focus();
+    }
+}
+
+function handleModelChange() {
+    const select = document.getElementById("chat-model-select");
+    if (!select) return;
+    
+    const modelId = select.value;
+    localStorage.setItem("ai_active_model", modelId);
+    
+    const provider = MODEL_TO_PROVIDER[modelId];
+    const attachBtn = document.getElementById("ai-attach-btn");
+    
+    // Toggle Image Attachment UI (Only Gemini natively supports it here right now)
+    if (attachBtn) {
+        if (provider === "gemini") {
+            attachBtn.style.display = "flex";
+        } else {
+            attachBtn.style.display = "none";
+            removeImage(); // clear if any
+        }
     }
 }
 
 function openAISettings() {
     document.getElementById("ai-settings-modal").classList.add("active");
     
-    // Load last used provider
-    const savedProvider = localStorage.getItem("ai_active_provider") || "gemini";
-    const providerSelect = document.getElementById("ai-provider-select");
-    if (providerSelect) providerSelect.value = savedProvider;
-    
-    handleProviderChange();
-}
-
-function handleProviderChange() {
-    const provider = document.getElementById("ai-provider-select").value;
-    const modelSelect = document.getElementById("ai-model-select");
-    const helpText = document.getElementById("api-key-help");
-    const keyInput = document.getElementById("api-key-input");
-    const attachBtn = document.querySelector(".attach-btn");
-
-    // Populate models
-    modelSelect.innerHTML = "";
-    PROVIDERS[provider].models.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m.id;
-        opt.textContent = m.name;
-        modelSelect.appendChild(opt);
-    });
-
-    // Load saved model for this provider if any
-    const savedModel = localStorage.getItem(`ai_model_${provider}`);
-    if (savedModel && PROVIDERS[provider].models.some(m => m.id === savedModel)) {
-        modelSelect.value = savedModel;
-    }
-
-    // Load saved key for this provider
-    const savedKey = localStorage.getItem(`ai_key_${provider}`);
-    keyInput.value = savedKey || "";
-    
-    // Update help text
-    helpText.textContent = PROVIDERS[provider].helpText;
-
-    // Toggle Image Attachment UI (Only Gemini supports it easily here right now)
-    if (provider === "gemini") {
-        attachBtn.style.display = "flex";
-    } else {
-        attachBtn.style.display = "none";
-        removeImage(); // clear if any
-    }
+    // Load saved keys
+    document.getElementById("key-gemini").value = localStorage.getItem("ai_key_gemini") || "";
+    document.getElementById("key-groq").value = localStorage.getItem("ai_key_groq") || "";
+    document.getElementById("key-openrouter").value = localStorage.getItem("ai_key_openrouter") || "";
 }
 
 function closeAISettings() {
     document.getElementById("ai-settings-modal").classList.remove("active");
 }
 
-function saveAPIKey() {
-    const provider = document.getElementById("ai-provider-select").value;
-    const model = document.getElementById("ai-model-select").value;
-    const key = document.getElementById("api-key-input").value.trim();
+function saveAPIKeys() {
+    const keyGemini = document.getElementById("key-gemini").value.trim();
+    const keyGroq = document.getElementById("key-groq").value.trim();
+    const keyOpenrouter = document.getElementById("key-openrouter").value.trim();
     
-    if (key) {
-        localStorage.setItem(`ai_key_${provider}`, key);
-        localStorage.setItem(`ai_model_${provider}`, model);
-        localStorage.setItem("ai_active_provider", provider);
-        closeAISettings();
-        addMessage("ai", `Settings saved! Using **${provider.toUpperCase()}** with model **${model}**.`);
-    } else {
-        alert("Please enter a valid API key for the selected provider.");
-    }
-}
-
-function checkAPIKey() {
-    const provider = localStorage.getItem("ai_active_provider") || "gemini";
-    const key = localStorage.getItem(`ai_key_${provider}`);
-    if (!key) {
-        openAISettings();
-    }
+    if (keyGemini) localStorage.setItem("ai_key_gemini", keyGemini);
+    if (keyGroq) localStorage.setItem("ai_key_groq", keyGroq);
+    if (keyOpenrouter) localStorage.setItem("ai_key_openrouter", keyOpenrouter);
+    
+    closeAISettings();
+    addMessage("ai", "🔑 API Keys saved securely in your browser!");
 }
 
 // ─── IMAGE HANDLING ───────────────────────────────────────
@@ -181,10 +194,7 @@ function handleEnter(event) {
 }
 
 function escapeHtmlText(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function formatMarkdown(text) {
@@ -256,13 +266,15 @@ async function sendAIMessage() {
     const input = document.getElementById("ai-input");
     const text = input.value.trim();
     
-    const provider = localStorage.getItem("ai_active_provider") || "gemini";
+    const select = document.getElementById("chat-model-select");
+    const modelName = select.value;
+    const provider = MODEL_TO_PROVIDER[modelName];
     const apiKey = localStorage.getItem(`ai_key_${provider}`);
-    const modelName = localStorage.getItem(`ai_model_${provider}`) || PROVIDERS[provider].models[0].id;
 
     if (!text && !currentImageBase64) return;
     
     if (!apiKey) {
+        addMessage("ai", `❌ **Missing API Key:** You selected a model from **${PROVIDERS[provider].name}**, but you haven't saved a key for them. Please click the 🔑 icon to enter your key.`);
         openAISettings();
         return;
     }
@@ -373,7 +385,7 @@ async function fetchOpenAICompatible(provider, apiKey, modelName, text) {
 
     if (!response.ok) {
         const errMsg = data.error?.message || data.error || response.statusText;
-        addMessage("ai", `❌ ${provider.toUpperCase()} API Error: ${errMsg}`);
+        addMessage("ai", `❌ ${PROVIDERS[provider].name} API Error: ${errMsg}`);
         return;
     }
 
