@@ -119,3 +119,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }, Math.min(i * 30, 600));
   });
 });
+
+// ─── Live IST Clock ─────────────────────────────────────
+function updateClock() {
+  const clockElement = document.getElementById("live-clock");
+  if (!clockElement) return;
+
+  const formatter = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+  
+  clockElement.textContent = formatter.format(new Date());
+}
+
+setInterval(updateClock, 1000);
+updateClock();

@@ -385,7 +385,11 @@ function generateHTML(briefing) {
                     <span class="meta-value">${meta.date}</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">LAST UPDATED</span>
+                    <span class="meta-label">IST TIME</span>
+                    <span class="meta-value" id="live-clock">--:--:--</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">LAST REFRESH</span>
                     <span class="meta-value">⏱️ ${meta.time}</span>
                 </div>
                 <div class="meta-item status-live">
