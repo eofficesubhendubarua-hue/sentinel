@@ -153,6 +153,22 @@ export const FEEDS = {
       name: "AP News",
       url: "https://rsshub.app/apnews/topics/apf-topnews",
     },
+    {
+      name: "New York Times",
+      url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+    },
+    {
+      name: "RT News",
+      url: "https://www.rt.com/rss/",
+    },
+    {
+      name: "China Daily",
+      url: "http://www.chinadaily.com.cn/rss/world_rss.xml",
+    },
+    {
+      name: "WION",
+      url: "https://www.wionews.com/rss",
+    },
   ],
 
   // ─────────────────────────────────────────────
@@ -370,6 +386,18 @@ export const FEEDS = {
     {
       name: "The Intercept",
       url: "https://theintercept.com/feed/?rss",
+    },
+    {
+      name: "Public Intelligence",
+      url: "https://publicintelligence.net/feed/",
+    },
+    {
+      name: "IntelNews",
+      url: "https://intelnews.org/feed/",
+    },
+    {
+      name: "OSINT Me",
+      url: "https://osintme.com/index.php/feed/",
     },
   ],
 
