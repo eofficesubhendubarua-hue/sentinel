@@ -131,6 +131,10 @@ export const FEEDS = {
       name: "Al Jazeera",
       url: "https://www.aljazeera.com/xml/rss/all.xml",
     },
+    {
+      name: "Times of India",
+      url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+    },
   ],
 
   // ─────────────────────────────────────────────
@@ -178,6 +182,10 @@ export const FEEDS = {
     {
       name: "The Hindu",
       url: "https://www.thehindu.com/news/national/feeder/default.rss",
+    },
+    {
+      name: "Times of India",
+      url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
     },
     {
       name: "India Today",
