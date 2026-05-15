@@ -89,7 +89,7 @@ async function fetchFeed(feedConfig) {
       parser.parseURL(feedConfig.url),
       absoluteTimeout
     ]);
-    const articles = (feed.items || []).slice(0, 15).map((item) => ({
+    const articles = (feed.items || []).slice(0, 20).map((item) => ({
       title: cleanText(item.title) || "Untitled",
       link: item.link || item.guid || "#",
       description: truncate(
@@ -136,7 +136,7 @@ async function fetchCategory(categoryId) {
     }
   }
 
-  return unique.slice(0, 12);
+  return unique.slice(0, 24);
 }
 
 // ─── Archive Index ────────────────────────────────────────
