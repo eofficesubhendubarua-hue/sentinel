@@ -501,7 +501,7 @@ function generateHTML(briefing) {
         window.briefingData = ${JSON.stringify(briefing).replace(/</g, '\\u003c')};
     </script>
     <script src="js/app.js"></script>
-    <script src="js/agent.js"></script>
+    <script src="js/agent.js?v=${Date.now()}"></script>
 </body>
 </html>`;
 

@@ -11,7 +11,7 @@ const PROVIDERS = {
         name: "Google Gemini",
         models: [
             { id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash (Fast, Multimodal)" },
-            { id: "gemini-1.5-flash-8b-latest", name: "Google AI Edge: Flash 8B" },
+            { id: "gemini-1.5-flash-8b", name: "Google AI Edge: Flash 8B" },
             { id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro (Advanced)" },
             { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Open Model)" },
             { id: "gemma-4-27b-it", name: "Gemma 4 27B IT (Open Model)" },
@@ -22,8 +22,6 @@ const PROVIDERS = {
     groq: {
         name: "Groq (Ultra-Fast)",
         models: [
-            { id: "llama-4-maverick", name: "Llama 4 Maverick" },
-            { id: "llama-4-scout", name: "Llama 4 Scout" },
             { id: "llama3-70b-8192", name: "Llama 3 70B" },
             { id: "gemma-4-9b-it", name: "Gemma 4 9B IT" },
             { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B" }
