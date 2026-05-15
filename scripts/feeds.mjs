@@ -285,6 +285,10 @@ export const FEEDS = {
       name: "LiveMint Markets",
       url: "https://www.livemint.com/rss/market",
     },
+    {
+      name: "Trade Brains",
+      url: "https://tradebrains.in/feed/",
+    },
   ],
 
   // ─────────────────────────────────────────────
