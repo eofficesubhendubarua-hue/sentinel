@@ -21,8 +21,9 @@ const PROVIDERS = {
     },
     groq: {
         models: [
+            { id: "llama-4-maverick", name: "Llama 4 Maverick (Ultra-Fast via Groq)" },
+            { id: "llama-4-scout", name: "Llama 4 Scout (Instant via Groq)" },
             { id: "llama3-70b-8192", name: "Llama 3 70B (Extremely Fast, Smart)" },
-            { id: "llama3-8b-8192", name: "Llama 3 8B (Instant)" },
             { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Ultra-Fast via Groq)" },
             { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B (Large Context)" }
         ],
@@ -31,9 +32,19 @@ const PROVIDERS = {
     },
     openrouter: {
         models: [
-            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" },
-            { id: "google/gemma-4-9b-it:free", name: "Google Gemma 4 9B (Free)" },
-            { id: "meta-llama/llama-3-8b-instruct:free", name: "Llama 3 8B (Free)" }
+            { id: "moonshotai/kimi-2.6-thinking:free", name: "Kimi 2.6 Thinking (Free)" },
+            { id: "deepseek/deepseek-v4-pro:free", name: "DeepSeek V4-Pro (Free)" },
+            { id: "deepseek/deepseek-v4-flash:free", name: "DeepSeek V4-Flash (Free)" },
+            { id: "alibaba/qwen-3-max:free", name: "Alibaba Qwen3-Max (Free)" },
+            { id: "alibaba/qwen-3.6:free", name: "Alibaba Qwen 3.6 (Free)" },
+            { id: "zhipuai/glm-5.1:free", name: "Zhipu AI GLM-5.1 (Free)" },
+            { id: "zhipuai/glm-5:free", name: "Zhipu AI GLM-5 (Free)" },
+            { id: "meta-llama/llama-4-maverick:free", name: "Meta Llama 4 Maverick (Free)" },
+            { id: "meta-llama/llama-4-scout:free", name: "Meta Llama 4 Scout (Free)" },
+            { id: "mistralai/ministral-8b:free", name: "Mistral Ministral 8B (Free)" },
+            { id: "mistralai/ministral-3b:free", name: "Mistral Ministral 3B (Free)" },
+            { id: "mistralai/devstral-2:free", name: "Mistral Devstral 2 (Free)" },
+            { id: "google/gemma-4-9b-it:free", name: "Google Gemma 4 9B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions",
         helpText: "Get a free key from: openrouter.ai/keys"
