@@ -444,7 +444,52 @@ function generateHTML(briefing) {
         </div>
     </footer>
 
+    <!-- AI Agent Widget -->
+    <div id="ai-fab" onclick="toggleAIChat()" title="Sentinel AI Assistant">✨</div>
+
+    <div id="ai-chat-panel">
+        <div class="chat-header">
+            <h3>✨ Sentinel AI</h3>
+            <div class="chat-header-actions">
+                <button onclick="openAISettings()" title="Settings">⚙️</button>
+                <button onclick="toggleAIChat()" title="Close">✕</button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message ai">Hello, I am the Sentinel AI Assistant. I have analyzed all the intelligence feeds currently on your dashboard. How can I help you?</div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="image-preview-area" id="image-preview-area"></div>
+            <div class="chat-input-wrapper">
+                <input type="file" id="ai-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <button class="attach-btn" onclick="document.getElementById('ai-file-input').click()" title="Attach Image">📎</button>
+                <textarea id="ai-input" placeholder="Ask about the news, or analyze an image..." rows="1" onkeydown="handleEnter(event)"></textarea>
+                <button class="send-btn" onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Settings Modal -->
+    <div id="ai-settings-modal">
+        <div class="modal-content">
+            <h3>⚙️ AI Configuration</h3>
+            <p>Enter your free Gemini API Key to activate the Sentinel AI. Your key is stored securely in your browser's local storage and is never sent to our servers.</p>
+            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeAISettings()">Cancel</button>
+                <button class="btn-save" onclick="saveAPIKey()">Save Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inject current dashboard context directly into the window for the AI to read
+        window.briefingData = ${JSON.stringify(briefing).replace(/</g, '\\u003c')};
+    </script>
     <script src="js/app.js"></script>
+    <script src="js/agent.js"></script>
 </body>
 </html>`;
 
