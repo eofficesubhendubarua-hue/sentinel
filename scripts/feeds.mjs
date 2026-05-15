@@ -52,6 +52,14 @@ export const CATEGORIES = {
     icon: "📈",
     priority: 6,
   },
+  daily_market_news: {
+    id: "daily_market_news",
+    name: "Daily Market News",
+    shortName: "Daily Markets",
+    description: "Daily latest reports from CNBC, ET Now, and leading financial networks",
+    icon: "📊",
+    priority: 6.5,
+  },
   technology: {
     id: "technology",
     name: "Technology",
@@ -250,6 +258,32 @@ export const FEEDS = {
     {
       name: "Business Standard",
       url: "https://www.business-standard.com/rss/home_page_top_stories.rss",
+    },
+  ],
+
+  // ─────────────────────────────────────────────
+  // 📊 DAILY MARKET NEWS
+  // ─────────────────────────────────────────────
+  daily_market_news: [
+    {
+      name: "ET Now - Latest",
+      url: "https://www.etnownews.com/feeds/gns-etn-latest",
+    },
+    {
+      name: "CNBC - Finance",
+      url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
+    },
+    {
+      name: "Economic Times - Markets",
+      url: "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+    },
+    {
+      name: "Moneycontrol News",
+      url: "https://www.moneycontrol.com/rss/latestnews.xml",
+    },
+    {
+      name: "LiveMint Markets",
+      url: "https://www.livemint.com/rss/market",
     },
   ],
 
