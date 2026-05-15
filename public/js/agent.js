@@ -38,6 +38,13 @@ const PROVIDERS = {
             { id: "qwen/qwen-2-7b-instruct:free", name: "Qwen 2 7B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions"
+    },
+    pollinations: {
+        name: "Public Web (No Key Required)",
+        models: [
+            { id: "pollinations-default", name: "Free Public AI (Instant)" }
+        ],
+        url: "https://text.pollinations.ai/"
     }
 };
 
@@ -268,7 +275,7 @@ async function sendAIMessage() {
 
     if (!text && !currentImageBase64) return;
     
-    if (!apiKey) {
+    if (!apiKey && provider !== "pollinations") {
         addMessage("ai", `❌ **Missing API Key:** You selected a model from **${PROVIDERS[provider].name}**, but you haven't saved a key for them. Please click the 🔑 icon to enter your key.`);
         openAISettings();
         return;
@@ -285,7 +292,9 @@ async function sendAIMessage() {
     showTyping();
 
     try {
-        if (provider === "gemini") {
+        if (provider === "pollinations") {
+            await fetchPollinations(text);
+        } else if (provider === "gemini") {
             await fetchGemini(apiKey, modelName, text, payloadImageBase64, payloadImageMime);
         } else {
             await fetchOpenAICompatible(provider, apiKey, modelName, text);
@@ -386,4 +395,25 @@ async function fetchOpenAICompatible(provider, apiKey, modelName, text) {
 
     const aiText = data.choices[0]?.message?.content || "I have no response.";
     addMessage("ai", aiText);
+}
+
+// ─── POLLINATIONS (KEYLESS) ───────────────────────────────
+async function fetchPollinations(text) {
+    const context = buildSystemContext();
+    const prompt = context + "\n\nUser Question:\n" + text;
+    
+    // Pollinations accepts raw GET requests where the URL is the prompt
+    const url = PROVIDERS.pollinations.url + encodeURIComponent(prompt);
+    
+    const response = await fetch(url);
+    const dataText = await response.text();
+    
+    hideTyping();
+    
+    if (!response.ok) {
+        addMessage("ai", `❌ Public Web API Error: Could not generate response.`);
+        return;
+    }
+    
+    addMessage("ai", dataText);
 }
