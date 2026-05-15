@@ -33,20 +33,20 @@ const PROVIDERS = {
     openrouter: {
         name: "OpenRouter (Community)",
         models: [
-            { id: "moonshotai/kimi-2.6-thinking:free", name: "Kimi 2.6 Thinking" },
-            { id: "deepseek/deepseek-v4-pro:free", name: "DeepSeek V4-Pro" },
-            { id: "deepseek/deepseek-v4-flash:free", name: "DeepSeek V4-Flash" },
-            { id: "alibaba/qwen-3-max:free", name: "Alibaba Qwen3-Max" },
-            { id: "alibaba/qwen-3.6:free", name: "Alibaba Qwen 3.6" },
-            { id: "zhipuai/glm-5.1:free", name: "Zhipu AI GLM-5.1" },
-            { id: "zhipuai/glm-5:free", name: "Zhipu AI GLM-5" },
-            { id: "meta-llama/llama-4-maverick:free", name: "Meta Llama 4 Maverick" },
-            { id: "meta-llama/llama-4-scout:free", name: "Meta Llama 4 Scout" },
-            { id: "mistralai/ministral-8b:free", name: "Mistral Ministral 8B" },
-            { id: "mistralai/ministral-3b:free", name: "Mistral Ministral 3B" },
-            { id: "mistralai/devstral-2:free", name: "Mistral Devstral 2" },
-            { id: "google/gemma-4-9b-it:free", name: "Google Gemma 4 9B" },
-            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B" }
+            { id: "moonshotai/kimi-k2.6", name: "Kimi 2.6 Thinking" },
+            { id: "deepseek/deepseek-v4-pro", name: "DeepSeek V4-Pro" },
+            { id: "deepseek/deepseek-v4-flash", name: "DeepSeek V4-Flash" },
+            { id: "alibaba/qwen-3-max", name: "Alibaba Qwen3-Max" },
+            { id: "alibaba/qwen3.6-flash", name: "Alibaba Qwen 3.6 Flash" },
+            { id: "zhipuai/glm-5.1", name: "Zhipu AI GLM-5.1" },
+            { id: "zhipuai/glm-5", name: "Zhipu AI GLM-5" },
+            { id: "meta-llama/llama-4-maverick", name: "Meta Llama 4 Maverick" },
+            { id: "meta-llama/llama-4-scout", name: "Meta Llama 4 Scout" },
+            { id: "mistralai/ministral-8b", name: "Mistral Ministral 8B" },
+            { id: "mistralai/ministral-3b", name: "Mistral Ministral 3B" },
+            { id: "mistralai/devstral-2", name: "Mistral Devstral 2" },
+            { id: "google/gemma-4-9b-it", name: "Google Gemma 4 9B" },
+            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions"
     }
@@ -130,7 +130,7 @@ function openAISettings() {
     document.getElementById("ai-settings-modal").classList.add("active");
     
     // Load saved keys
-    document.getElementById("key-gemini").value = localStorage.getItem("ai_key_gemini") || "";
+    document.getElementById("key-gemini").value = localStorage.getItem("ai_key_gemini") || localStorage.getItem("gemini_api_key") || "";
     document.getElementById("key-groq").value = localStorage.getItem("ai_key_groq") || "";
     document.getElementById("key-openrouter").value = localStorage.getItem("ai_key_openrouter") || "";
 }
@@ -269,7 +269,13 @@ async function sendAIMessage() {
     const select = document.getElementById("chat-model-select");
     const modelName = select.value;
     const provider = MODEL_TO_PROVIDER[modelName];
-    const apiKey = localStorage.getItem(`ai_key_${provider}`);
+    
+    // Check new storage key, fallback to legacy storage key for Gemini
+    let apiKey = localStorage.getItem(`ai_key_${provider}`);
+    if (!apiKey && provider === "gemini") {
+        apiKey = localStorage.getItem("gemini_api_key");
+        if (apiKey) localStorage.setItem("ai_key_gemini", apiKey); // Migrate it
+    }
 
     if (!text && !currentImageBase64) return;
     
