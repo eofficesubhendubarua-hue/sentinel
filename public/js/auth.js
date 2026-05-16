@@ -1,7 +1,7 @@
 // ─── FIREBASE CONFIGURATION ───────────────────────────────
 // IMPORTANT: You must replace this object with your actual Firebase config!
 const firebaseConfig = {
-    apiKey: "AIzaSyDmjXQDTZI_79LEvpPljNrXrENQSgohr7s",
+    apiKey: "AIzaSyDmjXQDTZl_79LEvpP1jNrXrENQSgohr7s",
     authDomain: "sentinel-63009.firebaseapp.com",
     projectId: "sentinel-63009",
     storageBucket: "sentinel-63009.firebasestorage.app",
