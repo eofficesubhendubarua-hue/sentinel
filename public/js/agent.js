@@ -26,9 +26,10 @@ const PROVIDERS = {
     openrouter: {
         name: "OpenRouter (Community)",
         models: [
-            { id: "meta-llama/llama-3-8b-instruct:free", name: "Llama 3 8B (Free)" },
-            { id: "microsoft/phi-3-mini-128k-instruct:free", name: "Microsoft Phi-3 Mini (Free)" },
-            { id: "google/gemma-7b-it:free", name: "Google Gemma 7B (Free)" }
+            { id: "meta-llama/llama-3.3-70b-instruct:free", name: "Llama 3.3 70B (Free)" },
+            { id: "deepseek/deepseek-v4-flash:free", name: "DeepSeek V4-Flash (Free)" },
+            { id: "google/gemma-4-31b-it:free", name: "Google Gemma 4 31B (Free)" },
+            { id: "meta-llama/llama-3.2-3b-instruct:free", name: "Llama 3.2 3B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions"
     },
