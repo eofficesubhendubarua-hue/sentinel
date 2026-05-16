@@ -369,14 +369,15 @@ function generateHTML(briefing) {
     <style>
         /* Login Overlay Styles */
         #login-overlay {
-            position: fixed;
+            position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(10px);
-            z-index: 99999;
+            z-index: 999;
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius: 12px;
         }
         .login-box {
             background: var(--bg-card);
@@ -422,21 +423,6 @@ function generateHTML(briefing) {
     </style>
 </head>
 <body>
-    <!-- Login Overlay -->
-    <div id="login-overlay">
-        <div class="login-box">
-            <h2>Sentinel Secure Login</h2>
-            <p>Please authenticate to access the Intelligence Dashboard.</p>
-            <div id="auth-error" class="auth-error"></div>
-            <button class="login-btn google-btn" onclick="signInWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> Sign in with Google
-            </button>
-            <button class="login-btn github-btn" onclick="signInWithGitHub()">
-                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub"> Sign in with GitHub
-            </button>
-        </div>
-    </div>
-
     <!-- Animated background -->
     <div class="bg-grid"></div>
     <div class="scanline"></div>
@@ -522,7 +508,21 @@ function generateHTML(briefing) {
     <!-- AI Agent Widget -->
     <div id="ai-fab" onclick="toggleAIChat()" title="Sentinel AI Assistant">✨</div>
 
-    <div id="ai-chat-panel">
+    <div id="ai-chat-panel" style="position: relative;">
+        <!-- Login Overlay (Only inside chat) -->
+        <div id="login-overlay">
+            <div class="login-box" style="padding: 20px; max-width: 90%;">
+                <h2 style="font-size: 18px;">AI Secure Login</h2>
+                <p style="font-size: 12px; margin-bottom: 20px;">Please authenticate to access the Intelligence AI.</p>
+                <div id="auth-error" class="auth-error"></div>
+                <button class="login-btn google-btn" onclick="signInWithGoogle()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> Sign in with Google
+                </button>
+                <button class="login-btn github-btn" onclick="signInWithGitHub()">
+                    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub"> Sign in with GitHub
+                </button>
+            </div>
+        </div>
         <div class="chat-header">
             <h3>✨ Sentinel</h3>
             <select id="chat-model-select" onchange="handleModelChange()" style="flex: 1; margin: 0 10px; padding: 5px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 12px;">
