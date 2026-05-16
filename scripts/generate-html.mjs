@@ -360,8 +360,83 @@ function generateHTML(briefing) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    
+    <style>
+        /* Login Overlay Styles */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .login-box h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: var(--primary);
+        }
+        .login-box p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .google-btn { background: #ffffff; color: #333; }
+        .google-btn:hover { background: #f0f0f0; }
+        .github-btn { background: #24292e; color: #fff; border-color: #24292e; }
+        .github-btn:hover { background: #1b1f23; }
+        .login-btn img { height: 20px; margin-right: 12px; }
+        .auth-error { color: #ff4d4d; font-size: 13px; margin-bottom: 15px; display: none; }
+    </style>
 </head>
 <body>
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Sentinel Secure Login</h2>
+            <p>Please authenticate to access the Intelligence Dashboard.</p>
+            <div id="auth-error" class="auth-error"></div>
+            <button class="login-btn google-btn" onclick="signInWithGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> Sign in with Google
+            </button>
+            <button class="login-btn github-btn" onclick="signInWithGitHub()">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub"> Sign in with GitHub
+            </button>
+        </div>
+    </div>
+
     <!-- Animated background -->
     <div class="bg-grid"></div>
     <div class="scanline"></div>
@@ -500,6 +575,7 @@ function generateHTML(briefing) {
         // Inject current dashboard context directly into the window for the AI to read
         window.briefingData = ${JSON.stringify(briefing).replace(/</g, '\\u003c')};
     </script>
+    <script src="js/auth.js?v=${Date.now()}"></script>
     <script src="js/app.js"></script>
     <script src="js/agent.js?v=${Date.now()}"></script>
 </body>

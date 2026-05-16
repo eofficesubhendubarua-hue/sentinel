@@ -260,6 +260,15 @@ async function sendAIMessage() {
     const modelName = select.value;
     const provider = MODEL_TO_PROVIDER[modelName];
     
+    // Check Firebase Auth
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            addMessage("ai", `❌ **Authentication Required:** You must be logged in with Google or GitHub to use the Sentinel AI.`);
+            return;
+        }
+    }
+    
     // Check new storage key, fallback to legacy storage key for Gemini
     let apiKey = localStorage.getItem(`ai_key_${provider}`);
     if (!apiKey && provider === "gemini") {
