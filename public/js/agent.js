@@ -10,32 +10,25 @@ const PROVIDERS = {
     gemini: {
         name: "Google Gemini",
         models: [
-            { id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash (Fast, Multimodal)" },
-            { id: "gemini-1.5-flash-8b", name: "Google AI Edge: Flash 8B" },
-            { id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro (Advanced)" },
-            { id: "gemma-4-9b-it", name: "Gemma 4 9B IT (Open Model)" },
-            { id: "gemma-4-27b-it", name: "Gemma 4 27B IT (Open Model)" },
-            { id: "gemini-1.0-pro", name: "Gemini 1.0 Pro" }
+            { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash (Fast, Multimodal)" },
+            { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro (Advanced)" }
         ],
         url: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
     },
     groq: {
         name: "Groq (Ultra-Fast)",
         models: [
-            { id: "llama3-70b-8192", name: "Llama 3 70B" },
-            { id: "llama3-8b-8192", name: "Llama 3 8B" },
-            { id: "gemma2-9b-it", name: "Gemma 2 9B IT" }
+            { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B" },
+            { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B" }
         ],
         url: "https://api.groq.com/openai/v1/chat/completions"
     },
     openrouter: {
         name: "OpenRouter (Community)",
         models: [
-            { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" },
             { id: "meta-llama/llama-3-8b-instruct:free", name: "Llama 3 8B (Free)" },
             { id: "microsoft/phi-3-mini-128k-instruct:free", name: "Microsoft Phi-3 Mini (Free)" },
-            { id: "google/gemma-7b-it:free", name: "Google Gemma 7B (Free)" },
-            { id: "qwen/qwen-2-7b-instruct:free", name: "Qwen 2 7B (Free)" }
+            { id: "google/gemma-7b-it:free", name: "Google Gemma 7B (Free)" }
         ],
         url: "https://openrouter.ai/api/v1/chat/completions"
     },
