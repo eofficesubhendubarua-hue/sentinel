@@ -1,12 +1,13 @@
 // ─── FIREBASE CONFIGURATION ───────────────────────────────
 // IMPORTANT: You must replace this object with your actual Firebase config!
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDmjXQDTZI_79LEvpPljNrXrENQSgohr7s",
+    authDomain: "sentinel-63009.firebaseapp.com",
+    projectId: "sentinel-63009",
+    storageBucket: "sentinel-63009.firebasestorage.app",
+    messagingSenderId: "979098579301",
+    appId: "1:979098579301:web:78378e6f2f1c106960f18c",
+    measurementId: "G-0NS1767F0J"
 };
 
 // Initialize Firebase
