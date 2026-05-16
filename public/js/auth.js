@@ -58,29 +58,24 @@ auth.onAuthStateChanged((user) => {
 // ─── LOGIN FUNCTIONS ──────────────────────────────────────
 function signInWithGoogle() {
     if (firebaseConfig.apiKey === "YOUR_API_KEY") return;
-    
-    auth.signInWithPopup(googleProvider)
-        .then((result) => {
-            console.log("Google Sign-In Successful");
-        }).catch((error) => {
-            console.error("Google Auth Error:", error);
-            document.getElementById("auth-error").innerText = error.message;
-            document.getElementById("auth-error").style.display = "block";
-        });
+    auth.signInWithRedirect(googleProvider);
 }
 
 function signInWithGitHub() {
     if (firebaseConfig.apiKey === "YOUR_API_KEY") return;
-    
-    auth.signInWithPopup(githubProvider)
-        .then((result) => {
-            console.log("GitHub Sign-In Successful");
-        }).catch((error) => {
-            console.error("GitHub Auth Error:", error);
-            document.getElementById("auth-error").innerText = error.message;
-            document.getElementById("auth-error").style.display = "block";
-        });
+    auth.signInWithRedirect(githubProvider);
 }
+
+// Handle redirect results and errors
+auth.getRedirectResult().then((result) => {
+    if (result.credential) {
+        console.log("Redirect Sign-In Successful");
+    }
+}).catch((error) => {
+    console.error("Auth Redirect Error:", error);
+    document.getElementById("auth-error").innerText = error.message;
+    document.getElementById("auth-error").style.display = "block";
+});
 
 function signOut() {
     auth.signOut().then(() => {
