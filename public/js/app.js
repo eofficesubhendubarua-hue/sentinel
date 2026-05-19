@@ -1,5 +1,5 @@
 // ============================================================
-// SENTINEL Intelligence Brief — Client-Side Interactivity
+// SENTINEL Intelligence Brief — Client-Side Cyber Interactivity
 // ============================================================
 
 // ─── Category Filtering ─────────────────────────────────
@@ -106,21 +106,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// ─── Staggered card animation on load ───────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  const cards = document.querySelectorAll(".news-card");
-  cards.forEach((card, i) => {
-    card.style.opacity = "0";
-    card.style.transform = "translateY(12px)";
-    setTimeout(() => {
-      card.style.transition = "opacity 0.4s ease, transform 0.4s ease";
-      card.style.opacity = "1";
-      card.style.transform = "translateY(0)";
-    }, Math.min(i * 30, 600));
-  });
-});
-
-// ─── Live IST Clock ─────────────────────────────────────
+// ─── Live Clock & System Telemetry ──────────────────────
 function updateClock() {
   const clockElement = document.getElementById("live-clock");
   if (!clockElement) return;
@@ -130,11 +116,187 @@ function updateClock() {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: true
+    hour12: false
   });
   
-  clockElement.textContent = formatter.format(new Date());
+  // Custom futuristic timestamp addition
+  clockElement.textContent = formatter.format(new Date()) + " IST";
 }
 
 setInterval(updateClock, 1000);
 updateClock();
+
+// ─── Interactive Neural Network Particle Background ──────
+function initNeuralNet() {
+  const canvas = document.getElementById("neural-canvas");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  const particles = [];
+  const maxParticles = Math.min(60, Math.floor((width * height) / 25000)); // Dynamic count
+  const connectionDistance = 120;
+  const mouse = { x: null, y: null, radius: 180 };
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.radius = Math.random() * 2 + 1;
+      this.color = Math.random() > 0.5 ? "rgba(0, 240, 255, 0.4)" : "rgba(157, 78, 221, 0.4)";
+    }
+
+    update() {
+      // Keep inside bounds
+      if (this.x < 0 || this.x > width) this.vx = -this.vx;
+      if (this.y < 0 || this.y > height) this.vy = -this.vy;
+
+      this.x += this.vx;
+      this.y += this.vy;
+
+      // Mouse interactive magnetism
+      if (mouse.x !== null && mouse.y !== null) {
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          this.x -= dx * force * 0.02;
+          this.y -= dy * force * 0.02;
+        }
+      }
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  // Populate particles
+  for (let i = 0; i < maxParticles; i++) {
+    particles.push(new Particle());
+  }
+
+  // Mouse Listeners
+  window.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  window.addEventListener("mouseleave", () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+
+  window.addEventListener("resize", () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  // Drawing physics loop
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Update and draw particles
+    particles.forEach((p) => {
+      p.update();
+      p.draw();
+    });
+
+    // Draw lines
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < connectionDistance) {
+          const alpha = (1 - dist / connectionDistance) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+
+      // Draw cursor connection
+      if (mouse.x !== null && mouse.y !== null) {
+        const dx = particles[i].x - mouse.x;
+        const dy = particles[i].y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius - 30) {
+          const alpha = (1 - dist / (mouse.radius - 30)) * 0.18;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(157, 78, 221, ${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+}
+
+// ─── Stats Number Counter Animation ──────────────────────
+function animateCounters() {
+  const elements = document.querySelectorAll(".stat-num");
+  elements.forEach((el) => {
+    const originalText = el.textContent.trim();
+    // Match only clean positive integers
+    const targetVal = parseInt(originalText.replace(/[^0-9]/g, ""));
+    if (isNaN(targetVal)) return;
+
+    let current = 0;
+    const duration = 1200; // Total animation ms
+    const stepTime = 20;
+    const steps = duration / stepTime;
+    const increment = targetVal / steps;
+
+    const suffix = originalText.replace(/[0-9]/g, ""); // Keep non-numeric characters (e.g. m, h, +, etc.)
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= targetVal) {
+        el.textContent = targetVal + suffix;
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(current) + suffix;
+      }
+    }, stepTime);
+  });
+}
+
+// ─── Load Trigger ─────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  // Staggered card entry
+  const cards = document.querySelectorAll(".news-card");
+  cards.forEach((card, i) => {
+    card.style.opacity = "0";
+    card.style.transform = "translateY(16px)";
+    setTimeout(() => {
+      card.style.transition = "opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out)";
+      card.style.opacity = "1";
+      card.style.transform = "translateY(0)";
+    }, Math.min(i * 20, 500));
+  });
+
+  // Start background canvas and counter animations
+  initNeuralNet();
+  animateCounters();
+});

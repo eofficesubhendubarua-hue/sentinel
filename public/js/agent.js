@@ -189,9 +189,22 @@ function escapeHtmlText(str) {
 
 function formatMarkdown(text) {
     let formatted = escapeHtmlText(text);
+    
+    // Multi-line code blocks
+    formatted = formatted.replace(/```(?:[a-zA-Z0-9]+)?\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    
+    // Inline code blocks
+    formatted = formatted.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    
+    // Bold
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Italic
     formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Line breaks
     formatted = formatted.replace(/\n/g, '<br>');
+    
     return formatted;
 }
 
