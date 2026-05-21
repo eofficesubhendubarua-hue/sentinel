@@ -83,6 +83,7 @@ function generateHTML(briefing) {
           (article) => `
                 <article class="news-card" data-category="${id}">
                     <div class="card-image-wrapper">
+                        <div class="card-hud-crosshair"></div>
                         <img class="card-image" src="${escapeHtml(article.image || '')}" alt="${escapeHtml(article.title)}" loading="lazy">
                     </div>
                     <div class="card-body">

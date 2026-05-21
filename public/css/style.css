@@ -543,14 +543,31 @@ a:hover {
 .card-image-wrapper {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 110px; /* Sleeker, smaller widescreen scanner visor */
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   border: 1px solid rgba(0, 240, 255, 0.15);
-  border-radius: 4px;
-  background: #040a15;
-  clip-path: polygon(0 0, 95% 0, 100% 10%, 100% 100%, 5% 100%, 0 90%);
-  transition: border-color 0.3s ease;
+  border-left: 3px solid var(--primary); /* Left neon indicator bar */
+  border-radius: 2px;
+  background: #020610;
+  clip-path: polygon(0 0, 96% 0, 100% 12%, 100% 100%, 4% 100%, 0 88%);
+  transition: all 0.3s ease;
+}
+
+.card-image-wrapper::before {
+  content: "• REC";
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-family: var(--font-terminal);
+  font-size: 8px;
+  color: #ff3b30;
+  text-shadow: 0 0 4px #ff3b30;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  z-index: 2;
+  animation: blink-rec 1.5s infinite;
+  pointer-events: none;
 }
 
 .card-image {
@@ -558,25 +575,82 @@ a:hover {
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s var(--ease-out), filter 0.5s var(--ease-out);
-  filter: saturate(0.7) contrast(1.15) brightness(0.85);
+  filter: saturate(0.6) contrast(1.1) brightness(0.75);
 }
 
 .card-image-wrapper::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 50%, rgba(8, 17, 32, 0.85));
+  /* Glowing bottom vignette + dynamic scanning grid pattern */
+  background: 
+    linear-gradient(to bottom, transparent 40%, rgba(2, 6, 16, 0.85) 95%),
+    repeating-linear-gradient(0deg, rgba(0, 240, 255, 0.04) 0px, rgba(0, 240, 255, 0.04) 1px, transparent 1px, transparent 4px);
   pointer-events: none;
+  z-index: 1;
+}
+
+/* Digital center reticle */
+.card-hud-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.35;
+  transition: all 0.3s var(--ease-out);
+}
+
+.card-hud-crosshair::before,
+.card-hud-crosshair::after {
+  content: "";
+  position: absolute;
+  background: rgba(0, 240, 255, 0.3);
+}
+
+/* Horizontal index wire */
+.card-hud-crosshair::before {
+  top: 50%;
+  left: -3px;
+  width: 22px;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+/* Vertical index wire */
+.card-hud-crosshair::after {
+  left: 50%;
+  top: -3px;
+  width: 1px;
+  height: 22px;
+  transform: translateX(-50%);
 }
 
 .news-card:hover .card-image-wrapper {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+  border-color: rgba(0, 240, 255, 0.4);
+  border-left-color: var(--secondary);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+}
+
+.news-card:hover .card-hud-crosshair {
+  opacity: 0.8;
+  transform: translate(-50%, -50%) scale(1.05);
+  border-color: var(--secondary);
 }
 
 .news-card:hover .card-image {
-  transform: scale(1.05);
-  filter: saturate(1.15) contrast(1.15) brightness(1.0);
+  transform: scale(1.04);
+  filter: saturate(1.1) contrast(1.1) brightness(0.95);
+}
+
+@keyframes blink-rec {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
 
 .card-body {
