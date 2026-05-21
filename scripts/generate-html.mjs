@@ -127,8 +127,13 @@ function generateHTML(briefing) {
                 </div>
                 <p class="section-desc">Free, comprehensive market tools — Indian & international markets, stocks, mutual funds, ETFs, insider data. No login required.</p>
 
-                <div class="tv-widget-container">
-                    <iframe src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=en#%7B%22symbols%22%3A%5B%7B%22proName%22%3A%22BSE%3ASENSEX%22%2C%22title%22%3A%22SENSEX%22%7D%2C%7B%22proName%22%3A%22NSE%3ANIFTY%22%2C%22title%22%3A%22NIFTY%2050%22%7D%2C%7B%22proName%22%3A%22NSE%3ABANKNIFTY%22%2C%22title%22%3A%22BANK%20NIFTY%22%7D%2C%7B%22proName%22%3A%22FOREXCOM%3ASPXUSD%22%2C%22title%22%3A%22S%26P%20500%22%7D%2C%7B%22proName%22%3A%22FOREXCOM%3ANSXUSD%22%2C%22title%22%3A%22NASDAQ%22%7D%2C%7B%22proName%22%3A%22FX_IDC%3AUSDINR%22%2C%22title%22%3A%22USD%2FINR%22%7D%5D%2C%22showSymbolLogo%22%3Atrue%2C%22isTransparent%22%3Atrue%2C%22displayMode%22%3A%22adaptive%22%2C%22colorTheme%22%3A%22dark%22%7D" style="width:100%;height:76px;border:none;" allowtransparency="true" frameborder="0"></iframe>
+                <div class="cyber-ticker-container">
+                    <div class="ticker-header">LIVE_MARKET_TELEMETRY</div>
+                    <div class="cyber-ticker-wrap">
+                        <div class="cyber-ticker-track" id="cyber-ticker-track-el">
+                            <!-- Populated & updated continuously by app.js -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="market-subsection">
@@ -365,7 +370,7 @@ function generateHTML(briefing) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2.2">
     <link rel="stylesheet" href="css/dashboard.css">
     
     <!-- Firebase SDK (Compat) -->
@@ -373,6 +378,24 @@ function generateHTML(briefing) {
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 </head>
 <body>
+    <!-- Maincore System Decryption Bootloader Overlay -->
+    <div id="sys-bootloader-overlay">
+        <div class="boot-terminal-box">
+            <span class="boot-corner-bracket bracket-tl"></span>
+            <span class="boot-corner-bracket bracket-tr"></span>
+            <span class="boot-corner-bracket bracket-bl"></span>
+            <span class="boot-corner-bracket bracket-br"></span>
+            <div class="boot-monitor" id="boot-monitor"></div>
+            <div class="boot-progress-container">
+                <span class="boot-progress-label">CORE_SYNC</span>
+                <div class="boot-progress-bar-wrap">
+                    <div class="boot-progress-bar-fill" id="boot-progress-fill"></div>
+                </div>
+                <span class="boot-decrypt-anim" id="boot-decrypt">SEC_DECRYPT // [INITIALIZING]</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Interactive Background and Overlay -->
     <canvas id="neural-canvas"></canvas>
     <div class="bg-grid"></div>
@@ -404,6 +427,17 @@ function generateHTML(briefing) {
                     <span class="meta-label">LAST REFRESH</span>
                     <span class="meta-value">⏱️ ${meta.time}</span>
                 </div>
+                <div class="meta-item audio-toggle-container">
+                    <span class="meta-label">AUDIO CHANNELS</span>
+                    <button id="sys-audio-toggle" class="hud-audio-btn" onclick="toggleSysAudio()">
+                        <span class="audio-wave-bars">
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                        </span>
+                        <span id="audio-toggle-label">SYS_AUDIO [OFF]</span>
+                    </button>
+                </div>
                 <div class="meta-item status-live">
                     <span class="live-dot"></span>
                     <span class="meta-value">ACTIVE</span>
@@ -434,6 +468,100 @@ function generateHTML(briefing) {
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- CYBER HUD DASHBOARD GRID -->
+        <div class="cyber-hud-dashboard">
+            <!-- Hardware Diagnostics Telemetry -->
+            <div class="hud-panel sensor-telemetry-hud">
+                <div class="hud-panel-header">
+                    <span class="hud-panel-title">◈ SYS_DIAGNOSTICS // MAINFRAME_SENSORS</span>
+                    <span class="hud-pulse-dot"></span>
+                </div>
+                <div class="hud-panel-body grid-2x2">
+                    <div class="diag-item">
+                        <div class="diag-label">⚡ POWER CORE STATUS</div>
+                        <div class="diag-value" id="diag-battery-pct">DETECTING...</div>
+                        <div class="hud-progress-container">
+                            <div class="hud-progress-bar" id="diag-battery-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="diag-sub" id="diag-battery-status">Querying power bus...</div>
+                    </div>
+                    <div class="diag-item">
+                        <div class="diag-label">🛰️ NETWORK DATALINK</div>
+                        <div class="diag-value" id="diag-net-speed">CONNECTING...</div>
+                        <div class="hud-progress-container">
+                            <div class="hud-progress-bar" id="diag-net-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="diag-sub" id="diag-net-status">Measuring bandwidth...</div>
+                    </div>
+                    <div class="diag-item">
+                        <div class="diag-label">🖥️ DISPLAY MATRIX CONFIG</div>
+                        <div class="diag-value" id="diag-screen-res">0 x 0</div>
+                        <div class="diag-sub" id="diag-screen-details">DPR: 1.0 // Depth: 24b</div>
+                    </div>
+                    <div class="diag-item">
+                        <div class="diag-label">⏱️ LOCAL TEMPORAL GRID</div>
+                        <div class="diag-value" id="diag-timezone">GMT+00:00</div>
+                        <div class="diag-sub" id="diag-local-time">Querying atomic clock...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice HUD Command Console -->
+            <div class="hud-panel voice-control-hud">
+                <div class="hud-panel-header">
+                    <span class="hud-panel-title">◈ VOICE_HUD // COGNITIVE_INTERFACE</span>
+                    <span class="hud-pulse-dot voice-pulse" id="voice-hud-indicator"></span>
+                </div>
+                <div class="hud-panel-body flex-row">
+                    <div class="voice-trigger-area">
+                        <button id="voice-hud-btn" class="hud-mic-btn" onclick="toggleVoiceHUD()" title="Activate Speech Recognition">
+                            <span class="mic-icon">🎙️</span>
+                            <span class="pulse-ring"></span>
+                        </button>
+                        <div class="voice-status-label" id="voice-hud-status">SYS_VOICE [STANDBY]</div>
+                        <div class="voice-hud-spectrum-wrapper">
+                            <canvas id="voice-spectrum-canvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="voice-log-area">
+                        <div class="voice-log-title">COMMANDS HINT // SPEAK "COMPUTER, ..."</div>
+                        <div class="voice-log-console" id="voice-console-logs">
+                            <div class="console-line hint">Say: "Computer, display Tech"</div>
+                            <div class="console-line hint">Say: "Computer, system status"</div>
+                            <div class="console-line hint">Say: "Computer, search cybersecurity"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temporal Divergence HUD (Y2K38 Safe-Node) -->
+            <div class="hud-panel temporal-divergence-hud">
+                <div class="hud-panel-header">
+                    <span class="hud-panel-title">◈ TEMPORAL_DIVERGENCE // SECURE_Y2K38_SAFE_NODE</span>
+                    <span class="hud-pulse-dot" style="background: var(--secondary); box-shadow: 0 0 8px var(--secondary);"></span>
+                </div>
+                <div class="hud-panel-body">
+                    <div class="epoch-timeline-container">
+                        <div class="epoch-ticker-grid">
+                            <div class="epoch-item">
+                                <div class="epoch-label">⏱️ Y2K38 EPOCH DIVERGENCE METRICS</div>
+                                <div class="epoch-value" id="epoch-value-sec">DETECTING...</div>
+                                <div class="epoch-value nano" id="epoch-value-nano">.000000000 ns</div>
+                            </div>
+                            <div class="epoch-item">
+                                <div class="epoch-label">💾 2026 DELEGATE SAFE-GRID</div>
+                                <div class="epoch-value" style="font-size: 13px; color: var(--accent-emerald);">MAINFRAME_SYNCHRONIZED</div>
+                                <div class="entropy-subtext" id="entropy-value">SYSTEM_ENTROPY: 0.0000% // CORE_TEMP: 36.5°C</div>
+                            </div>
+                        </div>
+                        <div class="epoch-progress-hud">
+                            <div class="epoch-progress-fill" id="epoch-progressbar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         ${categorySections}
         ${marketWidget}
         ${upscWidget}
