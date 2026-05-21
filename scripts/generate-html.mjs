@@ -82,18 +82,23 @@ function generateHTML(briefing) {
         .map(
           (article) => `
                 <article class="news-card" data-category="${id}">
-                    <div class="card-source">
-                        <span class="source-badge">${escapeHtml(article.source)}</span>
-                        <span class="card-time">${formatPubDate(article.pubDate)}</span>
+                    <div class="card-image-wrapper">
+                        <img class="card-image" src="${escapeHtml(article.image || '')}" alt="${escapeHtml(article.title)}" loading="lazy">
                     </div>
-                    <h3 class="card-title">
-                        <a href="${escapeHtml(article.link)}" target="_blank" rel="noopener">${escapeHtml(article.title)}</a>
-                    </h3>
-                    <p class="card-desc">${escapeHtml(article.description)}</p>
-                    <div class="card-footer">
-                        <a href="${escapeHtml(article.link)}" target="_blank" rel="noopener" class="read-more">
-                            Read Full →
-                        </a>
+                    <div class="card-body">
+                        <div class="card-source">
+                            <span class="source-badge">${escapeHtml(article.source)}</span>
+                            <span class="card-time">${formatPubDate(article.pubDate)}</span>
+                        </div>
+                        <h3 class="card-title">
+                            <a href="${escapeHtml(article.link)}" target="_blank" rel="noopener">${escapeHtml(article.title)}</a>
+                        </h3>
+                        <p class="card-desc">${escapeHtml(article.description)}</p>
+                        <div class="card-footer">
+                            <a href="${escapeHtml(article.link)}" target="_blank" rel="noopener" class="read-more">
+                                Read Full →
+                            </a>
+                        </div>
                     </div>
                 </article>`
         )

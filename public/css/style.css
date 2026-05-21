@@ -540,6 +540,51 @@ a:hover {
   opacity: 1;
 }
 
+.card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 4px;
+  background: #040a15;
+  clip-path: polygon(0 0, 95% 0, 100% 10%, 100% 100%, 5% 100%, 0 90%);
+  transition: border-color 0.3s ease;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease-out), filter 0.5s var(--ease-out);
+  filter: saturate(0.7) contrast(1.15) brightness(0.85);
+}
+
+.card-image-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(8, 17, 32, 0.85));
+  pointer-events: none;
+}
+
+.news-card:hover .card-image-wrapper {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.news-card:hover .card-image {
+  transform: scale(1.05);
+  filter: saturate(1.15) contrast(1.15) brightness(1.0);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 .card-source {
   display: flex;
   align-items: center;
