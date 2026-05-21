@@ -572,6 +572,7 @@ function generateHTML(briefing) {
         <div class="footer-content">
             <div class="footer-brand">
                 <span class="footer-logo">◈ SENTINEL</span>
+                <p class="footer-attribution" style="color: var(--primary); font-family: var(--font-cyber); font-size: 11px; font-weight: 700; letter-spacing: 0.5px; margin: 6px 0 10px 0; text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); text-transform: uppercase;">made by SUBHENDU BARUA X for your convenience</p>
                 <p>Automated Intelligence Briefing System</p>
                 <p class="footer-update">Last updated: ${meta.date} ${meta.time}</p>
             </div>
