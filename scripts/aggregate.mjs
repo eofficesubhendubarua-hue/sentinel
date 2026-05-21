@@ -84,14 +84,84 @@ function isImageUrl(url) {
   return url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || url.includes('image') || url.includes('img') || url.includes('photo-');
 }
 
+function isGenericOrLogo(url) {
+  if (!url) return true;
+  const lower = url.toLowerCase();
+  const genericTerms = [
+    'logo', 'default', 'placeholder', 'avatar', 'sharing', 'social', 'facebook', 
+    'twitter', 'fallback', 'feed-icon', 'rss', 'wp-content/uploads/assets/logo',
+    'favicon', 'apple-touch-icon', 'static/images/brand', 'generic', 'analytics', 'pixel'
+  ];
+  return genericTerms.some(term => lower.includes(term));
+}
+
+async function fetchOpenGraphImage(url) {
+  if (!url || url === '#' || !url.startsWith('http')) return null;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500); // Strict 2.5s timeout
+    
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+      }
+    });
+    
+    clearTimeout(timeoutId);
+    if (!response.ok) return null;
+    const html = await response.text();
+    
+    const ogImageRegex = /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i;
+    const ogImageRegex2 = /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i;
+    const twitterImageRegex = /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i;
+    const twitterImageRegex2 = /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i;
+    
+    const match = html.match(ogImageRegex) || html.match(ogImageRegex2) || html.match(twitterImageRegex) || html.match(twitterImageRegex2);
+    if (match && match[1]) {
+      let imgUrl = match[1].trim();
+      if (imgUrl.startsWith('//')) {
+        imgUrl = 'https:' + imgUrl;
+      } else if (imgUrl.startsWith('/')) {
+        const parsedUrl = new URL(url);
+        imgUrl = parsedUrl.origin + imgUrl;
+      }
+      return imgUrl;
+    }
+  } catch (e) {
+    // Silent fail
+  }
+  return null;
+}
+
 function extractImageUrl(item) {
-  // 1. Check enclosure
+  // 1. Direct check of enclosure (singular or plural)
   if (item.enclosure && item.enclosure.url && isImageUrl(item.enclosure.url)) {
     return item.enclosure.url;
   }
+  if (Array.isArray(item.enclosures)) {
+    for (const enc of item.enclosures) {
+      if (enc && enc.url && isImageUrl(enc.url)) return enc.url;
+    }
+  }
 
-  // 2. Check media:content / media:thumbnail
-  const mediaKeys = ['media:content', 'media:thumbnail', 'media:group'];
+  // 2. Direct object properties
+  const directProperties = ['thumbnail', 'image', 'img', 'pic', 'photo'];
+  for (const prop of directProperties) {
+    if (item[prop]) {
+      if (typeof item[prop] === 'string' && isImageUrl(item[prop])) return item[prop];
+      if (typeof item[prop] === 'object') {
+        const obj = item[prop];
+        if (obj.url && isImageUrl(obj.url)) return obj.url;
+        if (obj.$ && obj.$.url && isImageUrl(obj.$.url)) return obj.$.url;
+        if (obj.src && isImageUrl(obj.src)) return obj.src;
+      }
+    }
+  }
+
+  // 3. Custom namespaces: media:content / media:thumbnail / media:group / media:image
+  const mediaKeys = ['media:content', 'media:thumbnail', 'media:group', 'media:image'];
   for (const key of mediaKeys) {
     const media = item[key];
     if (media) {
@@ -99,26 +169,41 @@ function extractImageUrl(item) {
       if (media.url && isImageUrl(media.url)) return media.url;
       if (Array.isArray(media)) {
         for (const m of media) {
-          if (m.$ && m.$.url && isImageUrl(m.$.url)) return m.$.url;
-          if (m.url && isImageUrl(m.url)) return m.url;
+          if (m && m.$ && m.$.url && isImageUrl(m.$.url)) return m.$.url;
+          if (m && m.url && isImageUrl(m.url)) return m.url;
         }
       }
     }
   }
 
-  // 3. Search in description / content / contentSnippet via regex for <img> tag
+  // 4. Custom parser item attributes
+  if (item.$) {
+    const namespaces = ['media:content', 'media:thumbnail'];
+    for (const ns of namespaces) {
+      if (item.$[ns] && item.$[ns].url && isImageUrl(item.$[ns].url)) {
+        return item.$[ns].url;
+      }
+    }
+  }
+
+  // 5. Exhaustive check in HTML description / content / encoded / summary via robust regex
   const searchStrings = [
+    item['content:encoded'],
     item.description,
     item.content,
     item.contentSnippet,
     item.summary
   ];
-  const imgRegex = /<img[^>]+src=["']([^"']+)["']/i;
+  // Regex matches double, single, or quote-less image src tags while skipping empty/tracking trackers
+  const imgRegex = /<img[^>]+src=\s*["']?([^"' >]+)["']?/i;
   for (const str of searchStrings) {
     if (str && typeof str === 'string') {
       const match = str.match(imgRegex);
       if (match && match[1]) {
-        return match[1];
+        const url = match[1];
+        if (!url.includes('doubleclick') && !url.includes('analytics') && !url.includes('pixel') && !url.includes('1x1') && isImageUrl(url)) {
+          return url;
+        }
       }
     }
   }
@@ -126,77 +211,155 @@ function extractImageUrl(item) {
   return null;
 }
 
-function getCategoryPlaceholder(categoryId) {
+function getCategoryPlaceholder(categoryId, article = {}) {
+  // Extract words from title to perform semantic/topic matching
+  const title = (article.title || '').toLowerCase();
+  
+  // Curved matching rules: Title keyword -> curating high-definition futuristic Unsplash images
+  const keywordMappings = [
+    {
+      keywords: ['ai', 'artificial intelligence', 'llm', 'gpt', 'openai', 'claude', 'gemini', 'robot', 'deep learning', 'machine learning', 'nvidia'],
+      images: [
+        "https://images.unsplash.com/photo-1677442136019-21780efad99a?w=400&auto=format&fit=crop&q=80", // AI neural mesh
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80"  // Cybernetic brain
+      ]
+    },
+    {
+      keywords: ['hacker', 'hacking', 'cyberattack', 'ransomware', 'breach', 'malware', 'exploit', 'phishing', 'vulnerability', 'ddos', 'security', 'leak'],
+      images: [
+        "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&auto=format&fit=crop&q=80", // Cyan server rack
+        "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&auto=format&fit=crop&q=80"  // Hacker command console
+      ]
+    },
+    {
+      keywords: ['bitcoin', 'crypto', 'cryptocurrency', 'ethereum', 'btc', 'eth', 'blockchain', 'solana', 'doge', 'ledger'],
+      images: [
+        "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&auto=format&fit=crop&q=80", // Golden bitcoin on hardware board
+        "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&auto=format&fit=crop&q=80"  // Crypto neon matrix chart
+      ]
+    },
+    {
+      keywords: ['stock', 'market', 'nifty', 'sensex', 'trading', 'bull', 'bear', 'shares', 'nasdaq', 'sebi', 'invest', 'portfolio', 'quarterly', 'profit', 'dividend'],
+      images: [
+        "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&auto=format&fit=crop&q=80", // Blue neon financial terminal
+        "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&auto=format&fit=crop&q=80"  // Green/red stock chart console
+      ]
+    },
+    {
+      keywords: ['gold', 'silver', 'commodity', 'oil', 'crude', 'metals', 'zinc', 'copper', 'mcx'],
+      images: [
+        "https://images.unsplash.com/photo-1610375461246-83df859d8222?w=400&auto=format&fit=crop&q=80", // Fluid gold abstract matrix
+        "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&auto=format&fit=crop&q=80"  // Modern gold/silver bars grid
+      ]
+    },
+    {
+      keywords: ['india', 'indian', 'delhi', 'mumbai', 'modi', 'rbi', 'bjp', 'congress', 'gandhi', 'bharat', 'pib'],
+      images: [
+        "https://images.unsplash.com/photo-1506461883276-594a12b11cc3?w=400&auto=format&fit=crop&q=80", // Taj Mahal silhouette in cyber glow
+        "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400&auto=format&fit=crop&q=80"  // Golden Gate Taj Mahal glowing light
+      ]
+    },
+    {
+      keywords: ['space', 'satellite', 'nasa', 'isro', 'rocket', 'moon', 'mars', 'spacex', 'orbit', 'astronaut', 'telescope'],
+      images: [
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&auto=format&fit=crop&q=80", // Earth satellite orbital cyber feed
+        "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&auto=format&fit=crop&q=80"  // Space network telemetry sweep
+      ]
+    },
+    {
+      keywords: ['defense', 'military', 'war', 'army', 'navy', 'pentagon', 'missile', 'combat', 'soldiers', 'iaf', 'weapon', 'border', 'china', 'taiwan', 'russia', 'ukraine', 'gaza', 'israel'],
+      images: [
+        "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=400&auto=format&fit=crop&q=80", // Tactical green radar HUD grid
+        "https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?w=400&auto=format&fit=crop&q=80"  // Cyber surveillance coordinate screen
+      ]
+    },
+    {
+      keywords: ['politics', 'election', 'president', 'government', 'senate', 'parliament', 'court', 'judge', 'vote', 'biden', 'trump', 'minister'],
+      images: [
+        "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=400&auto=format&fit=crop&q=80", // Cyber vote ledger terminal
+        "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&auto=format&fit=crop&q=80"  // Abstract law & governance grid
+      ]
+    },
+    {
+      keywords: ['study', 'exam', 'syllabus', 'upsc', 'ias', 'education', 'learning', 'iasbaba', 'insightsias', 'drishti'],
+      images: [
+        "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&auto=format&fit=crop&q=80", // Modern tactical work study desk
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&auto=format&fit=crop&q=80"  // Cyber learning/digital database matrix
+      ]
+    }
+  ];
+
+  // Try to match keywords in the article title
+  for (const mapping of keywordMappings) {
+    for (const kw of mapping.keywords) {
+      if (title.includes(kw)) {
+        const list = mapping.images;
+        // Deterministically pick one of the matching images using title length to avoid duplicate images on contiguous items
+        const index = Math.abs(title.length + kw.length) % list.length;
+        return list[index];
+      }
+    }
+  }
+
+  // If no keywords matched, fall back to our premium category-specific lists
   const placeholders = {
     breaking_news: [
-      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80"
     ],
     world_news: [
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?w=400&auto=format&fit=crop&q=80"
     ],
     india_analysis: [
-      "https://images.unsplash.com/photo-1506461883276-594a12b11cc3?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1596422846543-75c6fc1f7f43?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1506461883276-594a12b11cc3?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=400&auto=format&fit=crop&q=80"
     ],
     politics: [
-      "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=400&auto=format&fit=crop&q=80"
     ],
     business: [
-      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&auto=format&fit=crop&q=80"
     ],
     share_market: [
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&auto=format&fit=crop&q=80"
     ],
     daily_market_news: [
-      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&auto=format&fit=crop&q=80"
     ],
     technology: [
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&auto=format&fit=crop&q=80"
     ],
     ai_future: [
-      "https://images.unsplash.com/photo-1677442136019-21780efad99a?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1677442136019-21780efad99a?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=80"
     ],
     cybersecurity: [
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&auto=format&fit=crop&q=80"
     ],
     intelligence: [
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&auto=format&fit=crop&q=80"
     ],
     education: [
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&auto=format&fit=crop&q=80"
     ],
     cyber_threat_intel: [
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1601597111158-2fceff270190?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1601597111158-2fceff270190?w=400&auto=format&fit=crop&q=80"
     ],
     upsc_current_affairs: [
-      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&auto=format&fit=crop&q=80"
     ]
   };
 
@@ -262,14 +425,31 @@ async function fetchCategory(categoryId) {
       (existing) => similarity(existing.title, article.title) > 0.6
     );
     if (!isDuplicate) {
-      if (!article.image) {
-        article.image = getCategoryPlaceholder(categoryId);
-      }
       unique.push(article);
     }
   }
 
-  return unique.slice(0, 24);
+  // Slice to the top 24 first to minimize OG scraping network requests!
+  const topArticles = unique.slice(0, 24);
+
+  // Scrape Open Graph images concurrently for articles that need it
+  console.log(`🔍 Resolving high-fidelity original news images for ${CATEGORIES[categoryId]?.name || categoryId}...`);
+  const scrapePromises = topArticles.map(async (article) => {
+    if (!article.image || isGenericOrLogo(article.image)) {
+      const ogImage = await fetchOpenGraphImage(article.link);
+      if (ogImage && !isGenericOrLogo(ogImage)) {
+        article.image = ogImage;
+      }
+    }
+    // If still no image or generic, fallback to keyword placeholder or category placeholder
+    if (!article.image || isGenericOrLogo(article.image)) {
+      article.image = getCategoryPlaceholder(categoryId, article);
+    }
+  });
+
+  await Promise.all(scrapePromises);
+
+  return topArticles;
 }
 
 // ─── Archive Index ────────────────────────────────────────
