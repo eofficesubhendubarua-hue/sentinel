@@ -31,6 +31,16 @@ function loadBriefing() {
   return JSON.parse(readFileSync(dataPath, "utf-8"));
 }
 
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // ─── Generate Email HTML ──────────────────────────────────
 
 function generateEmailHTML(briefing) {
@@ -49,8 +59,8 @@ function generateEmailHTML(briefing) {
         (a) => `
         <tr>
           <td style="padding:8px 0;border-bottom:1px solid #1a2332;">
-            <a href="${a.link}" style="color:#00e5ff;text-decoration:none;font-size:14px;font-weight:500;line-height:1.4;">${a.title}</a>
-            <div style="color:#6b7b8d;font-size:12px;margin-top:3px;">${a.source}</div>
+            <a href="${escapeHtml(a.link)}" style="color:#00e5ff;text-decoration:none;font-size:14px;font-weight:500;line-height:1.4;">${escapeHtml(a.title)}</a>
+            <div style="color:#6b7b8d;font-size:12px;margin-top:3px;">${escapeHtml(a.source)}</div>
           </td>
         </tr>`
       )
@@ -92,7 +102,7 @@ function generateEmailHTML(briefing) {
               <div style="font-size:12px;letter-spacing:4px;color:#00e5ff;margin-bottom:6px;">◈ AUTOMATED INTELLIGENCE BRIEFING</div>
               <div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:2px;">SENTINEL</div>
               <div style="font-size:13px;color:#6b7b8d;margin-top:6px;">
-                ${meta.date} • ${meta.period === "morning" ? "🌅 0800H BRIEFING" : "🌙 2200H BRIEFING"} • ${meta.totalArticles} Articles
+                ${escapeHtml(meta.date)} • ${meta.period === "morning" ? "🌅 0800H BRIEFING" : "🌙 2200H BRIEFING"} • ${meta.totalArticles} Articles
               </div>
             </td>
           </tr>
@@ -133,7 +143,7 @@ function generateEmailHTML(briefing) {
           <!-- CTA -->
           <tr>
             <td align="center" style="padding:16px 24px 28px;">
-              <a href="${SITE_URL}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#00e5ff,#006eff);color:#000;text-decoration:none;font-weight:700;font-size:14px;border-radius:8px;letter-spacing:1px;">
+              <a href="${escapeHtml(SITE_URL)}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#00e5ff,#006eff);color:#000;text-decoration:none;font-weight:700;font-size:14px;border-radius:8px;letter-spacing:1px;">
                 VIEW FULL BRIEFING ON WEBSITE →
               </a>
             </td>
