@@ -470,13 +470,16 @@ function generateHTML(briefing) {
         <div class="cat-scroll">
             <button class="cat-btn active" data-category="all" onclick="filterCategory('all')">🌐 All</button>
             ${categoryNav}
+            <button class="cat-btn telemetry-toggle-btn" id="telemetryToggleBtn" onclick="toggleTelemetryHUD()">
+                <span>⚙️ TELEMETRY SYSTEM</span> <span id="telemetry-arrow">▼</span>
+            </button>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- CYBER HUD DASHBOARD GRID -->
-        <div class="cyber-hud-dashboard">
+        <div class="cyber-hud-dashboard collapsed">
             <!-- Hardware Diagnostics Telemetry -->
             <div class="hud-panel sensor-telemetry-hud">
                 <div class="hud-panel-header">

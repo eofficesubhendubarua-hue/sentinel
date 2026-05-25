@@ -1319,3 +1319,34 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize continuous live indices ticker tape
   initLiveTicker();
 });
+
+// ─── Telemetry HUD Collapsible Toggle ─────────────────────
+function toggleTelemetryHUD() {
+  const hud = document.querySelector(".cyber-hud-dashboard");
+  const btn = document.getElementById("telemetryToggleBtn");
+  const arrow = document.getElementById("telemetry-arrow");
+  
+  if (!hud || !btn) return;
+  
+  const isCollapsed = hud.classList.contains("collapsed");
+  
+  if (isCollapsed) {
+    hud.classList.remove("collapsed");
+    btn.classList.add("active");
+    if (arrow) arrow.textContent = "▲";
+    
+    // Play cyber click when opening
+    if (typeof playCyberClick === "function") {
+      playCyberClick();
+    }
+  } else {
+    hud.classList.add("collapsed");
+    btn.classList.remove("active");
+    if (arrow) arrow.textContent = "▼";
+    
+    // Play cyber click when closing
+    if (typeof playCyberClick === "function") {
+      playCyberClick();
+    }
+  }
+}
