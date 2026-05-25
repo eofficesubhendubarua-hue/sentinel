@@ -12,20 +12,11 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: 📥 Checkout repository
@@ -82,12 +73,3 @@ jobs:
             fi
             sleep 15
           done
-
-      - name: 📄 Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './public'
-
-      - name: 🚀 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
