@@ -584,6 +584,9 @@ function initSensorGrid() {
   setInterval(() => {
     updateTemporalDiagnostics();
   }, 1000);
+  
+  // Initialize Visitor Device Telemetry & Session Views
+  initVisitorTelemetry();
 }
 
 // ─── Voice HUD Command Console (Web Speech API)
@@ -1349,4 +1352,102 @@ function toggleTelemetryHUD() {
       playCyberClick();
     }
   }
+}
+
+// ─── Visitor Device Telemetry & Personal/Global Views ─────
+function initVisitorTelemetry() {
+  const nodeIdEl = document.getElementById("diag-node-id");
+  const visitorOsEl = document.getElementById("diag-visitor-os");
+  const visitorGpuEl = document.getElementById("diag-visitor-gpu");
+  const visitorCpuEl = document.getElementById("diag-visitor-cpu");
+  const visitorRamEl = document.getElementById("diag-visitor-ram");
+  const userViewsEl = document.getElementById("diag-user-views");
+  const globalViewsEl = document.getElementById("diag-global-views");
+  const nodeViewsEl = document.getElementById("diag-node-views");
+
+  if (!nodeIdEl) return;
+
+  // 1. Generate unique futuristic node ID based on userAgent hash
+  let hash = 0;
+  const ua = navigator.userAgent;
+  for (let i = 0; i < ua.length; i++) {
+    hash = (hash << 5) - hash + ua.charCodeAt(i);
+    hash |= 0;
+  }
+  const hex = Math.abs(hash).toString(16).toUpperCase().substring(0, 4);
+  nodeIdEl.textContent = `NODE_ALPHA_${hex}`;
+
+  // 2. Detect OS and Browser
+  let os = "Linux Core";
+  let browser = "Web Engine";
+  if (ua.indexOf("Win") !== -1) os = "Windows";
+  else if (ua.indexOf("Mac") !== -1) os = "macOS";
+  else if (ua.indexOf("Linux") !== -1) os = "Linux";
+  else if (ua.indexOf("Android") !== -1) os = "Android";
+  else if (ua.indexOf("like Mac") !== -1) os = "iOS";
+  
+  if (ua.indexOf("Chrome") !== -1 && ua.indexOf("Chromium") === -1) browser = "Chrome";
+  else if (ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1) browser = "Safari";
+  else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+  else if (ua.indexOf("Edge") !== -1) browser = "Edge";
+  else if (ua.indexOf("Chromium") !== -1) browser = "Chromium";
+  
+  visitorOsEl.textContent = `${browser} // ${os}`;
+
+  // 3. WebGL GPU vendor/renderer detection
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (gl) {
+      const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+      if (debugInfo) {
+        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_VENDOR_DIFF || debugInfo.UNMASKED_RENDERER_VENDOR_DIFF);
+        if (renderer) {
+          let cleanGpu = "Default WebGL Engine";
+          if (renderer.indexOf("NVIDIA") !== -1) {
+            const m = renderer.match(/GeForce\s[^)]+/i) || renderer.match(/NVIDIA\s[^)]+/i);
+            cleanGpu = m ? m[0] : "NVIDIA Graphics";
+          } else if (renderer.indexOf("AMD") !== -1 || renderer.indexOf("Radeon") !== -1) {
+            cleanGpu = "AMD Radeon GPU";
+          } else if (renderer.indexOf("Intel") !== -1) {
+            cleanGpu = "Intel Iris Graphics";
+          } else if (renderer.indexOf("Apple") !== -1) {
+            cleanGpu = "Apple Silicon GPU";
+          } else {
+            cleanGpu = renderer.split("Direct3D")[0].trim().substring(0, 24);
+          }
+          visitorGpuEl.textContent = `Pipeline GPU: ${cleanGpu}`;
+        }
+      }
+    }
+  } catch (e) {
+    visitorGpuEl.textContent = "Pipeline GPU: Software Rasterizer";
+  }
+
+  // 4. CPU Cores & RAM detection
+  const cores = navigator.hardwareConcurrency || "UNAVAILABLE";
+  visitorCpuEl.textContent = `${cores} logical cores`;
+  
+  const memory = navigator.deviceMemory || "UNAVAILABLE";
+  const memText = typeof memory === "number" ? `${memory} GB RAM allocated` : "Device RAM size unmetered";
+  visitorRamEl.textContent = memText;
+
+  // 5. Views and Sessions Tracker (localStorage persistence)
+  let visits = localStorage.getItem("sentinel_visits");
+  if (!visits) {
+    visits = 1;
+  } else {
+    visits = parseInt(visits) + 1;
+  }
+  localStorage.setItem("sentinel_visits", visits);
+  
+  userViewsEl.textContent = `${visits} sessions`;
+  nodeViewsEl.textContent = `Node verified // Session views: ${visits}`;
+
+  // 6. Global simulated hits based on current timestamp
+  const baseViews = 24780;
+  const epochDays = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+  const currentHourViews = Math.floor((Date.now() % (1000 * 60 * 60 * 24)) / (1000 * 60 * 10)) * 6; // 6 new hits every 10 mins
+  const globalViews = baseViews + (epochDays % 100) * 280 + currentHourViews;
+  globalViewsEl.textContent = `Mainframe views: ${globalViews.toLocaleString()} hits`;
 }

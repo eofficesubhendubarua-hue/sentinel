@@ -570,6 +570,36 @@ function generateHTML(briefing) {
                     </div>
                 </div>
             </div>
+
+            <!-- Visitor Node Diagnostics & Live Telemetry -->
+            <div class="hud-panel visitor-telemetry-hud">
+                <div class="hud-panel-header">
+                    <span class="hud-panel-title">◈ VISITOR_TELEMETRY // USER_NODE_METRICS</span>
+                    <span class="hud-pulse-dot" style="background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald);"></span>
+                </div>
+                <div class="hud-panel-body grid-2x2">
+                    <div class="diag-item">
+                        <div class="diag-label">👤 VISITOR IDENTITY NODE</div>
+                        <div class="diag-value" id="diag-node-id" style="color: var(--accent-emerald);">DETECTING...</div>
+                        <div class="diag-sub" id="diag-node-views">Initializing node grid...</div>
+                    </div>
+                    <div class="diag-item">
+                        <div class="diag-label">💻 CLIENT ENGINE & SYSTEM</div>
+                        <div class="diag-value" id="diag-visitor-os">DETECTING...</div>
+                        <div class="diag-sub" id="diag-visitor-gpu">Mapping display pipeline...</div>
+                    </div>
+                    <div class="diag-item">
+                        <div class="diag-label">⚙️ PROCESSOR GRID</div>
+                        <div class="diag-value" id="diag-visitor-cpu">DETECTING...</div>
+                        <div class="diag-sub" id="diag-visitor-ram">Checking allocation...</div>
+                    </div>
+                    <div class="diag-item">
+                        <div class="diag-label">📊 MAINFRAME TRAFFIC FEED</div>
+                        <div class="diag-value" style="color: var(--primary);" id="diag-user-views">0 sessions</div>
+                        <div class="diag-sub" id="diag-global-views">Total views: unmetered</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         ${categorySections}
