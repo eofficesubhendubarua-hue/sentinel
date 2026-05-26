@@ -1076,6 +1076,35 @@
     </div>
   </div>
 
+  <!-- SCORE DASHBOARD -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      📊 INTELLIGENCE SCORE DASHBOARD
+    </div>
+    <div class="sim-scores-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+      ${scoreBar(techResult.score, '⚡ Technical Score', '')}
+      ${scoreBar(fundResult.score, '📈 Fundamental Score', '')}
+      ${scoreBar(verdict.combined, '🎯 Overall Conviction', '')}
+      <div class="sim-score-item" style="background: rgba(0, 30, 60, 0.5); border: 1px solid rgba(0, 200, 255, 0.1); border-radius: 10px; padding: 0.75rem 0.9rem;">
+        <div class="sim-score-label" style="font-family: 'Inter', sans-serif; font-size: 0.75rem; color: rgba(150, 190, 230, 0.65); margin-bottom: 0.5rem;">🌊 Volatility (Ann.)</div>
+        <div class="sim-score-num" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; margin-top: 0.25rem; color:${forecast.vol > 35 ? '#ff4466' : forecast.vol > 20 ? '#ffcc00' : '#00ff88'}">${forecast.vol.toFixed(1)}%</div>
+      </div>
+      <div class="sim-score-item" style="background: rgba(0, 30, 60, 0.5); border: 1px solid rgba(0, 200, 255, 0.1); border-radius: 10px; padding: 0.75rem 0.9rem;">
+        <div class="sim-score-label" style="font-family: 'Inter', sans-serif; font-size: 0.75rem; color: rgba(150, 190, 230, 0.65); margin-bottom: 0.5rem;">📐 Sharpe Ratio</div>
+        <div class="sim-score-num" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; margin-top: 0.25rem; color:${parseFloat(forecast.sharpe) > 1 ? '#00ff88' : parseFloat(forecast.sharpe) > 0 ? '#ffcc00' : '#ff4466'}">${forecast.sharpe}</div>
+      </div>
+      <div class="sim-score-item" style="background: rgba(0, 30, 60, 0.5); border: 1px solid rgba(0, 200, 255, 0.1); border-radius: 10px; padding: 0.75rem 0.9rem;">
+        <div class="sim-score-label" style="font-family: 'Inter', sans-serif; font-size: 0.75rem; color: rgba(150, 190, 230, 0.65); margin-bottom: 0.5rem;">🎲 Prob. of Profit (12M)</div>
+        <div class="sim-score-num" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; margin-top: 0.25rem; color:${forecast.probProfit > 60 ? '#00ff88' : '#ffcc00'}">${forecast.probProfit.toFixed(0)}%</div>
+      </div>
+    </div>
+    <div class="sim-verdict-bar" style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem; padding: 0.75rem 1rem; background: rgba(0, 20, 40, 0.5); border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.1);">
+      <div class="sim-verdict-rating" style="font-family: 'Inter', sans-serif; font-size: 0.88rem; color:${verdict.color}">${verdict.icon} Verdict: <b>${verdict.rating}</b></div>
+      <div class="sim-verdict-risk" style="font-family: 'Inter', sans-serif; font-size: 0.88rem; color: rgba(160, 200, 255, 0.7);">Risk: <b style="color:${verdict.riskLevel==='LOW'?'#00ff88':verdict.riskLevel==='MODERATE'?'#ffcc00':verdict.riskLevel==='HIGH'?'#ff8844':'#ff2222'}">${verdict.riskLevel}</b></div>
+      <div class="sim-verdict-conf" style="font-family: 'Inter', sans-serif; font-size: 0.88rem; color: rgba(160, 200, 255, 0.7);">Confidence: <b>${verdict.confidence}</b></div>
+    </div>
+  </div>
+
   <!-- SECTION 1: EXECUTIVE SUMMARY & ALPHA CONVICTION -->
   <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -1265,6 +1294,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Bullish & Bearish Technical Signals -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 1.5rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: #00ff88; font-weight: 700; margin-bottom: 0.6rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">🟢 BULLISH SIGNALS</span>
+        ${signalList(techResult.bullSignals, 'bull') || '<div class="sim-na">No strong bullish signals</div>'}
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: #ff8844; font-weight: 700; margin-bottom: 0.6rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">⚠️ RISK SIGNALS</span>
+        ${signalList(techResult.riskSignals, 'bear') || '<div class="sim-na">No strong risk signals</div>'}
+      </div>
+    </div>
   </div>
 
   <!-- SECTION 2-C: FUNDAMENTAL X-RAY DEEP DIVE -->
@@ -1313,6 +1354,18 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- Fundamental Strengths & Risks -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 1.5rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: #00ff88; font-weight: 700; margin-bottom: 0.6rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">🟢 FUNDAMENTAL STRENGTHS</span>
+        ${signalList(fundResult.signals, 'bull') || '<div class="sim-na">Insufficient data</div>'}
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: #ff8844; font-weight: 700; margin-bottom: 0.6rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">⚠️ FUNDAMENTAL RISKS</span>
+        ${signalList(fundResult.risks, 'bear') || '<div class="sim-na">No significant red flags</div>'}
+      </div>
     </div>
   </div>
 
@@ -1815,6 +1868,30 @@
         <p style="font-family: 'Inter', sans-serif; font-size: 0.92rem; line-height: 1.7; color: #c8e0f8; margin: 0;">${execSummaryText}</p>
       </div>
     </div>
+
+    <!-- Fund Intelligence Profile (Original details) -->
+    <div style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 1.5rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; border-bottom: 1px solid rgba(0,240,255,0.1); padding-bottom: 0.3rem; margin-bottom: 0.5rem;">🏢 FUND PROFILE & DETAILS</span>
+        <div style="font-size: 0.8rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>AMC / Fund House:</b> ${mfData.amc}<br>
+          • <b>Scheme Category:</b> ${mfData.category}<br>
+          • <b>Scheme Type:</b> ${mfData.type}<br>
+          • <b>AMFI Scheme Code:</b> ${mfData.schemeCode}<br>
+          • <b>Historical Data Period:</b> ${prices.length} days
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; border-bottom: 1px solid rgba(0,240,255,0.1); padding-bottom: 0.3rem; margin-bottom: 0.5rem;">📊 HISTORICAL PERFORMANCE INDEX</span>
+        <div style="font-size: 0.8rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>Current NAV:</b> ₹${fmt(nav)}<br>
+          • <b>1-Month NAV Return:</b> <span style="color:${colorVal(ret1m)}">${ret1m >= 0 ? '+' : ''}${ret1m.toFixed(2)}%</span><br>
+          • <b>1-Year NAV Return:</b> <span style="color:${colorVal(ret1y)}">${ret1y >= 0 ? '+' : ''}${ret1y.toFixed(2)}%</span><br>
+          • <b>Annualized Volatility:</b> ${vol.toFixed(1)}%<br>
+          • <b>Portfolio Sharpe Ratio:</b> ${sh}
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- SECTION 2: THE QUANTITATIVE & FACTOR BREAKDOWN -->
@@ -1965,6 +2042,13 @@
     </div>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; font-style: italic;">NAV projection and compounded SIP metrics modeled under varying macroeconomic market regimes.</p>
     
+    <!-- NAV Forecast Cards Grid (Original) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem;">
+      ${forecastCard('3-Month NAV', forecast.m3, 'INR')}
+      ${forecastCard('6-Month NAV', forecast.m6, 'INR')}
+      ${forecastCard('12-Month NAV', forecast.m12, 'INR')}
+    </div>
+
     <div style="overflow-x: auto; margin-bottom: 1.5rem;">
       <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.84rem;">
         <thead>
