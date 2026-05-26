@@ -1,0 +1,379 @@
+/* ================================================================
+   SENTINEL AI ANALYSIS ENGINE — SIMULATOR CSS
+   Institutional-Grade Financial Intelligence UI
+   ================================================================ */
+
+/* ─── Container ─────────────────────────────────────────────────── */
+.sim-widget-section { background: transparent; }
+
+.sim-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+}
+
+/* ─── Search Bar ─────────────────────────────────────────────────── */
+.sim-search-wrapper {
+  background: rgba(0, 240, 255, 0.04);
+  border: 1.5px solid rgba(0, 240, 255, 0.2);
+  border-radius: 16px;
+  padding: 6px 8px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.06);
+  margin-bottom: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.sim-search-wrapper:focus-within {
+  border-color: rgba(0, 240, 255, 0.55);
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
+}
+.sim-search-inner { display: flex; align-items: center; gap: 0.75rem; }
+.sim-search-icon { font-size: 1.3rem; flex-shrink: 0; opacity: 0.6; margin-left: 0.5rem; }
+
+#sim-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e0f0ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  padding: 0.75rem 0;
+  caret-color: #00f0ff;
+}
+#sim-search-input::placeholder { color: rgba(160, 200, 255, 0.35); }
+
+.sim-analyze-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #00f0ff22, #00ff8822);
+  border: 1.5px solid rgba(0, 240, 255, 0.45);
+  border-radius: 10px;
+  color: #00f0ff;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.65rem 1.4rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+.sim-analyze-btn:hover {
+  background: linear-gradient(135deg, #00f0ff33, #00ff8833);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+  transform: translateY(-1px);
+}
+.sim-analyze-btn:active { transform: translateY(0); }
+
+/* ─── Quick Chips ────────────────────────────────────────────────── */
+.sim-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.sim-chip-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(0, 240, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.quick-chip {
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 50px;
+  color: rgba(0, 240, 255, 0.75);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.3rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.quick-chip:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: rgba(0, 240, 255, 0.5);
+  color: #00f0ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.12);
+}
+
+/* ─── Loading State ──────────────────────────────────────────────── */
+.sim-loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: rgba(0, 15, 30, 0.6);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+}
+.sim-loading-spinner {
+  width: 52px;
+  height: 52px;
+  border: 3px solid rgba(0, 240, 255, 0.1);
+  border-top-color: #00f0ff;
+  border-right-color: #00ff88;
+  border-radius: 50%;
+  animation: simSpin 0.8s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+@keyframes simSpin { to { transform: rotate(360deg); } }
+.sim-loading-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  color: #00f0ff;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+.sim-loading-steps { display: flex; flex-direction: column; gap: 0.35rem; max-width: 500px; margin: 0 auto; }
+.sim-step {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(0, 255, 136, 0.7);
+  text-align: left;
+  padding: 0.2rem 0.5rem;
+  border-left: 2px solid rgba(0, 255, 136, 0.3);
+  animation: fadeSlideIn 0.3s ease;
+}
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+/* ─── Error State ────────────────────────────────────────────────── */
+.sim-error {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  background: rgba(255, 50, 50, 0.05);
+  border: 1px solid rgba(255, 70, 70, 0.3);
+  border-radius: 16px;
+}
+.sim-error-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.sim-error-msg { font-family: 'Inter', sans-serif; font-size: 1rem; color: #ff8888; margin-bottom: 0.5rem; font-weight: 500; }
+.sim-error-hint { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: rgba(255, 180, 180, 0.5); }
+
+/* ─── Utility ────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.sim-na { font-size: 0.8rem; color: rgba(120, 160, 200, 0.4); font-style: italic; padding: 0.3rem 0; }
+
+/* ─── REPORT WRAPPER ──────────────────────────────────────────────── */
+.sim-report-wrap { display: flex; flex-direction: column; gap: 1.25rem; animation: simFadeIn 0.5s ease; }
+@keyframes simFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ─── Report Header ──────────────────────────────────────────────── */
+.sim-rpt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  background: rgba(0, 20, 40, 0.7);
+  border: 1.5px solid rgba(0, 240, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(20px);
+  flex-wrap: wrap;
+}
+.sim-rpt-symbol {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #00f0ff;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+}
+.sim-rpt-name { font-family: 'Inter', sans-serif; font-size: 1.05rem; font-weight: 600; color: #c8e0f8; margin: 0.25rem 0 0.6rem; }
+.sim-rpt-meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+.sim-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sim-rpt-price-area { text-align: right; }
+.sim-rpt-price { font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 800; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.15); }
+.sim-rpt-change { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 600; margin: 0.25rem 0; }
+.sim-rpt-update { font-family: 'Inter', sans-serif; font-size: 0.72rem; color: rgba(150, 190, 230, 0.5); margin: 0.4rem 0; }
+.sim-rpt-verdict-badge {
+  display: inline-block;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+/* ─── Report Sections ─────────────────────────────────────────────── */
+.sim-section {
+  background: rgba(5, 15, 35, 0.65);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  backdrop-filter: blur(14px);
+  transition: border-color 0.3s;
+}
+.sim-section:hover { border-color: rgba(0, 240, 255, 0.22); }
+.sim-section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(0, 240, 255, 0.8);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+  padding-bottom: 0.7rem;
+  margin-bottom: 1rem;
+}
+.sim-sub-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(150, 200, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.65rem;
+}
+
+/* ─── Score Dashboard ─────────────────────────────────────────────── */
+.sim-scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.sim-score-item {
+  background: rgba(0, 30, 60, 0.5);
+  border: 1px solid rgba(0, 200, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+}
+.sim-score-label { font-family: 'Inter', sans-serif; font-size: 0.75rem; color: rgba(150, 190, 230, 0.65); margin-bottom: 0.5rem; }
+.sim-score-bar-wrap { height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin: 0.35rem 0; }
+.sim-score-bar-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+.sim-score-num { font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; margin-top: 0.25rem; }
+.sim-verdict-bar {
+  display: flex; gap: 2rem; flex-wrap: wrap; align-items: center;
+  margin-top: 0.5rem; padding: 0.75rem 1rem;
+  background: rgba(0, 20, 40, 0.5); border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.1);
+}
+.sim-verdict-rating, .sim-verdict-risk, .sim-verdict-conf { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: rgba(160, 200, 255, 0.7); }
+
+/* ─── Key-Value Grid ─────────────────────────────────────────────── */
+.sim-overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.55rem; }
+.sim-kv {
+  background: rgba(0, 20, 50, 0.45);
+  border: 1px solid rgba(0, 200, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  display: flex; flex-direction: column; gap: 0.2rem;
+}
+.sim-kv-k { font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(120, 170, 220, 0.55); }
+.sim-kv-v { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600; color: #c8e0f8; word-break: break-word; }
+
+/* ─── Description ─────────────────────────────────────────────────── */
+.sim-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem; line-height: 1.7; color: rgba(180, 210, 240, 0.75);
+  margin-top: 1rem; padding: 0.85rem 1rem;
+  background: rgba(0, 15, 40, 0.5);
+  border-left: 3px solid rgba(0, 240, 255, 0.25);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ─── Technical: RSI + MA ─────────────────────────────────────────── */
+.sim-tech-top-row { display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem; margin-bottom: 0.5rem; }
+@media (max-width: 640px) { .sim-tech-top-row { grid-template-columns: 1fr; } }
+.sim-tech-gauge-box, .sim-tech-ma-box {
+  background: rgba(0, 20, 50, 0.5);
+  border: 1px solid rgba(0, 200, 255, 0.1);
+  border-radius: 12px; padding: 1rem;
+}
+.sim-gauge-wrap { display: flex; flex-direction: column; align-items: center; }
+.sim-gauge-arc { width: 140px; }
+.sim-gauge-svg { width: 100%; }
+.sim-gauge-label { font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-align: center; margin-top: 0.3rem; }
+.sim-ma-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.sim-ma-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+  padding: 0.4rem 0.6rem; background: rgba(0, 15, 40, 0.5); border-radius: 6px;
+}
+.sim-ma-label { color: rgba(120, 170, 220, 0.6); min-width: 56px; }
+.sim-ma-val { color: #c8e0f8; flex: 1; }
+.sim-ma-status { font-weight: 700; font-size: 0.75rem; }
+
+/* ─── Signals Grid ────────────────────────────────────────────────── */
+.sim-signals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.75rem; }
+@media (max-width: 640px) { .sim-signals-grid { grid-template-columns: 1fr; } }
+.sim-signals-box { background: rgba(0, 15, 40, 0.4); border: 1px solid rgba(0, 200, 255, 0.08); border-radius: 10px; padding: 0.85rem; }
+.sim-signal-item {
+  font-family: 'Inter', sans-serif; font-size: 0.79rem; line-height: 1.5;
+  color: rgba(180, 215, 250, 0.8); padding: 0.3rem 0.6rem; margin-bottom: 0.4rem;
+  border-radius: 0 6px 6px 0; background: rgba(0, 20, 50, 0.4);
+}
+
+/* ─── Fundamental Grid ────────────────────────────────────────────── */
+.sim-fund-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+@media (max-width: 900px) { .sim-fund-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .sim-fund-grid { grid-template-columns: 1fr; } }
+.sim-fund-group {
+  background: rgba(0, 15, 40, 0.5); border: 1px solid rgba(0, 200, 255, 0.1);
+  border-radius: 12px; padding: 1rem;
+  display: flex; flex-direction: column; gap: 0.45rem;
+}
+
+/* ─── Forecast ────────────────────────────────────────────────────── */
+.sim-forecast-meta { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.5rem; margin-bottom: 1.25rem; }
+.sim-forecast-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+@media (max-width: 700px) { .sim-forecast-cards { grid-template-columns: 1fr; } }
+.sim-forecast-card {
+  background: rgba(0, 15, 45, 0.7);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 12px; padding: 1.1rem; text-align: center; transition: all 0.25s ease;
+}
+.sim-forecast-card:hover {
+  border-color: rgba(0, 240, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 240, 255, 0.1);
+}
+.sim-fc-period { font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; color: rgba(0, 240, 255, 0.6); text-transform: uppercase; margin-bottom: 0.6rem; }
+.sim-fc-base { font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.6rem; }
+.sim-fc-row { display: flex; flex-direction: column; gap: 0.3rem; }
+.sim-fc-bull { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: rgba(0, 255, 136, 0.8); }
+.sim-fc-bear { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: rgba(255, 100, 100, 0.8); }
+.sim-forecast-note { font-family: 'Inter', sans-serif; font-size: 0.76rem; color: rgba(120, 160, 200, 0.5); text-align: center; padding: 0.5rem; border-top: 1px solid rgba(0, 200, 255, 0.08); }
+
+/* ─── Verdict ──────────────────────────────────────────────────────── */
+.sim-verdict-main { border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; text-align: center; }
+.sim-verdict-rating-big {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem; font-weight: 900; letter-spacing: 0.1em;
+  text-shadow: 0 0 30px currentColor; margin-bottom: 1.25rem;
+}
+.sim-verdict-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.65rem; text-align: left; }
+
+/* ─── Disclaimer ──────────────────────────────────────────────────── */
+.sim-disclaimer {
+  font-family: 'Inter', sans-serif; font-size: 0.76rem; line-height: 1.7;
+  color: rgba(120, 160, 200, 0.5);
+  background: rgba(255, 150, 0, 0.04);
+  border: 1px solid rgba(255, 150, 0, 0.12);
+  border-radius: 10px; padding: 0.85rem 1rem;
+}
+.sim-disclaimer b { color: rgba(255, 180, 50, 0.75); }
+
+/* ─── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sim-rpt-header { flex-direction: column; }
+  .sim-rpt-price-area { text-align: left; }
+  .sim-rpt-price { font-size: 1.5rem; }
+  .sim-analyze-btn .sim-btn-text { display: none; }
+  .sim-analyze-btn { padding: 0.65rem 1rem; }
+}

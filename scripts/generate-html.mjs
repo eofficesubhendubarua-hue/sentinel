@@ -290,6 +290,66 @@ function generateHTML(briefing) {
                 </div>
             </section>`;
 
+  // ─── AI Stock Analysis Simulator ────────────────────────────
+  const aiSimulatorWidget = `
+            <section class="category-section sim-widget-section" id="section-ai-analyzer" data-category="ai-analyzer" style="display:none">
+                <div class="section-header">
+                    <h2>🤖 AI Analysis Engine — Institutional Intelligence</h2>
+                    <span class="article-count">SENTINEL Quant v3.0</span>
+                </div>
+                <p class="section-desc">Enter any Stock, ETF, Mutual Fund, or Index (NSE, BSE, Sensex, Nasdaq, NYSE, Global) for a comprehensive institutional-grade analysis: Technical + Fundamental + Predictive Forecast.</p>
+
+                <div class="sim-container">
+                    <!-- Search Bar -->
+                    <div class="sim-search-wrapper">
+                        <div class="sim-search-inner">
+                            <span class="sim-search-icon">🔍</span>
+                            <input type="text" id="sim-search-input"
+                                placeholder="Enter: Reliance, NIFTY 50, HDFC Bank, AAPL, Tesla, SBI Blue Chip Fund, Gold ETF, Sensex..."
+                                autocomplete="off" spellcheck="false" />
+                            <button id="sim-analyze-btn" class="sim-analyze-btn">
+                                <span class="sim-btn-icon">⚡</span>
+                                <span class="sim-btn-text">ANALYZE</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Access Chips -->
+                    <div class="sim-quick-chips">
+                        <span class="sim-chip-label">⚡ Quick:</span>
+                        <button class="quick-chip" data-query="RELIANCE">Reliance</button>
+                        <button class="quick-chip" data-query="TCS">TCS</button>
+                        <button class="quick-chip" data-query="NIFTY">NIFTY 50</button>
+                        <button class="quick-chip" data-query="SENSEX">Sensex</button>
+                        <button class="quick-chip" data-query="HDFC Bank">HDFC Bank</button>
+                        <button class="quick-chip" data-query="INFY">Infosys</button>
+                        <button class="quick-chip" data-query="SBI">SBI</button>
+                        <button class="quick-chip" data-query="AAPL">Apple</button>
+                        <button class="quick-chip" data-query="NVDA">NVIDIA</button>
+                        <button class="quick-chip" data-query="GOLD">Gold</button>
+                        <button class="quick-chip" data-query="Bitcoin">Bitcoin</button>
+                        <button class="quick-chip" data-query="SBI Blue Chip Fund">SBI Blue Chip MF</button>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="sim-loading" class="sim-loading hidden">
+                        <div class="sim-loading-spinner"></div>
+                        <div class="sim-loading-text">SENTINEL AI Engine — Analyzing Market Intelligence...</div>
+                        <div class="sim-loading-steps" id="sim-loading-steps"></div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="sim-error" class="sim-error hidden">
+                        <div class="sim-error-icon">⚠️</div>
+                        <div class="sim-error-msg" id="sim-error-msg">Analysis failed.</div>
+                        <div class="sim-error-hint">Try exact tickers: RELIANCE.NS, TATAMOTORS.NS, AAPL, ^NSEI, ^BSESN</div>
+                    </div>
+
+                    <!-- Report Output -->
+                    <div id="sim-report" class="sim-report hidden"></div>
+                </div>
+            </section>`;
+
   // ─── UPSC Study Hub ──────────────────────────────────────
   const upscWidget = `
             <section class="category-section market-widget-section upsc-hub-section" id="section-upsc-tools">
@@ -393,12 +453,13 @@ function generateHTML(briefing) {
     <title>SENTINEL Intelligence Brief — ${meta.date}</title>
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.allorigins.win https://corsproxy.io https://api.mfapi.in; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=2.2">
+    <link rel="stylesheet" href="css/style.css?v=2.3">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/simulator.css?v=1.0">
     
     <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -493,6 +554,7 @@ function generateHTML(briefing) {
         <div class="cat-scroll">
             <button class="cat-btn active" data-category="all" onclick="filterCategory('all')">🌐 All</button>
             ${categoryNav}
+            <button class="cat-btn" data-category="ai-analyzer" onclick="filterCategory('ai-analyzer')" style="background:linear-gradient(135deg,#0d2a1a,#0a1a2e);border-color:#00ff8855;color:#00ff88">🤖 AI Analyzer</button>
             <button class="cat-btn telemetry-toggle-btn" id="telemetryToggleBtn" onclick="toggleTelemetryHUD()">
                 <span>⚙️ TELEMETRY SYSTEM</span> <span id="telemetry-arrow">▼</span>
             </button>
@@ -626,6 +688,7 @@ function generateHTML(briefing) {
         </div>
 
         ${categorySections}
+        ${aiSimulatorWidget}
         ${marketWidget}
         ${upscWidget}
     </main>
@@ -799,6 +862,7 @@ function generateHTML(briefing) {
     <script src="js/auth.js?v=${Date.now()}"></script>
     <script src="js/app.js"></script>
     <script src="js/agent.js?v=${Date.now()}"></script>
+    <script src="js/simulator.js?v=${Date.now()}"></script>
 </body>
 </html>`;
 
