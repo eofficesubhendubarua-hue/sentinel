@@ -3,7 +3,7 @@
    ================================================================ */
 
 :root {
-  --bg-primary: #03070c;
+  --bg-primary: #010409;
   --bg-secondary: #060d19;
   --bg-card: rgba(8, 17, 32, 0.4);
   --bg-card-hover: rgba(14, 28, 52, 0.65);
@@ -87,7 +87,7 @@ a:hover {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 20%, #03070c 80%);
+  background: radial-gradient(circle at 50% 50%, rgba(10, 25, 47, 0.22) 0%, #010409 85%);
   pointer-events: none;
 }
 
@@ -2374,6 +2374,72 @@ a:hover {
     margin-left: 0;
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* Glowing Futuristic Nebula Orbs Styles */
+.nebula-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(160px);
+  -webkit-filter: blur(160px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--primary);
+  top: -10%;
+  left: -10%;
+  animation: floatOrb1 40s infinite alternate ease-in-out;
+}
+
+.orb-2 {
+  width: 600px;
+  height: 600px;
+  background: var(--secondary);
+  bottom: -15%;
+  right: -10%;
+  animation: floatOrb2 50s infinite alternate ease-in-out;
+}
+
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  background: var(--accent-emerald);
+  top: 40%;
+  left: 60%;
+  opacity: 0.05;
+  animation: floatOrb3 45s infinite alternate ease-in-out;
+}
+
+@keyframes floatOrb1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(150px, 80px) scale(1.15);
+  }
+}
+
+@keyframes floatOrb2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-180px, -120px) scale(0.95);
+  }
+}
+
+@keyframes floatOrb3 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-100px, 120px) scale(1.1);
   }
 }
 

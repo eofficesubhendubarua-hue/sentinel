@@ -406,6 +406,9 @@ function generateHTML(briefing) {
     <!-- Interactive Background and Overlay -->
     <canvas id="neural-canvas"></canvas>
     <div class="bg-grid"></div>
+    <div class="nebula-orb orb-1"></div>
+    <div class="nebula-orb orb-2"></div>
+    <div class="nebula-orb orb-3"></div>
     <div class="scanline"></div>
 
     <!-- Header -->
