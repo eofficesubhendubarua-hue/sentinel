@@ -1451,6 +1451,64 @@
 </div>`;
   }
 
+  function renderReport(html) {
+    const resultEl = document.getElementById('sim-report');
+    const loadingEl = document.getElementById('sim-loading');
+    
+    loadingEl.classList.add('hidden');
+    
+    const reportItem = document.createElement('div');
+    reportItem.className = 'sim-report-item';
+    reportItem.style.position = 'relative';
+    reportItem.style.marginBottom = '3rem';
+    reportItem.style.background = 'rgba(10, 25, 50, 0.15)';
+    reportItem.style.border = '1px solid rgba(0, 240, 255, 0.15)';
+    reportItem.style.borderRadius = '12px';
+    reportItem.style.padding = '1.5rem';
+    reportItem.innerHTML = html;
+    
+    let clearBtn = document.getElementById('sim-clear-history-btn');
+    if (!clearBtn) {
+      clearBtn = document.createElement('button');
+      clearBtn.id = 'sim-clear-history-btn';
+      clearBtn.className = 'sim-btn';
+      clearBtn.style.marginBottom = '2rem';
+      clearBtn.style.background = 'rgba(255, 68, 102, 0.1)';
+      clearBtn.style.border = '1px solid rgba(255, 68, 102, 0.3)';
+      clearBtn.style.color = '#ff4466';
+      clearBtn.style.fontSize = '0.8rem';
+      clearBtn.style.fontFamily = "'Orbitron', monospace";
+      clearBtn.style.padding = '6px 12px';
+      clearBtn.style.borderRadius = '4px';
+      clearBtn.style.cursor = 'pointer';
+      clearBtn.style.transition = 'all 0.2s';
+      clearBtn.textContent = '❌ CLEAR ANALYSIS HISTORY';
+      clearBtn.onmouseover = () => {
+        clearBtn.style.background = 'rgba(255, 68, 102, 0.2)';
+        clearBtn.style.borderColor = '#ff4466';
+      };
+      clearBtn.onmouseout = () => {
+        clearBtn.style.background = 'rgba(255, 68, 102, 0.1)';
+        clearBtn.style.borderColor = 'rgba(255, 68, 102, 0.3)';
+      };
+      clearBtn.onclick = () => {
+        resultEl.innerHTML = '';
+        resultEl.classList.add('hidden');
+      };
+    }
+    
+    resultEl.prepend(reportItem);
+    
+    const reportCount = resultEl.getElementsByClassName('sim-report-item').length;
+    if (reportCount > 1) {
+      resultEl.insertBefore(clearBtn, resultEl.firstChild);
+    } else if (clearBtn.parentNode) {
+      clearBtn.parentNode.removeChild(clearBtn);
+    }
+    
+    resultEl.classList.remove('hidden');
+    reportItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   // ═══════════════════════════════════════════════════════════
   // MAIN ANALYZER
@@ -1464,7 +1522,6 @@
     const loadingEl = document.getElementById('sim-loading');
     const errorEl = document.getElementById('sim-error');
 
-    resultEl.classList.add('hidden');
     errorEl.classList.add('hidden');
     loadingEl.classList.remove('hidden');
     if (steps) steps.innerHTML = '';
@@ -1487,10 +1544,8 @@
           step('Retrieving underlying holdings and fetching live quotes...');
           const holdings = await fetchHoldingsData(mfData.category);
           step('Computing NAV trend analysis and SIP projection...');
-          loadingEl.classList.add('hidden');
-          resultEl.innerHTML = buildMFReport(mfData, holdings);
-          resultEl.classList.remove('hidden');
-          resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const html = buildMFReport(mfData, holdings);
+          renderReport(html);
           return;
         }
       }
@@ -1516,10 +1571,8 @@
           step('Found as mutual fund — retrieving underlying holdings...');
           const holdings = await fetchHoldingsData(mfData.category);
           step('Computing analysis report...');
-          loadingEl.classList.add('hidden');
-          resultEl.innerHTML = buildMFReport(mfData, holdings);
-          resultEl.classList.remove('hidden');
-          resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const html = buildMFReport(mfData, holdings);
+          renderReport(html);
           return;
         }
         throw new Error(`Could not find data for "${query}". Try the exact ticker symbol (e.g., RELIANCE.NS, AAPL, ^NSEI).`);
@@ -1573,10 +1626,7 @@
       step('Generating institutional intelligence report...');
       const html = buildReport(chartData, fundamentals, techResult, fundResult, forecast, verdictData);
 
-      loadingEl.classList.add('hidden');
-      resultEl.innerHTML = html;
-      resultEl.classList.remove('hidden');
-      resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      renderReport(html);
 
     } catch (err) {
       loadingEl.classList.add('hidden');
