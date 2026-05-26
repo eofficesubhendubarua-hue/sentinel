@@ -1263,23 +1263,154 @@
   function init() {
     const btn = document.getElementById('sim-analyze-btn');
     const input = document.getElementById('sim-search-input');
-    if (!btn || !input) return;
+    const suggestBox = document.getElementById('sim-suggest-box');
+    if (!btn || !input || !suggestBox) return;
+
+    let debounceTimer = null;
+    let selectedIndex = -1;
+    let currentSuggestions = [];
+
+    // Search action helper
+    function triggerSearch(query) {
+      suggestBox.classList.add('hidden');
+      suggestBox.innerHTML = '';
+      selectedIndex = -1;
+      currentSuggestions = [];
+      input.value = query;
+      runAnalysis(query);
+    }
+
+    // Handle Input event for Autocomplete
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const val = input.value.trim();
+      if (val.length < 1) {
+        suggestBox.classList.add('hidden');
+        suggestBox.innerHTML = '';
+        currentSuggestions = [];
+        return;
+      }
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          const url = PROXY_BASE + '/api/yahoo-search?q=' + encodeURIComponent(val);
+          const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+          if (!r.ok) return;
+          const data = await r.json();
+          const quotes = data.quotes || [];
+
+          if (quotes.length === 0) {
+            suggestBox.classList.add('hidden');
+            suggestBox.innerHTML = '';
+            currentSuggestions = [];
+            return;
+          }
+
+          // Filter out index quotes or quotes without symbols
+          currentSuggestions = quotes.filter(q => q.symbol);
+          renderSuggestions(currentSuggestions);
+        } catch (_) {
+          // Fail silently on suggestion fetch error
+        }
+      }, 200); // 200ms debounce
+    });
+
+    // Render suggestions list
+    function renderSuggestions(quotes) {
+      suggestBox.innerHTML = quotes.map((q, idx) => {
+        const name = q.longname || q.shortname || '';
+        const exch = q.exchDisp || q.exchange || '';
+        const type = q.typeDisp || q.quoteType || 'equity';
+        return `
+          <div class="sim-suggest-item" data-index="${idx}" data-symbol="${q.symbol}">
+            <div class="sim-suggest-item-left">
+              <span class="sim-suggest-symbol">${q.symbol}</span>
+              <span class="sim-suggest-name">${name}</span>
+            </div>
+            <div class="sim-suggest-item-right">
+              ${exch ? `<span class="sim-suggest-exch">${exch}</span>` : ''}
+              <span class="sim-suggest-type">${type}</span>
+            </div>
+          </div>`;
+      }).join('');
+
+      suggestBox.classList.remove('hidden');
+      selectedIndex = -1;
+
+      // Attach click events to items
+      suggestBox.querySelectorAll('.sim-suggest-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const sym = item.getAttribute('data-symbol');
+          triggerSearch(sym);
+        });
+      });
+    }
+
+    // Keyboard navigation inside input box
+    input.addEventListener('keydown', e => {
+      const items = suggestBox.querySelectorAll('.sim-suggest-item');
+      if (suggestBox.classList.contains('hidden') || items.length === 0) {
+        if (e.key === 'Enter') {
+          const q = input.value.trim();
+          if (q) triggerSearch(q);
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex++;
+        if (selectedIndex >= items.length) selectedIndex = 0;
+        updateSelectedSuggestItem(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex--;
+        if (selectedIndex < 0) selectedIndex = items.length - 1;
+        updateSelectedSuggestItem(items);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < items.length) {
+          const sym = items[selectedIndex].getAttribute('data-symbol');
+          triggerSearch(sym);
+        } else {
+          const q = input.value.trim();
+          if (q) triggerSearch(q);
+        }
+      } else if (e.key === 'Escape') {
+        suggestBox.classList.add('hidden');
+        suggestBox.innerHTML = '';
+      }
+    });
+
+    function updateSelectedSuggestItem(items) {
+      items.forEach((item, idx) => {
+        item.classList.toggle('selected', idx === selectedIndex);
+        if (idx === selectedIndex) {
+          // Scroll item into view inside dropdown
+          item.scrollIntoView({ block: 'nearest' });
+          // Temporarily update search box value to show highlight
+          input.value = item.getAttribute('data-symbol');
+        }
+      });
+    }
+
+    // Close suggestions dropdown when clicking outside
+    document.addEventListener('click', e => {
+      if (!input.contains(e.target) && !suggestBox.contains(e.target)) {
+        suggestBox.classList.add('hidden');
+      }
+    });
 
     btn.addEventListener('click', () => {
       const q = input.value.trim();
       if (q.length < 1) { input.focus(); return; }
-      runAnalysis(q);
-    });
-
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { const q = input.value.trim(); if (q) runAnalysis(q); }
+      triggerSearch(q);
     });
 
     document.querySelectorAll('.quick-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const q = chip.getAttribute('data-query');
-        input.value = q;
-        runAnalysis(q);
+        triggerSearch(q);
       });
     });
   }

@@ -312,6 +312,7 @@ function generateHTML(briefing) {
                                 <span class="sim-btn-text">ANALYZE</span>
                             </button>
                         </div>
+                        <div id="sim-suggest-box" class="sim-suggest-box hidden"></div>
                     </div>
 
                     <!-- Quick Access Chips -->
