@@ -1091,6 +1091,68 @@
         <p style="font-family: 'Inter', sans-serif; font-size: 0.92rem; line-height: 1.7; color: #c8e0f8; margin: 0;">${execSummaryText}</p>
       </div>
     </div>
+
+    <!-- Company Intelligence & Business Profile -->
+    <div style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 1.5rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px; display: flex; flex-direction: column; gap: 0.5rem;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; border-bottom: 1px solid rgba(0,240,255,0.1); padding-bottom: 0.3rem;">🏢 COMPANY INTELLIGENCE</span>
+        <div style="font-size: 0.8rem; line-height: 1.5; color: #c8e0f8;">
+          • <b>Sector:</b> ${fund.sector || '—'}<br>
+          • <b>Industry:</b> ${fund.industry || '—'}<br>
+          • <b>Employees:</b> ${fund.employees ? fmt(fund.employees, 0) : '—'}<br>
+          • <b>Market Cap:</b> ${fmtCap(fund.marketCap)}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px; display: flex; flex-direction: column; gap: 0.5rem;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; border-bottom: 1px solid rgba(0,240,255,0.1); padding-bottom: 0.3rem;">📝 BUSINESS DESCRIPTION</span>
+        <div style="font-size: 0.76rem; line-height: 1.5; color: #a2c4e8; max-height: 80px; overflow-y: auto; padding-right: 0.3rem;">
+          ${fund.description || 'No corporate description is currently available in the telemetry stream.'}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1-B: PRICE MICROSTRUCTURE & PERFORMANCE DYNAMICS -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      💰 PRICE MICROSTRUCTURE & PERFORMANCE DYNAMICS
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Valuation Target Reference</span>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #fff; margin-top: 0.4rem;">${sym}${fmt(price)}</div>
+        <span style="font-size: 0.74rem; color: ${dayCol}; display: block; margin-top: 0.4rem;">
+          Daily Change: ${dayChange >= 0 ? '▲' : '▼'} ${sym}${Math.abs(dayChange).toFixed(2)} (${dayChange >= 0 ? '+' : ''}${dayChangePct.toFixed(2)}%)
+        </span>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">52-Week Range</span>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 0.5rem;">
+          Min: ${sym}${fmt(low52w)} <br> Max: ${sym}${fmt(high52w)}
+        </div>
+        <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 0.4rem;">
+          vs Low: +${nearLow}% | vs High: -${nearHigh}%
+        </span>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Volume Telemetry</span>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 0.5rem;">
+          Current: ${fmt(lastVol, 0)} <br> 20D Avg: ${fmt(avgVol, 0)}
+        </div>
+        <span style="font-size: 0.74rem; color: ${volRatio >= 100 ? '#00ff88' : '#ffcc00'}; display: block; margin-top: 0.4rem;">
+          Volume Speed: ${volRatio}% of average
+        </span>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Risk & Volatility Indicators</span>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700; color: #fff; margin-top: 0.5rem;">
+          Beta: ${fund.beta ? fmt(fund.beta) : '—'} <br> ATR (14): ${atrVal}
+        </div>
+        <span style="font-size: 0.74rem; color: #ff4466; display: block; margin-top: 0.4rem;">
+          Max Drawdown (1Y): -${mdd}%
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- SECTION 2: THE QUANTITATIVE & FACTOR BREAKDOWN -->
@@ -1098,7 +1160,7 @@
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
       📊 II. THE QUANTITATIVE & FACTOR BREAKDOWN
     </div>
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto; margin-bottom: 1.5rem;">
       <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
         <thead>
           <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
@@ -1135,6 +1197,122 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- SECTION 2-B: TECHNICAL ANALYSIS MICROSTRUCTURE -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      ⚡ II-B. TECHNICAL ANALYSIS MICROSTRUCTURE
+    </div>
+    <div class="sim-overview-grid" style="display: grid; grid-template-columns: 200px 1fr 1fr; gap: 1.5rem;">
+      
+      <!-- RSI Gauge -->
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; text-align: center;">RSI (14) GAUGE</span>
+        ${rsiGauge(techResult.rsiVal)}
+      </div>
+
+      <!-- Trend & Moving Averages -->
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">TREND & MOVING AVERAGES</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>MACD Indicator:</b> ${techResult.macdData ? (techResult.macdData.bullishCross ? '<span style="color:#00ff88; font-weight:700;">🟢 Bullish Golden Cross</span>' : techResult.macdData.bearishCross ? '<span style="color:#ff4466; font-weight:700;">🔴 Bearish Death Cross</span>' : `Histogram: ${techResult.macdData.histogram > 0 ? '📈 +' : '📉 '}${fmt(techResult.macdData.histogram, 4)}`) : '—'}<br>
+          • <b>20-Day SMA:</b> ${sym}${fmt(sma20v)} (${price > sma20v ? '<span style="color:#00ff88;">Above</span>' : '<span style="color:#ff4466;">Below</span>'})<br>
+          • <b>50-Day SMA:</b> ${sma50v ? `${sym}${fmt(sma50v)} (${price > sma50v ? '<span style="color:#00ff88;">Above</span>' : '<span style="color:#ff4466;">Below</span>'})` : '—'}<br>
+          • <b>200-Day SMA:</b> ${sma200v ? `${sym}${fmt(sma200v)} (${price > sma200v ? '<span style="color:#00ff88;">Above</span>' : '<span style="color:#ff4466;">Below</span>'})` : '—'}<br>
+          • <b>Momentum / Technical Score:</b> <span style="font-family:'Orbitron', monospace; font-weight:700; color:${techResult.score >= 60 ? '#00ff88' : '#ffcc00'};">${techResult.score} / 100</span>
+        </div>
+      </div>
+
+      <!-- Support, Resistance & Pivot -->
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">SUPPORT, RESISTANCE & PIVOT</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>Pivot Point (Classic):</b> ${sym}${fmt(sr.pivot)}<br>
+          • <b>Resistance 1 (R1):</b> ${sym}${fmt(sr.r1)}<br>
+          • <b>Support 1 (S1):</b> ${sym}${fmt(sr.s1)}<br>
+          • <b>Recent 20D range:</b> ${sym}${fmt(sr.recentLo)} - ${sym}${fmt(sr.recentHi)}<br>
+          • <b>52W range:</b> ${sym}${fmt(low52w)} - ${sym}${fmt(high52w)}
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-top: 1.2rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Oscillators & OBV</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif; margin-top: 0.4rem;">
+          • <b>Stochastic K/D:</b> K: ${techResult.stoch ? fmt(techResult.stoch.k) : '—'} | D: ${techResult.stoch ? fmt(techResult.stoch.d) : '—'}<br>
+          • <b>Williams %R:</b> ${techResult.willR !== undefined ? fmt(techResult.willR) : '—'}<br>
+          • <b>OBV Trend:</b> ${techResult.obvData ? techResult.obvData.trend : '—'}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Bollinger Bands & %B</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif; margin-top: 0.4rem;">
+          • <b>Bollinger %B:</b> ${techResult.bolBands ? fmt(techResult.bolBands.pctB) : '—'}%<br>
+          • <b>Upper Band:</b> ${techResult.bolBands && techResult.bolBands.upper ? sym + fmt(techResult.bolBands.upper) : '—'}<br>
+          • <b>Lower Band:</b> ${techResult.bolBands && techResult.bolBands.lower ? sym + fmt(techResult.bolBands.lower) : '—'}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Fibonacci Levels (52W)</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif; margin-top: 0.4rem;">
+          • <b>23.6% Retracement:</b> ${sym}${fmt(fib.r236)}<br>
+          • <b>50.0% Retracement:</b> ${sym}${fmt(fib.r500)}<br>
+          • <b>61.8% Retracement:</b> ${sym}${fmt(fib.r618)}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2-C: FUNDAMENTAL X-RAY DEEP DIVE -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      📈 II-C. INSTITUTIONAL FUNDAMENTAL X-RAY DEEP DIVE
+    </div>
+    <div class="sim-overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+      
+      <!-- Valuation Multiples -->
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">VALUATION MULTIPLES</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>Trailing P/E Ratio:</b> ${fund.trailingPE ? fmt(fund.trailingPE) + 'x' : '—'}<br>
+          • <b>Forward P/E Ratio:</b> ${fund.forwardPE ? fmt(fund.forwardPE) + 'x' : '—'}<br>
+          • <b>PEG Ratio (Growth G.A.R.P.):</b> ${fund.pegRatio ? fmt(fund.pegRatio) + 'x' : '—'}<br>
+          • <b>Price to Book (P/B):</b> ${fund.priceToBook ? fmt(fund.priceToBook) + 'x' : '—'}<br>
+          • <b>Price to Sales (P/S):</b> ${fund.priceToSales ? fmt(fund.priceToSales) + 'x' : '—'}<br>
+          • <b>EV to EBITDA:</b> ${fund.evToEbitda ? fmt(fund.evToEbitda) + 'x' : '—'}
+        </div>
+      </div>
+
+      <!-- Financial Efficiency & Returns -->
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">FINANCIAL EFFICIENCY & RETURNS</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>Earnings Per Share (EPS):</b> ${fund.eps ? sym + fmt(fund.eps) : '—'}<br>
+          • <b>Return on Equity (ROE):</b> ${fund.returnOnEquity ? fmt(fund.returnOnEquity * 100) + '%' : '—'}<br>
+          • <b>Return on Assets (ROA):</b> ${fund.returnOnAssets ? fmt(fund.returnOnAssets * 100) + '%' : '—'}<br>
+          • <b>Gross Margin:</b> ${fund.grossMargins ? fmt(fund.grossMargins * 100) + '%' : '—'}<br>
+          • <b>Operating Margin:</b> ${fund.operatingMargins ? fmt(fund.operatingMargins * 100) + '%' : '—'}<br>
+          • <b>Net Profit Margin:</b> ${fund.profitMargins ? fmt(fund.profitMargins * 100) + '%' : '—'}
+        </div>
+      </div>
+
+      <!-- Leverage, Cash & Ownership -->
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">LEVERAGE, CASH & OWNERSHIP</span>
+        <div style="font-size: 0.82rem; line-height: 1.6; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+          • <b>Revenue Growth (YoY):</b> ${fund.revenueGrowth ? fmt(fund.revenueGrowth * 100) + '%' : '—'}<br>
+          • <b>Debt-to-Equity Ratio:</b> ${fund.debtToEquity !== null && fund.debtToEquity !== undefined ? fmt(fund.debtToEquity) : '—'}<br>
+          • <b>Free Cash Flow (FCF):</b> ${fmtCap(fund.freeCashflow)}<br>
+          • <b>Dividend Yield:</b> ${fund.dividendYield ? fmt(fund.dividendYield * 100) + '%' : '—'} (${fund.dividendRate ? sym + fmt(fund.dividendRate) : '—'})<br>
+          • <b>Insider Shareholdings:</b> ${fund.insiderHoldPct ? fmt(fund.insiderHoldPct * 100) + '%' : '—'}<br>
+          • <b>Institutional Shareholdings:</b> ${fund.institutionHoldPct ? fmt(fund.institutionHoldPct * 100) + '%' : '—'}
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1270,6 +1448,57 @@
     </div>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; font-style: italic;">5-Year quantitative modeling projection based on revenue growth velocity & margin stabilization curves.</p>
     
+    <!-- Predictive Price Targets Sub-Panel -->
+    <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px; margin-bottom: 1.5rem;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem; text-align: center;">🔮 MULTI-HORIZON PREDICTIVE PRICE TARGETS (Linear Regression + Volatility Model)</span>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem;">
+        
+        <!-- 3 Month Card -->
+        <div style="background: rgba(5, 10, 25, 0.4); border: 1px solid rgba(0, 240, 255, 0.05); border-radius: 6px; padding: 1rem;">
+          <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">3-Month Horizon</span>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: ${colorVal(forecast.m3.changePct)}; margin-top: 0.3rem;">
+            Base: ${sym}${fmt(forecast.m3.base)} (${forecast.m3.changePct >= 0 ? '+' : ''}${forecast.m3.changePct.toFixed(1)}%)
+          </div>
+          <div style="font-size: 0.74rem; color: var(--text-muted); display: block; margin-top: 0.4rem;">
+            🟢 Bull Target: ${sym}${fmt(forecast.m3.bull)}<br>
+            🔴 Bear Target: ${sym}${fmt(forecast.m3.bear)}
+          </div>
+        </div>
+
+        <!-- 6 Month Card -->
+        <div style="background: rgba(5, 10, 25, 0.4); border: 1px solid rgba(0, 240, 255, 0.05); border-radius: 6px; padding: 1rem;">
+          <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">6-Month Horizon</span>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: ${colorVal(forecast.m6.changePct)}; margin-top: 0.3rem;">
+            Base: ${sym}${fmt(forecast.m6.base)} (${forecast.m6.changePct >= 0 ? '+' : ''}${forecast.m6.changePct.toFixed(1)}%)
+          </div>
+          <div style="font-size: 0.74rem; color: var(--text-muted); display: block; margin-top: 0.4rem;">
+            🟢 Bull Target: ${sym}${fmt(forecast.m6.bull)}<br>
+            🔴 Bear Target: ${sym}${fmt(forecast.m6.bear)}
+          </div>
+        </div>
+
+        <!-- 12 Month Card -->
+        <div style="background: rgba(5, 10, 25, 0.4); border: 1px solid rgba(0, 240, 255, 0.05); border-radius: 6px; padding: 1rem;">
+          <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">12-Month Horizon</span>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: ${colorVal(forecast.m12.changePct)}; margin-top: 0.3rem;">
+            Base: ${sym}${fmt(forecast.m12.base)} (${forecast.m12.changePct >= 0 ? '+' : ''}${forecast.m12.changePct.toFixed(1)}%)
+          </div>
+          <div style="font-size: 0.74rem; color: var(--text-muted); display: block; margin-top: 0.4rem;">
+            🟢 Bull Target: ${sym}${fmt(forecast.m12.bull)}<br>
+            🔴 Bear Target: ${sym}${fmt(forecast.m12.bear)}
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.8rem; font-size: 0.8rem; color: #c8e0f8;">
+        <div>• <b>Annualized Volatility:</b> ${forecast.vol.toFixed(1)}%</div>
+        <div>• <b>Sharpe Ratio:</b> ${forecast.sharpe}</div>
+        <div>• <b>Probability of Profit:</b> ${forecast.probProfit.toFixed(1)}%</div>
+        <div>• <b>Trend Strength (R²):</b> ${(forecast.reg.r2 * 100).toFixed(1)}%</div>
+      </div>
+    </div>
+
     <div style="overflow-x: auto; margin-bottom: 1.5rem;">
       <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.84rem;">
         <thead>
@@ -1304,7 +1533,7 @@
             <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${sym}${fmt(f5EPS)}</td>
           </tr>
           <tr style="border-bottom: none; background: rgba(5, 15, 35, 0.1);">
-            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Estimated Target Price (Forward PE)</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color:#fff;">Estimated Target Price (Forward PE)</td>
             <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color:#fff;">${sym}${fmt(price)}</td>
             <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">${sym}${fmt(f1Target)}</td>
             <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">${sym}${fmt(f3Target)}</td>
@@ -1342,6 +1571,35 @@
     <div class="sim-section-title" style="border-bottom: 1px solid ${convictionCol}33; color: ${convictionCol}; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; padding-bottom: 0.6rem; margin-bottom: 1rem;">
       💡 VIII. THE MULTIBAGGER CATALYST VERDICT
     </div>
+    
+    <!-- AI Verdict Info Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${verdict.color}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Sentinel AI Verdict</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: ${verdict.color}; margin-top: 0.3rem;">
+          ${verdict.icon} ${verdict.rating}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${verdict.color}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Risk Level</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: ${verdict.riskLevel === 'LOW' ? '#00ff88' : verdict.riskLevel === 'MODERATE' ? '#ffcc00' : '#ff4466'}; margin-top: 0.3rem;">
+          ${verdict.riskLevel}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${verdict.color}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Algorithm Score</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: ${verdict.color}; margin-top: 0.3rem;">
+          ${verdict.combined} / 100
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${verdict.color}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Confidence Level</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: #00f0ff; margin-top: 0.3rem;">
+          ${verdict.confidence}
+        </div>
+      </div>
+    </div>
+
     <div style="font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.7; color: #fff;">
       ${multibaggerVerdict}
     </div>
@@ -1375,6 +1633,10 @@
     // MF-specific Alpha Conviction Score
     const convictionScore = Math.min(10, Math.max(1, Math.round((ret1y > 20 ? 90 : ret1y > 10 ? 70 : 40) / 10)));
     const convictionCol = convictionScore >= 8 ? '#00ff88' : convictionScore >= 5 ? '#ffcc00' : '#ff4466';
+
+    const mfRating = convictionScore >= 8 ? 'STRONG BUY' : convictionScore >= 5 ? 'ACCUMULATE' : 'REDUCE';
+    const mfRisk = vol < 12 ? 'LOW' : vol < 18 ? 'MODERATE' : vol < 28 ? 'HIGH' : 'VERY HIGH';
+    const mfConfidence = convictionScore >= 8 ? 'HIGH' : convictionScore >= 5 ? 'MODERATE' : 'LOW';
 
     // 1. Executive Summary Narrative
     const execSummaryText = `SENTINEL Quant analyzes **${mfData.name}** under a structural factor framework. The fund operates in the **${mfData.category}** class (${mfData.type}). With an annualized volatility of **${vol.toFixed(1)}%** and a Sharpe ratio of **${sh.toFixed(2)}**, the fund displays a ${sh > 1.2 ? 'highly favorable' : 'moderate'} risk-adjusted return profile. Over a 1-year horizon, the fund has generated **${ret1y.toFixed(1)}%** alpha, outperforming cash baselines.`;
@@ -1761,6 +2023,35 @@
     <div class="sim-section-title" style="border-bottom: 1px solid ${convictionCol}33; color: ${convictionCol}; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; padding-bottom: 0.6rem; margin-bottom: 1rem;">
       💡 VIII. THE VERDICT
     </div>
+
+    <!-- AI Verdict Info Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${convictionCol}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Sentinel AI Verdict</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: ${convictionCol}; margin-top: 0.3rem;">
+          ${ret1y > 15 ? '🚀 STRONG BUY' : '⚖️ ACCUMULATE'}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${convictionCol}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Risk Level</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: ${mfRisk === 'LOW' ? '#00ff88' : mfRisk === 'MODERATE' ? '#ffcc00' : '#ff4466'}; margin-top: 0.3rem;">
+          ${mfRisk}
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${convictionCol}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Algorithm Score</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: ${convictionCol}; margin-top: 0.3rem;">
+          ${convictionScore * 10} / 100
+        </div>
+      </div>
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid ${convictionCol}33; padding: 1rem; border-radius: 6px; text-align: center;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Confidence Level</span>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; color: #00f0ff; margin-top: 0.3rem;">
+          ${mfConfidence}
+        </div>
+      </div>
+    </div>
+
     <div style="font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.7; color: #fff;">
       ${verdictVerdict}
     </div>
