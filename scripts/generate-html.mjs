@@ -292,7 +292,7 @@ function generateHTML(briefing) {
 
   // ─── AI Stock Analysis Simulator ────────────────────────────
   const aiSimulatorWidget = `
-            <section class="category-section sim-widget-section" id="section-ai-analyzer" data-category="ai-analyzer" style="display:none">
+            <section class="category-section sim-widget-section hidden" id="section-ai-analyzer" data-category="ai-analyzer">
                 <div class="section-header">
                     <h2>🤖 AI Analysis Engine — Institutional Intelligence</h2>
                     <span class="article-count">SENTINEL Quant v3.0</span>

@@ -21,7 +21,12 @@ function filterCategory(categoryId) {
   const sections = document.querySelectorAll(".category-section");
   sections.forEach((section) => {
     if (categoryId === "all") {
-      section.classList.remove("hidden");
+      // Hide AI Analyzer from the global 'All' view to avoid cluttering the news feed
+      if (section.id === "section-ai-analyzer") {
+        section.classList.add("hidden");
+      } else {
+        section.classList.remove("hidden");
+      }
     } else {
       const isMarketTools = section.id === "section-market-tools";
       const isUpscTools = section.id === "section-upsc-tools";
