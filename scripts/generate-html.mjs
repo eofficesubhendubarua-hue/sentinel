@@ -80,10 +80,21 @@ function generateHTML(briefing) {
     .map(([id, cat]) => {
       let injectedReport = "";
       if (id === "daily_market_news") {
-        const reportPath = join(DATA_DIR, "market_report.html");
-        if (existsSync(reportPath)) {
+        const niftyPath = join(DATA_DIR, "market_report.html");
+        const sensexPath = join(DATA_DIR, "market_report_sensex.html");
+        const usPath = join(DATA_DIR, "market_report_us.html");
+        
+        if (existsSync(niftyPath)) {
           console.log("🟢 Injected Indian Market Daily 9:20 Report into Daily Markets category grid.");
-          injectedReport = readFileSync(reportPath, "utf-8");
+          injectedReport += readFileSync(niftyPath, "utf-8");
+        }
+        if (existsSync(sensexPath)) {
+          console.log("🟢 Injected BSE Sensex Report into Daily Markets category grid.");
+          injectedReport += readFileSync(sensexPath, "utf-8");
+        }
+        if (existsSync(usPath)) {
+          console.log("🟢 Injected American Market Report into Daily Markets category grid.");
+          injectedReport += readFileSync(usPath, "utf-8");
         }
       }
 
