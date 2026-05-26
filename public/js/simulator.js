@@ -370,6 +370,52 @@
     return { reg, annualReturn, vol, m3: project(63), m6: project(126), m12: project(252), probProfit, sharpe };
   }
 
+  function getSectorBusinessProcess(sector, industry) {
+    const s = (sector || '').toLowerCase();
+    const ind = (industry || '').toLowerCase();
+
+    if (s.includes('tech') || ind.includes('software') || ind.includes('it services') || ind.includes('semiconductor')) {
+      return {
+        revModel: "Primarily SaaS recurring subscription licenses, enterprise cloud hosting consumption fees, and professional integration consulting. High annual recurring revenue (ARR) profiles with upfront cash-flow billing.",
+        valueChain: "Talent acquisition (highly specialized software engineers) → R&D product development (agile sprints, Git versioning) → distributed cloud infrastructure scaling (AWS, Azure, GCP) → global B2B corporate enterprise sales cycles → Customer Success management for churn control.",
+        metrics: "Annual Recurring Revenue (ARR) growth, Net Revenue Retention (NRR > 110%), Customer Acquisition Cost (CAC) payback period, developer utilization rates, and server margin leverage."
+      };
+    }
+    if (s.includes('financial') || ind.includes('bank') || ind.includes('credit') || ind.includes('insurance') || ind.includes('asset management')) {
+      return {
+        revModel: "Net Interest Income (NII) spread between deposit costs and lending yields, transaction processing fees (merchant commissions), and wealth management Advisory/Expense ratios.",
+        valueChain: "Deposit mobilization (CASA retail deposits) → quantitative credit risk modeling & loan underwriting → lending disbursement → debt collection & monitoring → Asset-Liability Management (ALM) treasury operations.",
+        metrics: "Net Interest Margin (NIM), Non-Performing Assets (Gross/Net NPA ratios), Provision Coverage Ratio (PCR), CASA ratio, Capital Adequacy Ratio (CAR), and Cost-to-Income efficiency ratio."
+      };
+    }
+    if (s.includes('defensive') || ind.includes('beverage') || ind.includes('food') || ind.includes('tobacco') || ind.includes('personal products')) {
+      return {
+        revModel: "High-volume direct sales of essential packaged products (FMCG) through multi-tiered distributor networks, retail chains, and direct-to-consumer (D2C) e-commerce platforms.",
+        valueChain: "Raw agricultural/chemical commodity procurement → automated high-speed packaging & manufacturing → logistics shipping to wholesale depots → local distributor inventory management → consumer purchases driven by brand equity.",
+        metrics: "YoY volume growth velocity, inventory turnover ratio, advertising-to-sales ratios, distribution footprint reach (number of retail outlets), and raw material input cost spreads."
+      };
+    }
+    if (s.includes('healthcare') || ind.includes('pharma') || ind.includes('biotech') || ind.includes('hospital') || ind.includes('medical')) {
+      return {
+        revModel: "Patent-protected novel drug sales, specialized diagnostic device leasing, hospital beds occupancy charges, and medical insurance payouts.",
+        valueChain: "Laboratory molecular discovery → Phase I-III clinical trial test runs → regulatory clearances (FDA, EMA) → global sterile chemical manufacturing → medical practitioner prescription networks → pharmacy fulfillment.",
+        metrics: "R&D expense capital efficiency, pipeline candidate success rates, patent protection duration (CAP), bed occupancy rates, and gross margin profit spread."
+      };
+    }
+    if (s.includes('energy') || s.includes('utilities') || ind.includes('oil') || ind.includes('gas') || ind.includes('power') || ind.includes('electricity')) {
+      return {
+        revModel: "Long-term Power Purchase Agreements (PPAs) based on tariff rates, raw volume oil/gas barrels distribution contracts, and utility throughput consumption charges.",
+        valueChain: "Natural resource prospecting/exploration or fuel procurement → plant construction & processing facilities → pipeline, electrical grid, or tanker logistics → industrial and grid utility distribution.",
+        metrics: "Plant Load Factor (PLF), gross refining margin (GRM) spreads, tariff pricing realizations, capital expenditure payback periods, and regulatory return on equity (RoE) caps."
+      };
+    }
+    return {
+      revModel: "Mixed transactional sales of goods, hardware machinery, and corporate engineering service contracts.",
+      valueChain: "Supply-chain material procurement → factory manufacturing & assembly → domestic/international shipping freight logistics → corporate business-to-business (B2B) account management.",
+      metrics: "Order book book-to-bill ratio, capacity utilization rate, working capital cash conversion cycles, and capital expenditure asset turnover ratio."
+    };
+  }
+
   // ═══════════════════════════════════════════════════════════
   // SCORING & VERDICT ENGINE
   // ═══════════════════════════════════════════════════════════
@@ -946,6 +992,63 @@
         ${chartData.symbol} is classified as an institutional value trap. Low return profile, high multiples relative to growth velocity, and weak FCF backing represent a severe structural risk. Theoretical downside exceeds alpha potential. Avoid allocation.`;
     }
 
+    // 6. Business Process & Value Chain Dynamics
+    const bizProcess = getSectorBusinessProcess(fund.sector || 'default', fund.industry || '—');
+
+    // 7. Predictive Earnings & Growth Forecast
+    const revGrowthVal = fund.revenueGrowth !== undefined ? fund.revenueGrowth : 0.12;
+    const marginVal = fund.operatingMargins !== undefined ? fund.operatingMargins : 0.15;
+    const epsGrowthVal = fund.earningsGrowth !== undefined ? fund.earningsGrowth : 0.14;
+    const estShares = fund.sharesOutstanding || (fund.marketCap && price ? fund.marketCap / price : 1e8);
+    const currRev = fund.totalRevenue || (price * estShares * 0.25);
+    const currEPS = fund.eps || (price / 20);
+
+    const f1Rev = currRev * (1 + revGrowthVal);
+    const f3Rev = currRev * Math.pow(1 + revGrowthVal, 3);
+    const f5Rev = currRev * Math.pow(1 + revGrowthVal, 5);
+
+    const f1EPS = currEPS * (1 + epsGrowthVal);
+    const f3EPS = currEPS * Math.pow(1 + epsGrowthVal, 3);
+    const f5EPS = currEPS * Math.pow(1 + epsGrowthVal, 5);
+
+    // Margin expansion assumption
+    const f1Ebitda = f1Rev * (marginVal + 0.005);
+    const f3Ebitda = f3Rev * (marginVal + 0.015);
+    const f5Ebitda = f5Rev * (marginVal + 0.025);
+
+    // Target Prices
+    const peMultiplier = fund.trailingPE || 25;
+    const f1Target = f1EPS * peMultiplier;
+    const f3Target = f3EPS * peMultiplier * 0.95;
+    const f5Target = f5EPS * peMultiplier * 0.90;
+
+    // Sensitivity Matrix calculation (Year 3 Net Income)
+    const revScenarios = [
+      { label: 'Bear (-5% Growth)', offset: -0.05 },
+      { label: 'Base Case Growth', offset: 0.0 },
+      { label: 'Bull (+5% Growth)', offset: 0.05 },
+      { label: 'Asymmetric (+10% Growth)', offset: 0.10 }
+    ];
+    const marginScenarios = [
+      { label: 'Contraction (-2%)', offset: -0.02 },
+      { label: 'Base Margin', offset: 0.0 },
+      { label: 'Expansion (+2%)', offset: 0.02 },
+      { label: 'Elite (+5%)', offset: 0.05 }
+    ];
+
+    let sensitivityHtml = '';
+    revScenarios.forEach(revS => {
+      sensitivityHtml += `<tr><td style="padding: 10px 12px; font-weight:700; color:#fff;">${revS.label}</td>`;
+      marginScenarios.forEach(marS => {
+        const pRev = currRev * Math.pow(1 + revGrowthVal + revS.offset, 3);
+        const pMar = Math.max(0.01, marginVal + marS.offset);
+        const pEps = (pRev * pMar) / estShares;
+        const pPrice = pEps * peMultiplier * 0.95;
+        sensitivityHtml += `<td style="padding: 10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:${pPrice >= price ? '#00ff88' : '#ff4466'}; font-weight:600;">${sym}${fmt(pPrice)}</td>`;
+      });
+      sensitivityHtml += `</tr>`;
+    });
+
     return `
 <div class="sim-report-wrap">
 
@@ -1145,10 +1248,99 @@
     </div>
   </div>
 
-  <!-- SECTION 6: THE MULTIBAGGER CATALYST VERDICT -->
+  <!-- SECTION 6: BUSINESS PROCESS & OPERATIONAL VALUE CHAIN -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      🏭 VI. BUSINESS PROCESS & OPERATIONAL VALUE CHAIN DECONSTRUCTION
+    </div>
+    <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem;">Segment revenue drivers & operating core</span>
+      <div style="font-size: 0.88rem; line-height: 1.7; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+        <p style="margin-bottom: 0.8rem;">• <b>Operational Revenue Model:</b> ${bizProcess.revModel}</p>
+        <p style="margin-bottom: 0.8rem;">• <b>Value Chain Dynamics:</b> ${bizProcess.valueChain}</p>
+        <p style="margin-bottom: 0;">• <b>Key Telemetry Metrics Tracked:</b> ${bizProcess.metrics}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PREDICTIVE FORECAST & PROFIT SENSITIVITY MATRIX -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      📈 VII. PREDICTIVE FORECAST & PROFIT SENSITIVITY MATRIX
+    </div>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; font-style: italic;">5-Year quantitative modeling projection based on revenue growth velocity & margin stabilization curves.</p>
+    
+    <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.84rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">METRIC (FORECAST)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">CURRENT (FY0)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">FY1 (PROJECTED)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">FY3 (PROJECTED)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">FY5 (PROJECTED)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.05); background: rgba(5, 15, 35, 0.2);">
+            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Annual Revenue</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace;">${fmtCap(currRev)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${fmtCap(f1Rev)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${fmtCap(f3Rev)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${fmtCap(f5Rev)}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.05); background: rgba(5, 15, 35, 0.1);">
+            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Projected EBITDA</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace;">${fmtCap(currRev * marginVal)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${fmtCap(f1Ebitda)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${fmtCap(f3Ebitda)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${fmtCap(f5Ebitda)}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.05); background: rgba(5, 15, 35, 0.2);">
+            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Earnings Per Share (EPS)</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace;">${sym}${fmt(currEPS)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${sym}${fmt(f1EPS)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${sym}${fmt(f3EPS)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${sym}${fmt(f5EPS)}</td>
+          </tr>
+          <tr style="border-bottom: none; background: rgba(5, 15, 35, 0.1);">
+            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Estimated Target Price (Forward PE)</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color:#fff;">${sym}${fmt(price)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">${sym}${fmt(f1Target)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">${sym}${fmt(f3Target)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">${sym}${fmt(f5Target)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sensitivity Grid -->
+    <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px; margin-bottom: 0.5rem;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--secondary); font-weight: 700; margin-bottom: 0.8rem; text-align: center;">📊 3-YEAR TARGET PRICE SENSITIVITY MATRIX (Valuation Contraction Stress Tested)</span>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.8rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.15); background: rgba(0, 20, 40, 0.6);">
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700;">Rev Growth vs Margin</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Contraction (-2%)</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Base Margin</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Expansion (+2%)</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Elite (+5%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sensitivityHtml}
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.6rem; text-align: center;">Cell values project target share price after Year 3 compounding under varying revenue growth and margin profiles (assumed constant PE).</div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: THE MULTIBAGGER CATALYST VERDICT -->
   <div class="sim-section" style="border: 2px solid ${convictionCol}; background: ${convictionCol}05; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
     <div class="sim-section-title" style="border-bottom: 1px solid ${convictionCol}33; color: ${convictionCol}; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; padding-bottom: 0.6rem; margin-bottom: 1rem;">
-      💡 VI. THE MULTIBAGGER CATALYST VERDICT
+      💡 VIII. THE MULTIBAGGER CATALYST VERDICT
     </div>
     <div style="font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.7; color: #fff;">
       ${multibaggerVerdict}
@@ -1217,6 +1409,60 @@
       verdictVerdict = `⚠️ **UNDERPERFORMANCE VERDICT: DEFENSIVE AVOIDANCE**<br><br>
         Poor near-term performance signals and high volatility relative to alpha suggest restructuring. Look for alternative high-Sharpe equity portfolios.`;
     }
+
+    // 6. Mutual Fund Portfolio Architecture deconstruction
+    let mfStrategy = {
+      allocation: "Focuses on capital appreciation by investing in high-quality equity and debt instruments aligned with the SEBI classification category guidelines.",
+      liquidity: "Maintains high systemic portfolio liquidity to support daily redemption volumes under strict regulatory parameters.",
+      metrics: "Portfolio Turnover Ratio, Sharpe Ratio index, Standard Deviation tracking, and Expense Ratio management efficiency."
+    };
+    const catLower = mfData.category.toLowerCase();
+    if (catLower.includes('large cap') || catLower.includes('bluechip')) {
+      mfStrategy = {
+        allocation: "Concentrated core allocation in top 100 bluechip companies with high market capitalizations and stable, compound earnings histories.",
+        liquidity: "Fortress liquidity profile with near-zero exit load slippage risk under sudden systemic retail redemption scenarios.",
+        metrics: "Expense ratio efficiency, standard beta mapping, tracking error variance, and benchmark index matching."
+      };
+    } else if (catLower.includes('mid cap') || catLower.includes('small cap')) {
+      mfStrategy = {
+        allocation: "Diversified allocation across fast-growing mid and small-scale companies offering asymmetric operating leverage and volume growth potential.",
+        liquidity: "Moderate liquidity profile. Relies on cash reserves and liquid sector balances to manage redemption shocks.",
+        metrics: "Active share alpha generation, portfolio turnover velocity, high beta volatility spreads, and capitalization migration trends."
+      };
+    }
+
+    // 7. Mutual Fund NAV Forecast & SIP Compounding Projections
+    const retVal = Math.max(0.06, ret1y / 100); // base average rate (6% min fallback)
+    const f1Nav = nav * (1 + retVal);
+    const f3Nav = nav * Math.pow(1 + retVal, 3);
+    const f5Nav = nav * Math.pow(1 + retVal, 5);
+
+    // SIP Projections (₹10,000 monthly)
+    function calcCompoundSip(months, rate) {
+      const mRate = Math.pow(1 + rate, 1/12) - 1;
+      let val = 0;
+      for (let i = 0; i < months; i++) val = (val + 10000) * (1 + mRate);
+      return val;
+    }
+    const sip1y = calcCompoundSip(12, retVal);
+    const sip3y = calcCompoundSip(36, retVal);
+    const sip5y = calcCompoundSip(60, retVal);
+
+    // CAPM Sensitivity Grid (Beta vs Market Return)
+    const betaScenarios = [0.70, 0.90, 1.10, 1.30];
+    const marketScenarios = [0.08, 0.12, 0.18, 0.25];
+    const rf = 0.065; // 6.5% risk free rate
+
+    let mfSensitivityHtml = '';
+    betaScenarios.forEach(b => {
+      mfSensitivityHtml += `<tr><td style="padding: 10px 12px; font-weight:700; color:#fff; font-family:'JetBrains Mono', monospace;">Beta: ${b.toFixed(2)}</td>`;
+      marketScenarios.forEach(m => {
+        const capmRet = rf + b * (m - rf);
+        const capmRetPct = capmRet * 100;
+        mfSensitivityHtml += `<td style="padding: 10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:${capmRetPct >= 12 ? '#00ff88' : '#ffcc00'}; font-weight:600;">${capmRetPct.toFixed(1)}%</td>`;
+      });
+      mfSensitivityHtml += `</tr>`;
+    });
 
     const holdingsHtml = resolvedHoldings && resolvedHoldings.length > 0 ? `
     <!-- UNDERLYING FUND HOLDINGS (LIVE TELEMETRY) -->
@@ -1435,10 +1681,85 @@
     </div>
   </div>
 
-  <!-- SECTION 6: THE VERDICT -->
+  <!-- SECTION 6: PORTFOLIO OPERATION & ASSET ALLOCATION STRATEGY -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      🏭 VI. PORTFOLIO OPERATION & ASSET ALLOCATION STRATEGY
+    </div>
+    <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem;">Fund architecture deconstruction & execution model</span>
+      <div style="font-size: 0.88rem; line-height: 1.7; color: #c8e0f8; font-family: 'Inter', sans-serif;">
+        <p style="margin-bottom: 0.8rem;">• <b>Asset Allocation Strategy:</b> ${mfStrategy.allocation}</p>
+        <p style="margin-bottom: 0.8rem;">• <b>Liquidity Management Protocol:</b> ${mfStrategy.liquidity}</p>
+        <p style="margin-bottom: 0;">• <b>Key Telemetry Metrics Tracked:</b> ${mfStrategy.metrics}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PREDICTIVE FORECAST & CAPM SENSITIVITY MATRIX -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      📈 VII. PREDICTIVE FORECAST & CAPM SENSITIVITY MATRIX
+    </div>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; font-style: italic;">NAV projection and compounded SIP metrics modeled under varying macroeconomic market regimes.</p>
+    
+    <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.84rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">METRIC (FORECAST)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">CURRENT (FY0)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">FY1 (PROJECTED)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">FY3 (PROJECTED)</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">FY5 (PROJECTED)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.05); background: rgba(5, 15, 35, 0.2);">
+            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Estimated Net Asset Value (NAV)</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace;">₹${fmt(nav)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">₹${fmt(f1Nav)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">₹${fmt(f3Nav)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">₹${fmt(f5Nav)}</td>
+          </tr>
+          <tr style="border-bottom: none; background: rgba(5, 15, 35, 0.1);">
+            <td style="padding: 10px 12px; font-weight: 700; color: #fff;">Projected SIP Value (₹10,000/mo)</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color:#fff;">—</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">₹${fmt(sip1y)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">₹${fmt(sip3y)}</td>
+            <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #00f0ff;">₹${fmt(sip5y)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sensitivity Grid (CAPM returns mapped) -->
+    <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px; margin-bottom: 0.5rem;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--secondary); font-weight: 700; margin-bottom: 0.8rem; text-align: center;">📊 CAPM PORTFOLIO RETURN SENSITIVITY MATRIX (Beta vs Market Return)</span>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.8rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.15); background: rgba(0, 20, 40, 0.6);">
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700;">Fund Beta vs Market Return</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Bearish (8.0%)</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Neutral (12.0%)</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Bullish (18.0%)</th>
+              <th style="padding: 8px 10px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; text-align: right;">Asymmetric (25.0%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${mfSensitivityHtml}
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.6rem; text-align: center;">Cell values project annual return rates calculated using Capital Asset Pricing Model (CAPM) with 6.5% risk-free rate.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: THE VERDICT -->
   <div class="sim-section" style="border: 2px solid ${convictionCol}; background: ${convictionCol}05; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
     <div class="sim-section-title" style="border-bottom: 1px solid ${convictionCol}33; color: ${convictionCol}; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; padding-bottom: 0.6rem; margin-bottom: 1rem;">
-      💡 VI. INVESTMENT VERDICT
+      💡 VIII. THE VERDICT
     </div>
     <div style="font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.7; color: #fff;">
       ${verdictVerdict}
