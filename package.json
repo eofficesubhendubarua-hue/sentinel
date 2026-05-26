@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "aggregate": "node scripts/aggregate.mjs",
+    "market": "node scripts/market-report.mjs",
     "generate": "node scripts/generate-html.mjs",
     "email": "node scripts/email.mjs",
-    "build": "node scripts/aggregate.mjs && node scripts/generate-html.mjs",
-    "publish": "node scripts/aggregate.mjs && node scripts/generate-html.mjs && node scripts/email.mjs",
+    "build": "node scripts/aggregate.mjs && node scripts/market-report.mjs && node scripts/generate-html.mjs",
+    "publish": "node scripts/aggregate.mjs && node scripts/market-report.mjs && node scripts/generate-html.mjs && node scripts/email.mjs",
     "dev": "npx http-server public -p 3000 -o"
   },
   "dependencies": {

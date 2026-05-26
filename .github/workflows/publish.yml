@@ -6,8 +6,8 @@ on:
     branches:
       - master
   schedule:
-    # Run at exactly the top of the hour in IST (which is XX:30 in UTC)
-    - cron: '30 * * * *'
+    # Run every 15 minutes to refresh daily market data and feeds
+    - cron: '*/15 * * * *'
   workflow_dispatch: # Manual trigger for testing
 
 permissions:
@@ -32,6 +32,9 @@ jobs:
 
       - name: 📡 Aggregate RSS feeds
         run: node scripts/aggregate.mjs
+
+      - name: 📈 Fetch Indian Market Daily Report
+        run: node scripts/market-report.mjs
 
       - name: 🏗️ Generate website
         run: node scripts/generate-html.mjs

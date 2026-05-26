@@ -78,7 +78,16 @@ function generateHTML(briefing) {
   // Build category sections
   const categorySections = categoryEntries
     .map(([id, cat]) => {
-      const articlesHTML = cat.articles
+      let injectedReport = "";
+      if (id === "daily_market_news") {
+        const reportPath = join(DATA_DIR, "market_report.html");
+        if (existsSync(reportPath)) {
+          console.log("🟢 Injected Indian Market Daily 9:20 Report into Daily Markets category grid.");
+          injectedReport = readFileSync(reportPath, "utf-8");
+        }
+      }
+
+      const articlesHTML = injectedReport + cat.articles
         .map(
           (article) => `
                 <article class="news-card" data-category="${id}">
