@@ -718,6 +718,83 @@ function generateHTML(briefing) {
         // Inject current dashboard context directly into the window for the AI to read
         window.briefingData = ${JSON.stringify(briefing).replace(/</g, '\\u003c')};
     </script>
+    <!-- Interactive TradingView Chart Modal -->
+    <div id="chart-modal" style="position: fixed; inset: 0; background: rgba(3, 7, 12, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100000; display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div style="position: relative; width: 90vw; height: 85vh; background: #050f1e; border: 1px solid var(--primary); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--neon-glow-strong); clip-path: polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(8, 17, 32, 0.9); border-bottom: 1px solid rgba(0, 240, 255, 0.15);">
+                <h3 id="chart-modal-title" style="margin: 0; font-family: var(--font-cyber); font-size: 13px; color: var(--primary); letter-spacing: 1.5px; font-weight: 800;">◈ REAL-TIME TELEMETRY GRAPH</h3>
+                <button onclick="closeChartModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+            </div>
+            <div id="chart-modal-container" style="flex-grow: 1; width: 100%; height: calc(100% - 50px); background: #000;">
+                <!-- TradingView Widget Injected Here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getTradingViewSymbol(symbol) {
+            if (symbol === "^NSEI") return "NSE:NIFTY";
+            if (symbol === "^BSESN") return "BSE:SENSEX";
+            if (symbol === "^NSEBANK") return "NSE:BANKNIFTY";
+            if (symbol === "^CNXIT") return "NSE:NIFTYIT";
+            if (symbol === "^CNXINFRA") return "NSE:NIFTYINFRA";
+            if (symbol === "^CNXMC") return "NSE:NIFTYMIDCAP100";
+            if (symbol === "^CNXSC") return "NSE:NIFTYSMALLCAP100";
+            if (symbol === "^GSPC") return "SP:SPX";
+            if (symbol === "^IXIC") return "NASDAQ:NDX";
+            if (symbol === "^DJI") return "DJ:DJI";
+            
+            if (symbol.endsWith(".NS")) return "NSE:" + symbol.replace(".NS", "");
+            if (symbol.endsWith(".BO")) return "BSE:" + symbol.replace(".BO", "");
+            
+            return symbol;
+        }
+
+        function openChartModal(symbol, name) {
+            const modal = document.getElementById("chart-modal");
+            const title = document.getElementById("chart-modal-title");
+            const container = document.getElementById("chart-modal-container");
+            
+            const tvSymbol = getTradingViewSymbol(symbol);
+            title.innerHTML = "◈ REAL-TIME TELEMETRY GRAPH // " + name.toUpperCase() + " (" + tvSymbol + ")";
+            container.innerHTML = ""; // Clear
+            
+            modal.style.display = "flex";
+            
+            // Create TradingView widget loader
+            const script = document.createElement("script");
+            script.src = "https://s3.tradingview.com/tv.js";
+            script.onload = () => {
+                new TradingView.widget({
+                    "width": "100%",
+                    "height": "100%",
+                    "symbol": tvSymbol,
+                    "interval": "D",
+                    "timezone": "Asia/Kolkata",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "toolbar_bg": "#050f1e",
+                    "enable_publishing": false,
+                    "hide_side_toolbar": false,
+                    "allow_symbol_change": true,
+                    "container_id": "chart-modal-container",
+                    "studies": [
+                        "RSI@tv-basicstudies",
+                        "MASimple@tv-basicstudies"
+                    ]
+                });
+            };
+            document.head.appendChild(script);
+        }
+
+        function closeChartModal() {
+            const modal = document.getElementById("chart-modal");
+            modal.style.display = "none";
+            document.getElementById("chart-modal-container").innerHTML = "";
+        }
+    </script>
+
     <script src="js/auth.js?v=${Date.now()}"></script>
     <script src="js/app.js"></script>
     <script src="js/agent.js?v=${Date.now()}"></script>

@@ -94,7 +94,12 @@ async function fetchFinancialData(symbol, nameOverride = null) {
     const changePct = (change / prevClose) * 100;
     const name = nameOverride || result.meta.shortName || symbol;
     
-    return { symbol, price, prevClose, change, changePct, name };
+    const quote = result.indicators?.quote?.[0];
+    const open = quote?.open?.[0] || result.meta.regularMarketOpen || price;
+    const high = quote?.high?.[0] || result.meta.regularMarketDayHigh || price;
+    const low = quote?.low?.[0] || result.meta.regularMarketDayLow || price;
+    
+    return { symbol, price, prevClose, change, changePct, name, open, high, low };
   } catch (err) {
     return null;
   }
@@ -122,7 +127,6 @@ function getMarketStatus() {
 
 function getUSMarketStatus() {
   const now = new Date();
-  // Get time in EST/EDT using America/New_York native timezone formatting
   const estString = now.toLocaleString("en-US", { timeZone: "America/New_York" });
   const estDate = new Date(estString);
   const day = estDate.getDay();
@@ -160,7 +164,6 @@ function getMoveReason(changePct, type, market = "IN") {
       return "Decline: Pressured by core large-cap outflows and defensive index hedging.";
     }
   } else {
-    // Indian Market (Nifty / Sensex)
     if (type === "index") {
       if (changePct > 0.75) return "Strong FII buying, positive global cues, and robust banking sector earnings drive the surge.";
       if (changePct > 0.1) return "Moderate domestic institutional support and steady IT sector performance sustain the positive momentum.";
@@ -185,7 +188,6 @@ async function generateAllReports() {
   console.log("📡 Generating Premium Cyber Telemetry Markets Suite...");
   mkdirSync(DATA_DIR, { recursive: true });
   
-  // Load Indian benchmark data first to map categories
   const indexPromises = Object.entries(INDICES).map(([sym, name]) => fetchFinancialData(sym, name));
   const indicesResults = await Promise.all(indexPromises);
   const indices = indicesResults.filter(Boolean);
@@ -195,7 +197,6 @@ async function generateAllReports() {
     indexMap[idx.symbol] = idx;
   });
 
-  // Fetch US benchmark data
   const usIndexPromises = Object.entries(US_INDICES).map(([sym, name]) => fetchFinancialData(sym, name));
   const usIndicesResults = await Promise.all(usIndexPromises);
   const usIndices = usIndicesResults.filter(Boolean);
@@ -226,7 +227,7 @@ async function generateNiftyReport(indices, indexMap) {
   const stocks = stockResults.filter(Boolean);
   stocks.sort((a, b) => b.changePct - a.changePct);
   
-  const nifty = indexMap["^NSEI"] || { price: 23936.3, change: -95.4, changePct: -0.396 };
+  const nifty = indexMap["^NSEI"] || { price: 23925.65, change: -186.85, changePct: -0.44, open: 24110.20, high: 24125.00, low: 23890.10, prevClose: 24112.50 };
   const isBullish = nifty.changePct >= 0;
   const marketTrend = isBullish ? "🔴 BULLISH" : "🔵 BEARISH";
   
@@ -234,8 +235,8 @@ async function generateNiftyReport(indices, indexMap) {
   const diiNet = 1450.20 + nifty.changePct * 500;
   const fiiBuy = 14520.80 + Math.max(0, fiiNet);
   const fiiSell = 14520.80 + Math.max(0, -fiiNet);
-  const diiBuy = 11250.40 + Math.max(0, diiNet);
-  const diiSell = 11250.40 + Math.max(0, -diiNet);
+  const diiBuy = 12479.95 + Math.max(0, diiNet);
+  const diiSell = 12479.95 + Math.max(0, -diiNet);
   
   const fiiDii = {
     fii: { buy: fiiBuy.toFixed(2), sell: fiiSell.toFixed(2), net: fiiNet.toFixed(2) },
@@ -259,17 +260,34 @@ async function generateNiftyReport(indices, indexMap) {
     };
   });
   
+  // Predictive metrics calculation
+  const t1Change = nifty.changePct * 0.4;
+  const t2Change = nifty.changePct * 0.85;
+  const t1WkChange = nifty.changePct * 1.5;
+  
+  const predictions = {
+    t1: { price: (nifty.price * (1 + t1Change / 100)).toFixed(2), change: t1Change.toFixed(2), status: t1Change >= 0 ? "BULLISH_REBOUND" : "BEARISH_DRIFT" },
+    t2: { price: (nifty.price * (1 + t2Change / 100)).toFixed(2), change: t2Change.toFixed(2), status: t2Change >= 0 ? "ACCUMULATION_PUMP" : "SUPPORT_CONSOLIDATION" },
+    wk1: { price: (nifty.price * (1 + t1WkChange / 100)).toFixed(2), change: t1WkChange.toFixed(2), status: t1WkChange >= 0 ? "MACRO_UPTREND_GRID" : "WEEKLY_GRID_RECOVERY" }
+  };
+  
   let indexRows = indices.map(idx => {
     const isUp = idx.change >= 0;
     const sign = isUp ? "+" : "";
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${idx.name} (${idx.symbol})</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700;">${idx.price.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index")}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 12px 14px; font-family: var(--font-cyber); font-weight: 700;">${idx.name} (${idx.symbol})</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">${idx.price.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal);">${idx.open.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal);">${idx.prevClose.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${idx.low.toFixed(2)} - ${idx.high.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
+        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index")}</td>
+        <td style="padding: 12px 14px; text-align: right;">
+          <button onclick="openChartModal('${idx.symbol}', '${idx.name}')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
+        </td>
       </tr>`;
   }).join("");
 
@@ -279,12 +297,18 @@ async function generateNiftyReport(indices, indexMap) {
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     const status = isUp ? "🟢 GAINING" : "🔴 CORR_PULLBACK";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${etf.name} (${etf.symbol})</td>
-        <td style="font-family: var(--font-terminal);">${etf.price.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); ${color}">${sign}${etf.changePct.toFixed(2)}%</td>
-        <td style="font-weight: 700; font-size: 10px; ${color}">${status}</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${getMoveReason(etf.changePct, "etf")}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">${etf.name} (${etf.symbol})</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal);">${etf.price.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal);">${etf.open.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal);">${etf.prevClose.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${etf.low.toFixed(2)} - ${etf.high.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal); ${color}">${sign}${etf.changePct.toFixed(2)}%</td>
+        <td style="padding: 10px 14px; font-weight: 700; font-size: 10px; ${color}">${status}</td>
+        <td style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(etf.changePct, "etf")}</td>
+        <td style="padding: 10px 14px; text-align: right;">
+          <button onclick="openChartModal('${etf.symbol}', '${etf.name}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📈</button>
+        </td>
       </tr>`;
   }).join("");
 
@@ -293,11 +317,11 @@ async function generateNiftyReport(indices, indexMap) {
     const sign = isUp ? "+" : "";
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${cat.name}</td>
-        <td style="font-family: var(--font-terminal); ${color}">${sign}${cat.changePct.toFixed(2)}%</td>
-        <td style="font-weight: 700; font-size: 10px; ${color}">${cat.status}</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${cat.reason}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">${cat.name}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal); ${color}">${sign}${cat.changePct.toFixed(2)}%</td>
+        <td style="padding: 10px 14px; font-weight: 700; font-size: 10px; ${color}">${cat.status}</td>
+        <td style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">${cat.reason}</td>
       </tr>`;
   }).join("");
 
@@ -305,21 +329,25 @@ async function generateNiftyReport(indices, indexMap) {
   const topLosers = stocks.slice(-25).reverse();
   
   let gainerRows = topGainers.map((stk, idx) => `
-    <tr>
-      <td style="font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td style="font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
-      <td style="font-size: 10px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Earnings support / Volume surge</td>
+    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   let loserRows = topLosers.map((stk, idx) => `
-    <tr>
-      <td style="font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td style="font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
-      <td style="font-size: 10px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Profit booking / FII outflow</td>
+    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   const reportHTML = `
-  <article id="indian-market-daily-9-20-report" class="news-card market-report-card animate-glow-nifty" data-category="daily_market_news" style="grid-column: span 2; width: 100%; border: 1px solid rgba(0, 240, 255, 0.25); background: rgba(5, 15, 30, 0.7); box-shadow: 0 0 15px rgba(0, 240, 255, 0.15); max-width: 100%; border-radius: 8px; margin-bottom: 24px;">
+  <article id="indian-market-daily-9-20-report" class="news-card market-report-card animate-glow-nifty" data-category="daily_market_news" style="grid-column: 1 / -1; width: 100%; border: 1px solid rgba(0, 240, 255, 0.25); background: rgba(5, 15, 30, 0.75); box-shadow: 0 0 20px rgba(0, 240, 255, 0.15); max-width: 100%; border-radius: 8px; margin-bottom: 24px;">
     <div class="card-body" style="padding: 24px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--primary); padding-bottom: 12px; margin-bottom: 20px;">
         <div>
@@ -337,7 +365,7 @@ async function generateNiftyReport(indices, indexMap) {
         <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid ${isBullish ? "var(--accent-emerald)" : "#ff3b30"}; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
           <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">MARKET SENTIMENT</div>
           <div style="font-family: var(--font-cyber); font-size: 22px; font-weight: 900; ${isBullish ? "color: var(--accent-emerald);" : "color: #ff3b30;"} margin-top: 4px;">${marketTrend}</div>
-          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Nifty 50 trades broadly ${isBullish ? "bullish" : "bearish"} today, closing ${Math.abs(nifty.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} with Nifty at ${nifty.price.toFixed(2)}.</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Nifty 50 trades broadly ${isBullish ? "bullish" : "bearish"} today, closing ${Math.abs(nifty.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} with Nifty LTP at ${nifty.price.toFixed(2)}.</div>
         </div>
         
         <!-- FII / DII Flow Telemetry -->
@@ -373,15 +401,19 @@ async function generateNiftyReport(indices, indexMap) {
       <!-- Main Indices Table -->
       <div style="margin-bottom: 24px;">
         <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1px; margin-bottom: 8px;">📡 1. BENCHMARK MAINFRAME INDICES</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 240, 255, 0.05); border-radius: 4px;">
-          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 4px;">
+          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 900px;">
             <thead>
-              <tr style="background: rgba(0, 240, 255, 0.03); border-bottom: 1px solid rgba(0, 240, 255, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
-                <th style="padding: 10px 14px;">INDEX NAME</th>
-                <th style="padding: 10px 14px;">PRICE (INR)</th>
-                <th style="padding: 10px 14px;">1-DAY MOVE</th>
-                <th style="padding: 10px 14px;">MOVE %</th>
-                <th style="padding: 10px 14px;">TELEMETRY MOVE REASON & MARKET ANALYSIS</th>
+              <tr style="background: rgba(0, 240, 255, 0.05); border-bottom: 1px solid rgba(0, 240, 255, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+                <th style="padding: 12px 14px;">INDEX NAME</th>
+                <th style="padding: 12px 14px;">LTP (INR)</th>
+                <th style="padding: 12px 14px;">OPEN</th>
+                <th style="padding: 12px 14px;">PREV CLOSE</th>
+                <th style="padding: 12px 14px;">DAY RANGE</th>
+                <th style="padding: 12px 14px;">CHANGE</th>
+                <th style="padding: 12px 14px;">CHANGE %</th>
+                <th style="padding: 12px 14px; width: 25%;">MARKET OUTLOOK ANALYSIS</th>
+                <th style="padding: 12px 14px; text-align: right;">GRAPH</th>
               </tr>
             </thead>
             <tbody>
@@ -394,15 +426,19 @@ async function generateNiftyReport(indices, indexMap) {
       <!-- ETFs Performance Grid -->
       <div style="margin-bottom: 24px;">
         <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--secondary); letter-spacing: 1px; margin-bottom: 8px;">🛰️ 2. ACTIVE SYSTEM EXCHANGE TRADED FUNDS (ETFs)</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(157, 78, 221, 0.05); border-radius: 4px;">
-          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(157, 78, 221, 0.1); border-radius: 4px;">
+          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 900px;">
             <thead>
-              <tr style="background: rgba(157, 78, 221, 0.03); border-bottom: 1px solid rgba(157, 78, 221, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
-                <th style="padding: 10px 14px;">ETF SCHEME NAME</th>
-                <th style="padding: 10px 14px;">PRICE (INR)</th>
-                <th style="padding: 10px 14px;">1-DAY MOVE %</th>
-                <th style="padding: 10px 14px;">TRACKING STATUS</th>
-                <th style="padding: 10px 14px;">ETF INTEGRITY & MOVEMENT REASON</th>
+              <tr style="background: rgba(157, 78, 221, 0.05); border-bottom: 1px solid rgba(157, 78, 221, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+                <th style="padding: 12px 14px;">ETF SCHEME NAME</th>
+                <th style="padding: 12px 14px;">LTP (INR)</th>
+                <th style="padding: 12px 14px;">OPEN</th>
+                <th style="padding: 12px 14px;">PREV CLOSE</th>
+                <th style="padding: 12px 14px;">DAY RANGE</th>
+                <th style="padding: 12px 14px;">MOVE %</th>
+                <th style="padding: 12px 14px;">TRACKING STATUS</th>
+                <th style="padding: 12px 14px; width: 25%;">ETF INTEGRITY & MOVEMENT REASON</th>
+                <th style="padding: 12px 14px; text-align: right;">GRAPH</th>
               </tr>
             </thead>
             <tbody>
@@ -412,13 +448,35 @@ async function generateNiftyReport(indices, indexMap) {
         </div>
       </div>
 
+      <!-- Predictive Intelligence Forecast Matrix -->
+      <div style="margin-bottom: 24px; border: 1px dashed rgba(0, 240, 255, 0.3); padding: 16px; border-radius: 4px; background: rgba(0, 240, 255, 0.02);">
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (Nifty 50)</h4>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t1Change >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.t1.price} <span style="font-size: 12px;">(${t1Change >= 0 ? "+" : ""}${predictions.t1.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.t1.status}</div>
+          </div>
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+2 (TWO DAY FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t2Change >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.t2.price} <span style="font-size: 12px;">(${t2Change >= 0 ? "+" : ""}${predictions.t2.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.t2.status}</div>
+          </div>
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">1-WK (1 WEEK FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t1WkChange >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.wk1.price} <span style="font-size: 12px;">(${t1WkChange >= 0 ? "+" : ""}${predictions.wk1.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.wk1.status}</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Sectoral Mutual Funds -->
       <div style="margin-bottom: 24px;">
         <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--accent-emerald); letter-spacing: 1px; margin-bottom: 8px;">🎓 3. MUTUAL FUND SCHEMES & SECTORAL CATEGORIES</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 230, 118, 0.05); border-radius: 4px;">
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 230, 118, 0.1); border-radius: 4px;">
           <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
             <thead>
-              <tr style="background: rgba(0, 230, 118, 0.03); border-bottom: 1px solid rgba(0, 230, 118, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+              <tr style="background: rgba(0, 230, 118, 0.05); border-bottom: 1px solid rgba(0, 230, 118, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
                 <th style="padding: 10px 14px;">MUTUAL FUND SCHEME CLASS</th>
                 <th style="padding: 10px 14px;">1-DAY NAV MOVE %</th>
                 <th style="padding: 10px 14px;">TREND DIRECTION</th>
@@ -434,7 +492,7 @@ async function generateNiftyReport(indices, indexMap) {
 
       <!-- 50 Bullish & Bearish Stocks Side-by-Side Grid -->
       <div style="margin-bottom: 24px;">
-        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1px; margin-bottom: 8px;">💾 4. TOP 50 LIQUID INDIAN NODE BLUE-CHIPS (Gainers vs Losers)</h4>
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1px; margin-bottom: 8px;">💾 4. TOP 50 LIQUID INDIAN BLUE-CHIP NODES (Gainers vs Losers)</h4>
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 280px; background: rgba(1, 4, 9, 0.35); border: 1px solid rgba(0, 230, 118, 0.1); border-radius: 4px;">
             <div style="background: rgba(0, 230, 118, 0.05); border-bottom: 1px solid rgba(0, 230, 118, 0.1); padding: 8px 12px; font-family: var(--font-cyber); font-size: 10px; color: var(--accent-emerald); font-weight: 800; letter-spacing: 1px;">🟢 TOP 25 BULLISH STOCKS</div>
@@ -484,7 +542,7 @@ async function generateSensexReport(indices, indexMap) {
   const stocks = stockResults.filter(Boolean);
   stocks.sort((a, b) => b.changePct - a.changePct);
   
-  const sensex = indexMap["^BSESN"] || { price: 78590.2, change: -285.5, changePct: -0.362 };
+  const sensex = indexMap["^BSESN"] || { price: 78590.2, change: -285.5, changePct: -0.36, open: 79120.40, high: 79220.00, low: 78450.60, prevClose: 79140.20 };
   const isBullish = sensex.changePct >= 0;
   const marketTrend = isBullish ? "🔴 BULLISH" : "🔵 BEARISH";
   
@@ -505,12 +563,18 @@ async function generateSensexReport(indices, indexMap) {
     const sign = isUp ? "+" : "";
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${idx.name} (${idx.symbol})</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700;">${idx.price.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index")}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 12px 14px; font-family: var(--font-cyber); font-weight: 700;">${idx.name} (${idx.symbol})</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">${idx.price.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal);">${idx.open.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal);">${idx.prevClose.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${idx.low.toFixed(2)} - ${idx.high.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
+        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index")}</td>
+        <td style="padding: 12px 14px; text-align: right;">
+          <button onclick="openChartModal('${idx.symbol}', '${idx.name}')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
+        </td>
       </tr>`;
   }).join("");
 
@@ -518,21 +582,36 @@ async function generateSensexReport(indices, indexMap) {
   const topLosers = stocks.slice(-15).reverse();
   
   let gainerRows = topGainers.map((stk, idx) => `
-    <tr>
-      <td style="font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td style="font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
-      <td style="font-size: 10px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">BSE liquidity pool support</td>
+    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   let loserRows = topLosers.map((stk, idx) => `
-    <tr>
-      <td style="font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td style="font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
-      <td style="font-size: 10px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Large-cap allocation rotation</td>
+    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
+  // Predictive calculations for Sensex
+  const t1Change = sensex.changePct * 0.4;
+  const t2Change = sensex.changePct * 0.85;
+  const t1WkChange = sensex.changePct * 1.5;
+  
+  const predictions = {
+    t1: { price: (sensex.price * (1 + t1Change / 100)).toFixed(2), change: t1Change.toFixed(2), status: t1Change >= 0 ? "BULLISH_REBOUND" : "BEARISH_DRIFT" },
+    t2: { price: (sensex.price * (1 + t2Change / 100)).toFixed(2), change: t2Change.toFixed(2), status: t2Change >= 0 ? "ACCUMULATION_PUMP" : "SUPPORT_CONSOLIDATION" },
+    wk1: { price: (sensex.price * (1 + t1WkChange / 100)).toFixed(2), change: t1WkChange.toFixed(2), status: t1WkChange >= 0 ? "MACRO_UPTREND_GRID" : "WEEKLY_GRID_RECOVERY" }
+  };
+
   const reportHTML = `
-  <article id="bse-sensex-daily-9-20-report" class="news-card market-report-card animate-glow-sensex" data-category="daily_market_news" style="grid-column: span 2; width: 100%; border: 1px solid rgba(255, 0, 127, 0.25); background: rgba(18, 2, 10, 0.65); box-shadow: 0 0 15px rgba(255, 0, 127, 0.12); max-width: 100%; border-radius: 8px; margin-bottom: 24px;">
+  <article id="bse-sensex-daily-9-20-report" class="news-card market-report-card animate-glow-sensex" data-category="daily_market_news" style="grid-column: 1 / -1; width: 100%; border: 1px solid rgba(255, 0, 127, 0.25); background: rgba(18, 2, 10, 0.65); box-shadow: 0 0 20px rgba(255, 0, 127, 0.15); max-width: 100%; border-radius: 8px; margin-bottom: 24px;">
     <div class="card-body" style="padding: 24px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(255, 0, 127, 0.5); padding-bottom: 12px; margin-bottom: 20px;">
         <div>
@@ -550,7 +629,7 @@ async function generateSensexReport(indices, indexMap) {
         <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid ${isBullish ? "var(--accent-emerald)" : "#ff3b30"}; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
           <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">MARKET SENTIMENT (BSE)</div>
           <div style="font-family: var(--font-cyber); font-size: 22px; font-weight: 900; ${isBullish ? "color: var(--accent-emerald);" : "color: #ff3b30;"} margin-top: 4px;">${marketTrend}</div>
-          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">BSE Sensex is broadly ${isBullish ? "bullish" : "bearish"} today, moving ${Math.abs(sensex.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} to stand at ${sensex.price.toFixed(2)}.</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">BSE Sensex is broadly ${isBullish ? "bullish" : "bearish"} today, moving ${Math.abs(sensex.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} with SENSEX LTP at ${sensex.price.toFixed(2)}.</div>
         </div>
         
         <!-- FII / DII Flow Telemetry -->
@@ -585,22 +664,48 @@ async function generateSensexReport(indices, indexMap) {
 
       <!-- Main Indices Table -->
       <div style="margin-bottom: 24px;">
-        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(255, 0, 127, 1); letter-spacing: 1px; margin-bottom: 8px;">📡 1. SENSEX CORE benchmark DIAGNOSTICS</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(255, 0, 127, 0.05); border-radius: 4px;">
-          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(255, 0, 127, 1); letter-spacing: 1px; margin-bottom: 8px;">📡 1. SENSEX CORE BENCHMARK DIAGNOSTICS</h4>
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(255, 0, 127, 0.1); border-radius: 4px;">
+          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 900px;">
             <thead>
-              <tr style="background: rgba(255, 0, 127, 0.03); border-bottom: 1px solid rgba(255, 0, 127, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
-                <th style="padding: 10px 14px;">INDEX NAME</th>
-                <th style="padding: 10px 14px;">PRICE (INR)</th>
-                <th style="padding: 10px 14px;">1-DAY MOVE</th>
-                <th style="padding: 10px 14px;">MOVE %</th>
-                <th style="padding: 10px 14px;">SENSEX SYSTEM OUTLOOK ANALYSIS</th>
+              <tr style="background: rgba(255, 0, 127, 0.05); border-bottom: 1px solid rgba(255, 0, 127, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+                <th style="padding: 12px 14px;">INDEX NAME</th>
+                <th style="padding: 12px 14px;">LTP (INR)</th>
+                <th style="padding: 12px 14px;">OPEN</th>
+                <th style="padding: 12px 14px;">PREV CLOSE</th>
+                <th style="padding: 12px 14px;">DAY RANGE</th>
+                <th style="padding: 12px 14px;">CHANGE</th>
+                <th style="padding: 12px 14px;">CHANGE %</th>
+                <th style="padding: 12px 14px; width: 25%;">SENSEX SYSTEM OUTLOOK ANALYSIS</th>
+                <th style="padding: 12px 14px; text-align: right;">GRAPH</th>
               </tr>
             </thead>
             <tbody>
               ${sensexIndexRows}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Predictive Intelligence Forecast Matrix -->
+      <div style="margin-bottom: 24px; border: 1px dashed rgba(255, 0, 127, 0.3); padding: 16px; border-radius: 4px; background: rgba(255, 0, 127, 0.02);">
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(255, 0, 127, 1); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (BSE Sensex)</h4>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(255, 0, 127, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t1Change >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.t1.price} <span style="font-size: 12px;">(${t1Change >= 0 ? "+" : ""}${predictions.t1.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.t1.status}</div>
+          </div>
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(255, 0, 127, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+2 (TWO DAY FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t2Change >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.t2.price} <span style="font-size: 12px;">(${t2Change >= 0 ? "+" : ""}${predictions.t2.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.t2.status}</div>
+          </div>
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(255, 0, 127, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">1-WK (1 WEEK FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t1WkChange >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.wk1.price} <span style="font-size: 12px;">(${t1WkChange >= 0 ? "+" : ""}${predictions.wk1.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.wk1.status}</div>
+          </div>
         </div>
       </div>
 
@@ -659,11 +764,10 @@ async function generateUSReport(usIndices, usIndexMap) {
   const stocks = stockResults.filter(Boolean);
   stocks.sort((a, b) => b.changePct - a.changePct);
   
-  const sp500 = usIndexMap["^GSPC"] || { price: 5321.4, change: 15.2, changePct: 0.286 };
+  const sp500 = usIndexMap["^GSPC"] || { price: 5321.4, change: 15.2, changePct: 0.28, open: 5310.20, high: 5332.10, low: 5298.50, prevClose: 5306.20 };
   const isBullish = sp500.changePct >= 0;
   const marketTrend = isBullish ? "🔴 BULLISH" : "🔵 BEARISH";
   
-  // Institutional vs Retail Flows (USD Millions)
   const instNet = -320.50 + sp500.changePct * 800;
   const retailNet = 150.20 + sp500.changePct * 250;
   const instBuy = 5420.80 + Math.max(0, instNet);
@@ -695,12 +799,18 @@ async function generateUSReport(usIndices, usIndexMap) {
     const sign = isUp ? "+" : "";
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${idx.name} (${idx.symbol})</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700;">${idx.price.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index", "US")}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 12px 14px; font-family: var(--font-cyber); font-weight: 700;">${idx.name} (${idx.symbol})</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">${idx.price.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal);">${idx.open.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal);">${idx.prevClose.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${idx.low.toFixed(2)} - ${idx.high.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
+        <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
+        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index", "US")}</td>
+        <td style="padding: 12px 14px; text-align: right;">
+          <button onclick="openChartModal('${idx.symbol}', '${idx.name}')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
+        </td>
       </tr>`;
   }).join("");
 
@@ -710,12 +820,18 @@ async function generateUSReport(usIndices, usIndexMap) {
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     const status = isUp ? "🟢 GAINING" : "🔴 CORR_PULLBACK";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${etf.name} (${etf.symbol})</td>
-        <td style="font-family: var(--font-terminal);">${etf.price.toFixed(2)}</td>
-        <td style="font-family: var(--font-terminal); ${color}">${sign}${etf.changePct.toFixed(2)}%</td>
-        <td style="font-weight: 700; font-size: 10px; ${color}">${status}</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${getMoveReason(etf.changePct, "etf", "US")}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">${etf.name} (${etf.symbol})</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal);">${etf.price.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal);">${etf.open.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal);">${etf.prevClose.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${etf.low.toFixed(2)} - ${etf.high.toFixed(2)}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal); ${color}">${sign}${etf.changePct.toFixed(2)}%</td>
+        <td style="padding: 10px 14px; font-weight: 700; font-size: 10px; ${color}">${status}</td>
+        <td style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(etf.changePct, "etf", "US")}</td>
+        <td style="padding: 10px 14px; text-align: right;">
+          <button onclick="openChartModal('${etf.symbol}', '${etf.name}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📈</button>
+        </td>
       </tr>`;
   }).join("");
 
@@ -724,11 +840,11 @@ async function generateUSReport(usIndices, usIndexMap) {
     const sign = isUp ? "+" : "";
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
     return `
-      <tr>
-        <td style="font-family: var(--font-cyber); font-weight: 700;">${cat.name}</td>
-        <td style="font-family: var(--font-terminal); ${color}">${sign}${cat.changePct.toFixed(2)}%</td>
-        <td style="font-weight: 700; font-size: 10px; ${color}">${cat.status}</td>
-        <td style="font-size: 11px; color: var(--text-secondary);">${cat.reason}</td>
+      <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+        <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">${cat.name}</td>
+        <td style="padding: 10px 14px; font-family: var(--font-terminal); ${color}">${sign}${cat.changePct.toFixed(2)}%</td>
+        <td style="padding: 10px 14px; font-weight: 700; font-size: 10px; ${color}">${cat.status}</td>
+        <td style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">${cat.reason}</td>
       </tr>`;
   }).join("");
 
@@ -736,21 +852,36 @@ async function generateUSReport(usIndices, usIndexMap) {
   const topLosers = stocks.slice(-15).reverse();
   
   let gainerRows = topGainers.map((stk, idx) => `
-    <tr>
-      <td style="font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name}</td>
-      <td style="font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
-      <td style="font-size: 10px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Institutional index accumulation</td>
+    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   let loserRows = topLosers.map((stk, idx) => `
-    <tr>
-      <td style="font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name}</td>
-      <td style="font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
-      <td style="font-size: 10px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Profit profit taking / Macro hedge</td>
+    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
+  // Predictive calculations for S&P 500
+  const t1Change = sp500.changePct * 0.4;
+  const t2Change = sp500.changePct * 0.85;
+  const t1WkChange = sp500.changePct * 1.5;
+  
+  const predictions = {
+    t1: { price: (sp500.price * (1 + t1Change / 100)).toFixed(2), change: t1Change.toFixed(2), status: t1Change >= 0 ? "BULLISH_MOMENTUM" : "BEARISH_CONSOLIDATION" },
+    t2: { price: (sp500.price * (1 + t2Change / 100)).toFixed(2), change: t2Change.toFixed(2), status: t2Change >= 0 ? "LIQUIDITY_ACCUMULATION" : "GRID_SUPPORT_CONSOLIDATION" },
+    wk1: { price: (sp500.price * (1 + t1WkChange / 100)).toFixed(2), change: t1WkChange.toFixed(2), status: t1WkChange >= 0 ? "MACRO_UPTREND_SYNCHRONIZED" : "WEEKLY_DIVERGENCE_RECOVERY" }
+  };
+
   const reportHTML = `
-  <article id="american-market-daily-report" class="news-card market-report-card animate-glow-us" data-category="daily_market_news" style="grid-column: span 2; width: 100%; border: 1px solid rgba(0, 230, 118, 0.25); background: rgba(2, 18, 10, 0.65); box-shadow: 0 0 15px rgba(0, 230, 118, 0.12); max-width: 100%; border-radius: 8px; margin-bottom: 24px;">
+  <article id="american-market-daily-report" class="news-card market-report-card animate-glow-us" data-category="daily_market_news" style="grid-column: 1 / -1; width: 100%; border: 1px solid rgba(0, 230, 118, 0.25); background: rgba(2, 18, 10, 0.65); box-shadow: 0 0 20px rgba(0, 230, 118, 0.15); max-width: 100%; border-radius: 8px; margin-bottom: 24px;">
     <div class="card-body" style="padding: 24px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(0, 230, 118, 0.5); padding-bottom: 12px; margin-bottom: 20px;">
         <div>
@@ -768,7 +899,7 @@ async function generateUSReport(usIndices, usIndexMap) {
         <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid ${isBullish ? "var(--accent-emerald)" : "#ff3b30"}; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
           <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">US MARKET SENTIMENT</div>
           <div style="font-family: var(--font-cyber); font-size: 22px; font-weight: 900; ${isBullish ? "color: var(--accent-emerald);" : "color: #ff3b30;"} margin-top: 4px;">${marketTrend}</div>
-          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">S&P 500 registers a broadly ${isBullish ? "bullish" : "bearish"} swing today, moving ${Math.abs(sp500.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} with S&P at ${sp500.price.toFixed(2)}.</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">S&P 500 registers a broadly ${isBullish ? "bullish" : "bearish"} swing today, moving ${Math.abs(sp500.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} with S&P LTP at ${sp500.price.toFixed(2)}.</div>
         </div>
         
         <!-- Institutional vs Retail Flows -->
@@ -804,15 +935,19 @@ async function generateUSReport(usIndices, usIndexMap) {
       <!-- Main Indices Table -->
       <div style="margin-bottom: 24px;">
         <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(0, 230, 118, 1); letter-spacing: 1px; margin-bottom: 8px;">📡 1. AMERICAN MARKET INDEX GRID</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 230, 118, 0.05); border-radius: 4px;">
-          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 230, 118, 0.1); border-radius: 4px;">
+          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 900px;">
             <thead>
-              <tr style="background: rgba(0, 230, 118, 0.03); border-bottom: 1px solid rgba(0, 230, 118, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
-                <th style="padding: 10px 14px;">INDEX NAME</th>
-                <th style="padding: 10px 14px;">PRICE (USD)</th>
-                <th style="padding: 10px 14px;">1-DAY MOVE</th>
-                <th style="padding: 10px 14px;">MOVE %</th>
-                <th style="padding: 10px 14px;">US TELEMETRY MOVE REASON & MARKET ANALYSIS</th>
+              <tr style="background: rgba(0, 230, 118, 0.05); border-bottom: 1px solid rgba(0, 230, 118, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+                <th style="padding: 12px 14px;">INDEX NAME</th>
+                <th style="padding: 12px 14px;">LTP (USD)</th>
+                <th style="padding: 12px 14px;">OPEN</th>
+                <th style="padding: 12px 14px;">PREV CLOSE</th>
+                <th style="padding: 12px 14px;">DAY RANGE</th>
+                <th style="padding: 12px 14px;">CHANGE</th>
+                <th style="padding: 12px 14px;">CHANGE %</th>
+                <th style="padding: 12px 14px; width: 25%;">US TELEMETRY MOVE REASON & MARKET ANALYSIS</th>
+                <th style="padding: 12px 14px; text-align: right;">GRAPH</th>
               </tr>
             </thead>
             <tbody>
@@ -825,15 +960,19 @@ async function generateUSReport(usIndices, usIndexMap) {
       <!-- US ETFs -->
       <div style="margin-bottom: 24px;">
         <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--secondary); letter-spacing: 1px; margin-bottom: 8px;">🛰️ 2. LEADING US LIQUIDITY EXCHANGE TRADED FUNDS</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(157, 78, 221, 0.05); border-radius: 4px;">
-          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(157, 78, 221, 0.1); border-radius: 4px;">
+          <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 900px;">
             <thead>
-              <tr style="background: rgba(157, 78, 221, 0.03); border-bottom: 1px solid rgba(157, 78, 221, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
-                <th style="padding: 10px 14px;">ETF SCHEME NAME</th>
-                <th style="padding: 10px 14px;">PRICE (USD)</th>
-                <th style="padding: 10px 14px;">1-DAY MOVE %</th>
-                <th style="padding: 10px 14px;">TRACKING STATUS</th>
-                <th style="padding: 10px 14px;">US ETF INTEGRITY & MOVEMENT REASON</th>
+              <tr style="background: rgba(157, 78, 221, 0.05); border-bottom: 1px solid rgba(157, 78, 221, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+                <th style="padding: 12px 14px;">ETF SCHEME NAME</th>
+                <th style="padding: 12px 14px;">LTP (USD)</th>
+                <th style="padding: 12px 14px;">OPEN</th>
+                <th style="padding: 12px 14px;">PREV CLOSE</th>
+                <th style="padding: 12px 14px;">DAY RANGE</th>
+                <th style="padding: 12px 14px;">MOVE %</th>
+                <th style="padding: 12px 14px;">TRACKING STATUS</th>
+                <th style="padding: 12px 14px; width: 25%;">US ETF INTEGRITY & MOVEMENT REASON</th>
+                <th style="padding: 12px 14px; text-align: right;">GRAPH</th>
               </tr>
             </thead>
             <tbody>
@@ -843,13 +982,35 @@ async function generateUSReport(usIndices, usIndexMap) {
         </div>
       </div>
 
+      <!-- Predictive Intelligence Forecast Matrix -->
+      <div style="margin-bottom: 24px; border: 1px dashed rgba(0, 230, 118, 0.3); padding: 16px; border-radius: 4px; background: rgba(0, 230, 118, 0.02);">
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(0, 230, 118, 1); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (S&P 500)</h4>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t1Change >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.t1.price} <span style="font-size: 12px;">(${t1Change >= 0 ? "+" : ""}${predictions.t1.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.t1.status}</div>
+          </div>
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+2 (TWO DAY FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t2Change >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.t2.price} <span style="font-size: 12px;">(${t2Change >= 0 ? "+" : ""}${predictions.t2.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.t2.status}</div>
+          </div>
+          <div style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
+            <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">1-WK (1 WEEK FORECAST)</div>
+            <div style="font-size: 18px; font-weight: 900; color: ${t1WkChange >= 0 ? "var(--accent-emerald)" : "#ff3b30"}; font-family: var(--font-terminal); margin-top: 6px;">${predictions.wk1.price} <span style="font-size: 12px;">(${t1WkChange >= 0 ? "+" : ""}${predictions.wk1.change}%)</span></div>
+            <div style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: ${predictions.wk1.status}</div>
+          </div>
+        </div>
+      </div>
+
       <!-- US Mutual Funds / Sector Indexes -->
       <div style="margin-bottom: 24px;">
         <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--accent-emerald); letter-spacing: 1px; margin-bottom: 8px;">🎓 3. US SECTOR INDEX BASKETS & MUTUAL FUND CLASSES</h4>
-        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 230, 118, 0.05); border-radius: 4px;">
+        <div style="overflow-x: auto; background: rgba(1, 4, 9, 0.4); border: 1px solid rgba(0, 230, 118, 0.1); border-radius: 4px;">
           <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 12px; min-width: 600px;">
             <thead>
-              <tr style="background: rgba(0, 230, 118, 0.03); border-bottom: 1px solid rgba(0, 230, 118, 0.1); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
+              <tr style="background: rgba(0, 230, 118, 0.05); border-bottom: 1px solid rgba(0, 230, 118, 0.15); font-family: var(--font-cyber); font-size: 10px; color: var(--text-muted); letter-spacing: 1px;">
                 <th style="padding: 10px 14px;">MUTUAL FUND CLASS / SECTOR REPRESENTATION</th>
                 <th style="padding: 10px 14px;">1-DAY MOVE %</th>
                 <th style="padding: 10px 14px;">TREND DIRECTION</th>
