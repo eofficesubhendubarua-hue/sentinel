@@ -743,6 +743,7 @@ function generateHTML(briefing) {
             if (symbol === "^GSPC") return "SP:SPX";
             if (symbol === "^IXIC") return "NASDAQ:NDX";
             if (symbol === "^DJI") return "DJ:DJI";
+            if (symbol === "BRK-B") return "NYSE:BRK.B";
             
             if (symbol.endsWith(".NS")) return "NSE:" + symbol.replace(".NS", "");
             if (symbol.endsWith(".BO")) return "BSE:" + symbol.replace(".BO", "");
