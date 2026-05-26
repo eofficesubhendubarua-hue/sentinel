@@ -132,14 +132,36 @@
     'default': { avgPE: 20, avgROE: 15, avgMargin: 12 }
   };
 
+  const NETLIFY_HOST = 'https://leafy-granita-bc2649.netlify.app';
+  const isNetlify = window.location.hostname.includes('netlify.app');
+  const PROXY_BASE = isNetlify ? '' : NETLIFY_HOST;
+
   // ─── Utility: CORS-safe fetch ─────────────────────────────
   async function safeFetch(url) {
-    // Direct fetch first
+    // 1. Try our own secure Netlify proxy first (to avoid antivirus warnings)
+    let proxyUrl = null;
+    if (url.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/')) {
+      const rest = url.replace('https://query1.finance.yahoo.com/v8/finance/chart/', '');
+      proxyUrl = PROXY_BASE + '/api/yahoo-chart/' + rest;
+    } else if (url.startsWith('https://query2.finance.yahoo.com/v10/finance/quoteSummary/')) {
+      const rest = url.replace('https://query2.finance.yahoo.com/v10/finance/quoteSummary/', '');
+      proxyUrl = PROXY_BASE + '/api/yahoo-quote/' + rest;
+    }
+
+    if (proxyUrl) {
+      try {
+        const r = await fetch(proxyUrl, { headers: { 'Accept': 'application/json' } });
+        if (r.ok) return await r.json();
+      } catch (_) {}
+    }
+
+    // 2. Direct fetch as fallback
     try {
       const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
       if (r.ok) return await r.json();
     } catch (_) {}
-    // CORS proxy fallbacks
+
+    // 3. CORS proxy fallbacks
     for (const proxy of CORS_PROXIES) {
       try {
         const r = await fetch(proxy.url + encodeURIComponent(url));
