@@ -12,11 +12,16 @@ on:
 
 permissions:
   contents: write
+  pages: write      # Required for GitHub Pages deployment
+  id-token: write   # Required for security token validation
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: 📥 Checkout repository
@@ -44,7 +49,7 @@ jobs:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           GMAIL_RECIPIENT: "eoffice.subhendubarua@gmail.com"
-          SITE_URL: "https://leafy-granita-bc2649.netlify.app"
+          SITE_URL: "https://eofficesubhendubarua-hue.github.io/sentinel/"
         run: node scripts/email.mjs
 
       - name: 💾 Commit updated data & archive
@@ -76,3 +81,12 @@ jobs:
             fi
             sleep 15
           done
+
+      - name: 📤 Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public'
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
