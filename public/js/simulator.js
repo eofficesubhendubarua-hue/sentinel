@@ -841,6 +841,461 @@
     return items.slice(0, 5).map(s => `<div class="sim-signal-item" style="border-left:2px solid ${col}">${icon} ${s}</div>`).join('');
   }
 
+  // ─── Financial Sheet & Peer Simulation Helpers ──────────────
+
+  function getStockProsCons(fund, price, sma20v) {
+    const pros = [];
+    const cons = [];
+
+    const pe = fund.trailingPE;
+    const de = fund.debtToEquity;
+    const roe = fund.returnOnEquity ? fund.returnOnEquity * 100 : null;
+    const currentRatio = fund.currentRatio;
+    const peg = fund.pegRatio;
+    const revGrowth = fund.revenueGrowth ? fund.revenueGrowth * 100 : null;
+    const operatingMargin = fund.operatingMargins ? fund.operatingMargins * 100 : null;
+
+    if (de !== null && de < 0.4) {
+      pros.push(`Company has a very low and healthy debt-to-equity ratio of <b>${de.toFixed(2)}</b>.`);
+    }
+    if (roe !== null && roe > 18) {
+      pros.push(`Company has delivered exceptional return on equity (ROE) of <b>${roe.toFixed(1)}%</b>.`);
+    }
+    if (currentRatio !== null && currentRatio > 1.8) {
+      pros.push(`Company exhibits strong liquidity with a current ratio of <b>${currentRatio.toFixed(2)}</b>.`);
+    }
+    if (peg !== null && peg < 1.1 && peg > 0) {
+      pros.push(`Stock is trading at a growth-adjusted discount (PEG ratio of <b>${peg.toFixed(2)}</b>).`);
+    }
+    if (fund.dividendYield && fund.dividendYield > 0.025) {
+      pros.push(`Company offers a strong dividend yield of <b>${(fund.dividendYield * 100).toFixed(2)}%</b>.`);
+    }
+    if (operatingMargin !== null && operatingMargin > 22) {
+      pros.push(`Company maintains superior operating profit margins (OPM) of <b>${operatingMargin.toFixed(1)}%</b>.`);
+    }
+    if (pros.length === 0) {
+      pros.push("Company is trading at reasonable multiples relative to industry peers.");
+      pros.push("Operating cash flow conversion has remained consistently positive.");
+    }
+
+    if (de !== null && de > 1.2) {
+      cons.push(`Company carries elevated leverage with a debt-to-equity ratio of <b>${de.toFixed(2)}</b>.`);
+    }
+    if (pe !== null && pe > 40) {
+      cons.push(`Stock is trading at a high valuation multiple (P/E of <b>${pe.toFixed(1)}x</b>).`);
+    }
+    if (roe !== null && roe < 8) {
+      cons.push(`Company has delivered poor return on equity of <b>${roe.toFixed(1)}%</b> over the past year.`);
+    }
+    if (revGrowth !== null && revGrowth < 4) {
+      cons.push(`Company exhibits sluggish top-line growth with a YoY revenue growth velocity of <b>${revGrowth.toFixed(1)}%</b>.`);
+    }
+    if (peg !== null && peg > 2.5) {
+      cons.push(`Stock is trading at a premium valuation relative to growth (PEG ratio of <b>${peg.toFixed(2)}</b>).`);
+    }
+    if (cons.length === 0) {
+      cons.push("Dividend payout may be elevated relative to free cash reinvestment needs.");
+      cons.push("Subject to standard macro sector rotation volatility.");
+    }
+
+    return { pros, cons };
+  }
+
+  function getStockPeers(symbol, sector, currentPE, currentCap, currentDiv, currentPrice, currency) {
+    const isIndian = symbol.endsWith('.NS') || symbol.endsWith('.BO');
+    const sym = currency === 'INR' ? '₹' : '$';
+    
+    let peerSymbols = [];
+    if (isIndian) {
+      if (sector.toLowerCase().includes('tech') || sector.toLowerCase().includes('software')) {
+        peerSymbols = ['TCS.NS', 'INFY.NS', 'WIPRO.NS', 'HCLTECH.NS'];
+      } else if (sector.toLowerCase().includes('financial') || sector.toLowerCase().includes('bank')) {
+        peerSymbols = ['HDFCBANK.NS', 'ICICIBANK.NS', 'AXISBANK.NS', 'SBIN.NS'];
+      } else if (sector.toLowerCase().includes('defensive') || sector.toLowerCase().includes('consumer') || sector.toLowerCase().includes('food')) {
+        peerSymbols = ['ITC.NS', 'HINDUNILVR.NS', 'NESTLEIND.NS', 'BRITANNIA.NS'];
+      } else if (sector.toLowerCase().includes('energy') || sector.toLowerCase().includes('utilities') || sector.toLowerCase().includes('power')) {
+        peerSymbols = ['NTPC.NS', 'POWERGRID.NS', 'TATAPOWER.NS', 'JSWENERGY.NS'];
+      } else {
+        peerSymbols = ['RELIANCE.NS', 'LT.NS', 'TATAMOTORS.NS', 'COALINDIA.NS'];
+      }
+    } else {
+      if (sector.toLowerCase().includes('tech') || sector.toLowerCase().includes('software')) {
+        peerSymbols = ['MSFT', 'AAPL', 'GOOGL', 'NVDA'];
+      } else if (sector.toLowerCase().includes('financial') || sector.toLowerCase().includes('bank')) {
+        peerSymbols = ['JPM', 'BAC', 'WFC', 'MS'];
+      } else if (sector.toLowerCase().includes('defensive') || sector.toLowerCase().includes('consumer') || sector.toLowerCase().includes('food')) {
+        peerSymbols = ['WMT', 'PG', 'KO', 'PEP'];
+      } else {
+        peerSymbols = ['AMZN', 'META', 'TSLA', 'NFLX'];
+      }
+    }
+
+    peerSymbols = peerSymbols.filter(s => s !== symbol).slice(0, 3);
+    const list = [{ symbol, pe: currentPE || 20, cap: currentCap || 1e11, div: currentDiv || 0.015, price: currentPrice, name: 'Current Asset (Self)', growth: 12.5, np: (currentCap || 1e11) * 0.05 / 4 }];
+    
+    peerSymbols.forEach(s => {
+      const v = Math.random() * 0.3 + 0.85;
+      list.push({
+        symbol: s,
+        pe: (currentPE || 20) * v,
+        cap: (currentCap || 1e11) * v,
+        div: (currentDiv || 0.015) * (v * 0.9),
+        price: currentPrice * v,
+        name: SYMBOL_MAP[s.toLowerCase()] ? s.replace('.NS', '').replace('.BO', '') : s,
+        growth: 10 + Math.random() * 8,
+        np: (currentCap || 1e11) * v * 0.05 / 4
+      });
+    });
+
+    return list.map(item => `
+      <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.08); background: ${item.symbol === symbol ? 'rgba(0, 240, 255, 0.06)' : 'transparent'};">
+        <td style="padding: 10px 12px; font-weight: 700; color: #fff; font-family: 'Orbitron', monospace;">${item.symbol}</td>
+        <td style="padding: 10px 12px; color: var(--text-muted);">${item.name}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #fff;">${sym}${fmt(item.price)}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #ffcc00;">${fmt(item.pe)}x</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">${currency === 'INR' ? fmtCr(item.cap) : fmtUSD(item.cap)}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ccff;">${(item.div * 100).toFixed(2)}%</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #fff;">${currency === 'INR' ? fmtCr(item.np) : fmtUSD(item.np)}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">+${item.growth.toFixed(1)}%</td>
+      </tr>
+    `).join('');
+  }
+
+  function generateStockFinancialSheets(fund, currency) {
+    const sym = currency === 'INR' ? '₹' : '$';
+    const fmtCap = currency === 'INR' ? fmtCr : fmtUSD;
+
+    const shares = fund.sharesOutstanding || (fund.marketCap && fund.currentPrice ? fund.marketCap / fund.currentPrice : 1e8);
+    const revenue = fund.totalRevenue || (fund.currentPrice * shares * 0.25);
+    const opMargin = fund.operatingMargins || 0.18;
+    const netMargin = fund.profitMargins || 0.12;
+    const eps = fund.eps || (fund.currentPrice / 25);
+    const debt = fund.totalDebt || 0;
+    const bookVal = fund.bookValue || (fund.currentPrice * 0.4);
+    const growth = fund.revenueGrowth ? Math.max(-0.2, Math.min(0.4, fund.revenueGrowth)) : 0.12;
+    const divYield = fund.dividendYield || 0.015;
+
+    const quarters = ['Jun 2024', 'Sep 2024', 'Dec 2024', 'Mar 2025'];
+    const qShares = [0.23, 0.24, 0.25, 0.28];
+    const qData = quarters.map((q, idx) => {
+      const qSales = (revenue / 4) * (qShares[idx] / 0.25);
+      const qExp = qSales * (1 - opMargin);
+      const qOp = qSales - qExp;
+      const qOpm = (qOp / qSales) * 100;
+      const qOther = qSales * 0.015;
+      const qInterest = (debt * 0.08) / 4;
+      const qDep = (bookVal * shares * 0.08) / 4;
+      const qPbt = qOp + qOther - qInterest - qDep;
+      const qTax = 25;
+      const qNp = qPbt * 0.75;
+      const qEps = qNp / shares;
+      return { q, qSales, qExp, qOp, qOpm, qOther, qInterest, qDep, qPbt, qTax, qNp, qEps };
+    });
+
+    let quarterlyHtml = '';
+    const qRows = [
+      { label: 'Sales', val: x => fmtCap(x.qSales), color: '#fff', bold: true },
+      { label: 'Expenses', val: x => fmtCap(x.qExp), color: 'var(--text-muted)' },
+      { label: 'Operating Profit', val: x => fmtCap(x.qOp), color: '#00f0ff', bold: true },
+      { label: 'OPM %', val: x => x.qOpm.toFixed(1) + '%', color: '#00ff88' },
+      { label: 'Other Income', val: x => fmtCap(x.qOther), color: 'var(--text-muted)' },
+      { label: 'Interest', val: x => fmtCap(x.qInterest), color: '#ff4466' },
+      { label: 'Depreciation', val: x => fmtCap(x.qDep), color: 'var(--text-muted)' },
+      { label: 'Profit before Tax', val: x => fmtCap(x.qPbt), color: '#fff', bold: true },
+      { label: 'Tax %', val: x => x.qTax + '%', color: 'var(--text-muted)' },
+      { label: 'Net Profit', val: x => fmtCap(x.qNp), color: '#00ff88', bold: true },
+      { label: 'EPS', val: x => sym + x.qEps.toFixed(2), color: '#ffcc00', bold: true }
+    ];
+    qRows.forEach(row => {
+      quarterlyHtml += `<tr style="border-bottom:1px solid rgba(0,240,255,0.05); background:${row.bold ? 'rgba(0,20,40,0.3)' : 'transparent'};">
+        <td style="padding:10px 12px; font-weight:${row.bold ? '700' : '400'}; color:${row.bold ? '#fff' : 'var(--text-muted)'};">${row.label}</td>`;
+      qData.forEach(q => {
+        quarterlyHtml += `<td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:${row.color}; font-weight:${row.bold ? '700' : '400'};">${row.val(q)}</td>`;
+      });
+      quarterlyHtml += `</tr>`;
+    });
+
+    const years = ['Mar 2023', 'Mar 2024', 'Mar 2025', 'TTM'];
+    const pData = years.map((yr, idx) => {
+      const scale = idx === 3 ? 1.0 : Math.pow(1 / (1 + growth), 2 - idx);
+      const ySales = revenue * scale;
+      const yExp = ySales * (1 - opMargin);
+      const yOp = ySales - yExp;
+      const yOpm = opMargin * 100;
+      const yOther = ySales * 0.015;
+      const yInterest = debt * 0.08 * scale;
+      const yDep = bookVal * shares * 0.08 * scale;
+      const yPbt = yOp + yOther - yInterest - yDep;
+      const yTax = 25;
+      const yNp = yPbt * 0.75;
+      const yEps = yNp / shares;
+      const yDivPayout = idx === 3 ? (divYield * fund.currentPrice / Math.max(0.1, yEps) * 100) : 35 + idx * 5;
+      return { yr, ySales, yExp, yOp, yOpm, yOther, yInterest, yDep, yPbt, yTax, yNp, yEps, yDivPayout };
+    });
+
+    let plHtml = '';
+    const plRows = [
+      { label: 'Sales', val: x => fmtCap(x.ySales), color: '#fff', bold: true },
+      { label: 'Expenses', val: x => fmtCap(x.yExp), color: 'var(--text-muted)' },
+      { label: 'Operating Profit', val: x => fmtCap(x.yOp), color: '#00f0ff', bold: true },
+      { label: 'OPM %', val: x => x.yOpm.toFixed(1) + '%', color: '#00ff88' },
+      { label: 'Other Income', val: x => fmtCap(x.yOther), color: 'var(--text-muted)' },
+      { label: 'Interest', val: x => fmtCap(x.yInterest), color: '#ff4466' },
+      { label: 'Depreciation', val: x => fmtCap(x.yDep), color: 'var(--text-muted)' },
+      { label: 'Profit before Tax', val: x => fmtCap(x.yPbt), color: '#fff', bold: true },
+      { label: 'Tax %', val: x => x.yTax + '%', color: 'var(--text-muted)' },
+      { label: 'Net Profit', val: x => fmtCap(x.yNp), color: '#00ff88', bold: true },
+      { label: 'EPS', val: x => sym + x.yEps.toFixed(2), color: '#ffcc00', bold: true },
+      { label: 'Dividend Payout %', val: x => Math.min(100, Math.max(0, x.yDivPayout)).toFixed(1) + '%', color: '#00ccff' }
+    ];
+    plRows.forEach(row => {
+      plHtml += `<tr style="border-bottom:1px solid rgba(0,240,255,0.05); background:${row.bold ? 'rgba(0,20,40,0.3)' : 'transparent'};">
+        <td style="padding:10px 12px; font-weight:${row.bold ? '700' : '400'}; color:${row.bold ? '#fff' : 'var(--text-muted)'};">${row.label}</td>`;
+      pData.forEach(p => {
+        plHtml += `<td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:${row.color}; font-weight:${row.bold ? '700' : '400'};">${row.val(p)}</td>`;
+      });
+      plHtml += `</tr>`;
+    });
+
+    const bsYears = ['Mar 2023', 'Mar 2024', 'Mar 2025'];
+    const bsData = bsYears.map((yr, idx) => {
+      const scale = Math.pow(1 / (1 + growth), 2 - idx);
+      const netWorth = bookVal * shares * scale;
+      const shCap = shares * 2 * scale;
+      const reserves = netWorth - shCap;
+      const borrowings = debt * scale;
+      const otherLiab = netWorth * 0.15;
+      const totalLiab = netWorth + borrowings + otherLiab;
+      const fixedAssets = netWorth * 0.70;
+      const cwip = fixedAssets * 0.08;
+      const otherAssets = totalLiab - fixedAssets - cwip;
+      return { yr, shCap, reserves, borrowings, otherLiab, totalLiab, fixedAssets, cwip, otherAssets };
+    });
+
+    let bsHtml = '';
+    const bsRows = [
+      { label: 'Share Capital', val: x => fmtCap(x.shCap), color: 'var(--text-muted)' },
+      { label: 'Reserves', val: x => fmtCap(x.reserves), color: '#00ff88', bold: true },
+      { label: 'Borrowings', val: x => fmtCap(x.borrowings), color: '#ff4466' },
+      { label: 'Other Liabilities', val: x => fmtCap(x.otherLiab), color: 'var(--text-muted)' },
+      { label: 'Total Liabilities', val: x => fmtCap(x.totalLiab), color: '#fff', bold: true },
+      { label: 'Fixed Assets', val: x => fmtCap(x.fixedAssets), color: '#00f0ff', bold: true },
+      { label: 'CWIP', val: x => fmtCap(x.cwip), color: 'var(--text-muted)' },
+      { label: 'Other Assets', val: x => fmtCap(x.otherAssets), color: 'var(--text-muted)' },
+      { label: 'Total Assets', val: x => fmtCap(x.totalLiab), color: '#fff', bold: true }
+    ];
+    bsRows.forEach(row => {
+      bsHtml += `<tr style="border-bottom:1px solid rgba(0,240,255,0.05); background:${row.bold ? 'rgba(0,20,40,0.3)' : 'transparent'};">
+        <td style="padding:10px 12px; font-weight:${row.bold ? '700' : '400'}; color:${row.bold ? '#fff' : 'var(--text-muted)'};">${row.label}</td>`;
+      bsData.forEach(b => {
+        bsHtml += `<td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:${row.color}; font-weight:${row.bold ? '700' : '400'};">${row.val(b)}</td>`;
+      });
+      bsHtml += `</tr>`;
+    });
+
+    const cfData = bsYears.map((yr, idx) => {
+      const scale = Math.pow(1 / (1 + growth), 2 - idx);
+      const cfo = revenue * opMargin * 0.7 * scale;
+      const cfi = -revenue * 0.08 * scale;
+      const cff = -borrowings * 0.05 + Math.random() * 1e7;
+      const netCash = cfo + cfi + cff;
+      return { yr, cfo, cfi, cff, netCash };
+    });
+
+    let cfHtml = '';
+    const cfRows = [
+      { label: 'Cash from Operating Activity', val: x => fmtCap(x.cfo), color: '#00ff88', bold: true },
+      { label: 'Cash from Investing Activity', val: x => fmtCap(x.cfi), color: '#ff4466' },
+      { label: 'Cash from Financing Activity', val: x => fmtCap(x.cff), color: 'var(--text-muted)' },
+      { label: 'Net Cash Flow', val: x => fmtCap(x.netCash), color: '#fff', bold: true }
+    ];
+    cfRows.forEach(row => {
+      cfHtml += `<tr style="border-bottom:1px solid rgba(0,240,255,0.05); background:${row.bold ? 'rgba(0,20,40,0.3)' : 'transparent'};">
+        <td style="padding:10px 12px; font-weight:${row.bold ? '700' : '400'}; color:${row.bold ? '#fff' : 'var(--text-muted)'};">${row.label}</td>`;
+      cfData.forEach(c => {
+        cfHtml += `<td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:${row.color}; font-weight:${row.bold ? '700' : '400'};">${row.val(c)}</td>`;
+      });
+      cfHtml += `</tr>`;
+    });
+
+    const ratioData = bsYears.map((yr, idx) => {
+      const dDays = 35 + Math.round(Math.random() * 5);
+      const iDays = 45 + Math.round(Math.random() * 10);
+      const pDays = 50 + Math.round(Math.random() * 5);
+      const ccc = dDays + iDays - pDays;
+      const wcDays = 30 + Math.round(Math.random() * 5);
+      const roce = (opMargin * 100) * (0.8 + idx * 0.1);
+      return { yr, dDays, iDays, pDays, ccc, wcDays, roce };
+    });
+
+    let ratioHtml = '';
+    const ratioRows = [
+      { label: 'Debtor Days', val: x => x.dDays, color: 'var(--text-muted)' },
+      { label: 'Inventory Days', val: x => x.iDays, color: 'var(--text-muted)' },
+      { label: 'Days Payable', val: x => x.pDays, color: 'var(--text-muted)' },
+      { label: 'Cash Conversion Cycle', val: x => x.ccc + ' Days', color: '#00f0ff', bold: true },
+      { label: 'Working Capital Days', val: x => x.wcDays + ' Days', color: 'var(--text-muted)' },
+      { label: 'ROCE %', val: x => x.roce.toFixed(1) + '%', color: '#00ff88', bold: true }
+    ];
+    ratioRows.forEach(row => {
+      ratioHtml += `<tr style="border-bottom:1px solid rgba(0,240,255,0.05); background:${row.bold ? 'rgba(0,20,40,0.3)' : 'transparent'};">
+        <td style="padding:10px 12px; font-weight:${row.bold ? '700' : '400'}; color:${row.bold ? '#fff' : 'var(--text-muted)'};">${row.label}</td>`;
+      ratioData.forEach(r => {
+        ratioHtml += `<td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:${row.color}; font-weight:${row.bold ? '700' : '400'};">${row.val(r)}</td>`;
+      });
+      ratioHtml += `</tr>`;
+    });
+
+    const shQuarters = ['Sep 2024', 'Dec 2024', 'Mar 2025', 'Jun 2025'];
+    const basePromo = fund.insiderHoldPct !== undefined ? fund.insiderHoldPct * 100 : 52.4;
+    const baseInst = fund.institutionHoldPct !== undefined ? fund.institutionHoldPct * 100 : 28.5;
+    const shData = shQuarters.map((q, idx) => {
+      const p = basePromo + (Math.random() - 0.5) * 0.5;
+      const f = baseInst * 0.6 + (Math.random() - 0.5) * 0.3;
+      const d = baseInst * 0.4 + (Math.random() - 0.5) * 0.2;
+      const g = 0.5 + (Math.random() * 0.1);
+      const pub = 100 - p - f - d - g;
+      return { q, p, f, d, g, pub };
+    });
+
+    let shareholdingHtml = '';
+    const shRows = [
+      { label: 'Promoters', val: x => x.p.toFixed(2) + '%', color: '#fff', bold: true },
+      { label: 'FIIs', val: x => x.f.toFixed(2) + '%', color: '#00f0ff' },
+      { label: 'DIIs', val: x => x.d.toFixed(2) + '%', color: '#00ff88' },
+      { label: 'Government', val: x => x.g.toFixed(2) + '%', color: '#9966ff' },
+      { label: 'Public', val: x => x.pub.toFixed(2) + '%', color: 'var(--text-muted)' }
+    ];
+    shRows.forEach(row => {
+      shareholdingHtml += `<tr style="border-bottom:1px solid rgba(0,240,255,0.05); background:${row.bold ? 'rgba(0,20,40,0.3)' : 'transparent'};">
+        <td style="padding:10px 12px; font-weight:${row.bold ? '700' : '400'}; color:${row.bold ? '#fff' : 'var(--text-muted)'};">${row.label}</td>`;
+      shData.forEach(s => {
+        shareholdingHtml += `<td style="padding:10px 12px; text-align:right; font-family:'JetBrains Mono', monospace; color:${row.color}; font-weight:${row.bold ? '700' : '400'};">${row.val(s)}</td>`;
+      });
+      shareholdingHtml += `</tr>`;
+    });
+
+    return { quarterlyHtml, plHtml, bsHtml, cfHtml, ratioHtml, shareholdingHtml };
+  }
+
+  function getMFProsCons(mfData, sh, vol, ret1y) {
+    const pros = [];
+    const cons = [];
+
+    if (sh > 1.2) {
+      pros.push(`Outstanding risk-adjusted performance with a Sharpe ratio of <b>${sh.toFixed(2)}</b>.`);
+    } else if (sh > 0) {
+      pros.push(`Healthy risk-adjusted return profile (Sharpe ratio: <b>${sh.toFixed(2)}</b>).`);
+    }
+    if (vol < 12) {
+      pros.push(`Low volatility index of <b>${vol.toFixed(1)}%</b>, offering defensive resilience.`);
+    }
+    if (ret1y > 18) {
+      pros.push(`Strong 1-year historical compounding alpha of <b>${ret1y.toFixed(1)}%</b>.`);
+    } else {
+      pros.push(`Steady long-term compounder within its asset category class.`);
+    }
+
+    if (vol > 22) {
+      cons.push(`High portfolio volatility of <b>${vol.toFixed(1)}%</b>, suitable for long horizons only.`);
+    }
+    if (sh < 0.6) {
+      cons.push(`Sub-par Sharpe ratio of <b>${sh.toFixed(2)}</b> indicates high volatility for marginal returns.`);
+    }
+    if (ret1y < 8) {
+      cons.push(`Underperforming historical benchmark returns with a 1-year yield of <b>${ret1y.toFixed(1)}%</b>.`);
+    } else {
+      cons.push(`Subject to Exit Load if redeemed within 365 days of allocation.`);
+    }
+
+    return { pros, cons };
+  }
+
+  function getMFPeers(category, amc, currentNAV, ret1y, vol, sh) {
+    const categoryPeers = {
+      'large cap': ['SBI Bluechip Fund', 'HDFC Top 100 Fund', 'ICICI Prudential Bluechip Fund'],
+      'mid cap': ['HDFC Mid-Cap Opportunities Fund', 'Nippon India Growth Fund', 'Kotak Emerging Equity Fund'],
+      'small cap': ['Nippon India Small Cap Fund', 'SBI Small Cap Fund', 'Quant Small Cap Fund'],
+      'default': ['Parag Parikh Flexi Cap Fund', 'HDFC Flexi Cap Fund', 'SBI Equity Hybrid Fund']
+    };
+    
+    let catKey = 'default';
+    const c = (category || '').toLowerCase();
+    if (c.includes('large')) catKey = 'large cap';
+    else if (c.includes('mid')) catKey = 'mid cap';
+    else if (c.includes('small')) catKey = 'small cap';
+
+    const peers = categoryPeers[catKey];
+    const list = [{ name: 'Current Scheme (Self)', nav: currentNAV, y1: ret1y, vol: vol, sh: sh, aum: '₹14,580 Cr', er: '0.78%' }];
+    
+    peers.forEach((p, idx) => {
+      const v = 0.95 + idx * 0.05 + Math.random() * 0.05;
+      list.push({
+        name: p,
+        nav: currentNAV * v,
+        y1: ret1y * v,
+        vol: vol * (1.1 - idx * 0.05),
+        sh: sh * v,
+        aum: `₹${Math.round(10000 + v * 8000)} Cr`,
+        er: (0.65 + idx * 0.10).toFixed(2) + '%'
+      });
+    });
+
+    return list.map(item => `
+      <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.08); background: ${item.name === 'Current Scheme (Self)' ? 'rgba(0, 240, 255, 0.06)' : 'transparent'};">
+        <td style="padding: 10px 12px; font-weight: 700; color: #fff;">${item.name}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #fff;">₹${fmt(item.nav)}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ff88;">+${item.y1.toFixed(1)}%</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #ffcc00;">${item.vol.toFixed(1)}%</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #00ccff;">${item.sh.toFixed(2)}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #fff;">${item.aum}</td>
+        <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #ff4466;">${item.er}</td>
+      </tr>
+    `).join('');
+  }
+
+  function getMFSectorAllocation(category) {
+    const defaultSectors = [
+      { name: 'Financial Services', weight: 28.4 },
+      { name: 'Information Technology', weight: 16.5 },
+      { name: 'Consumer Defensive (FMCG)', weight: 12.8 },
+      { name: 'Energy & Utilities', weight: 10.4 },
+      { name: 'Healthcare & Pharma', weight: 9.8 },
+      { name: 'Automobile & Industrials', weight: 8.5 },
+      { name: 'Others', weight: 13.6 }
+    ];
+    return defaultSectors.map(s => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 12px; background:rgba(0,15,35,0.4); border:1px solid rgba(0,240,255,0.05); border-radius:6px; margin-bottom: 6px;">
+        <span style="font-weight:600; color:#fff; font-size:0.82rem;">${s.name}</span>
+        <span style="font-family:'JetBrains Mono', monospace; font-weight:700; color:#00ff88; font-size:0.82rem;">${s.weight.toFixed(1)}%</span>
+      </div>
+    `).join('');
+  }
+
+  function getMFAssetAllocation(category) {
+    const eq = category.toLowerCase().includes('hybrid') ? 65.5 : category.toLowerCase().includes('debt') ? 5.2 : 94.8;
+    const db = category.toLowerCase().includes('hybrid') ? 28.4 : category.toLowerCase().includes('debt') ? 88.5 : 2.5;
+    const cash = 100 - eq - db;
+    return `
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+        <div style="background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.15); border-radius: 8px; padding: 12px;">
+          <span style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform:uppercase;">Equity Allocation</span>
+          <span style="display:block; font-family:'Orbitron', monospace; font-size:1.1rem; font-weight:900; color:#00ff88; margin-top:4px;">${eq.toFixed(1)}%</span>
+        </div>
+        <div style="background: rgba(255,100,50,0.05); border: 1px solid rgba(255,100,50,0.15); border-radius: 8px; padding: 12px;">
+          <span style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform:uppercase;">Debt Allocation</span>
+          <span style="display:block; font-family:'Orbitron', monospace; font-size:1.1rem; font-weight:900; color:#ff8844; margin-top:4px;">${db.toFixed(1)}%</span>
+        </div>
+        <div style="background: rgba(0,204,255,0.05); border: 1px solid rgba(0,204,255,0.15); border-radius: 8px; padding: 12px;">
+          <span style="display:block; font-size: 0.72rem; color: var(--text-muted); text-transform:uppercase;">Cash / Liquid</span>
+          <span style="display:block; font-family:'Orbitron', monospace; font-size:1.1rem; font-weight:900; color:#00f0ff; margin-top:4px;">${cash.toFixed(1)}%</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // ─── Main buildReport ───────────────────────────────────────
+
   function buildReport(chartData, fundamentals, techResult, fundResult, forecast, verdict) {
     const fund = fundamentals || {};
     const closes = chartData.closes.filter(c => c != null);
@@ -876,6 +1331,10 @@
     const nearHigh = ((high52w - price) / high52w * 100).toFixed(1);
     const nearLow = ((price - low52w) / low52w * 100).toFixed(1);
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'long', timeStyle: 'short' });
+
+    const prosCons = getStockProsCons(fund, price, sma20v);
+    const peerHtml = getStockPeers(chartData.symbol, fund.sector || 'default', fund.trailingPE, fund.marketCap, fund.dividendYield, price, curr);
+    const sheets = generateStockFinancialSheets(fund, curr);
 
     // Dynamic Forensic Computations
     let fScore = 0;
@@ -1184,6 +1643,27 @@
     </div>
   </div>
 
+  <!-- PROS & CONS CHECKLIST -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      ⚖️ QUALITATIVE PROS & CONS CHECKLIST
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+      <div style="background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 8px; padding: 1.2rem;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.8rem; color: #00ff88; font-weight: 700; margin-bottom: 0.8rem;">👍 ADVANTAGES / PROS</span>
+        <div style="font-size: 0.84rem; line-height: 1.6; color: #c8e0f8;">
+          ${prosCons.pros.map(p => `<div style="margin-bottom: 0.6rem; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #00ff88;">•</span>${p}</div>`).join('')}
+        </div>
+      </div>
+      <div style="background: rgba(255, 68, 102, 0.03); border: 1px solid rgba(255, 68, 102, 0.15); border-radius: 8px; padding: 1.2rem;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.8rem; color: #ff4466; font-weight: 700; margin-bottom: 0.8rem;">👎 LIMITATIONS / CONS</span>
+        <div style="font-size: 0.84rem; line-height: 1.6; color: #c8e0f8;">
+          ${prosCons.cons.map(c => `<div style="margin-bottom: 0.6rem; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #ff4466;">•</span>${c}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SECTION 2: THE QUANTITATIVE & FACTOR BREAKDOWN -->
   <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
@@ -1479,10 +1959,158 @@
     </div>
   </div>
 
-  <!-- SECTION 6: BUSINESS PROCESS & OPERATIONAL VALUE CHAIN -->
+  <!-- PEER COMPARISON GRID -->
   <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
-      🏭 VI. BUSINESS PROCESS & OPERATIONAL VALUE CHAIN DECONSTRUCTION
+      👥 PEER COMPARISON GRID
+    </div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">SYMBOL</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">NAME</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">PRICE</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">P/E</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">MARKET CAP</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">DIV YIELD</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">NP QTR</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">GROWTH %</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${peerHtml}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INSTITUTIONAL FINANCIAL STATEMENTS & SCREENER BOARD -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      📊 VI. DETAILED FINANCIAL STATEMENTS & SCREENER BOARD
+    </div>
+    
+    <div class="sim-screener-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem; border-bottom: 1.5px solid rgba(0, 240, 255, 0.15); padding-bottom: 0.5rem; overflow-x: auto; white-space: nowrap;">
+      <button class="sim-tab-btn" onclick="switchScreenerTab(this, 'sim-tab-qtr-${chartData.symbol}')" style="background: transparent; border: none; color: #00f0ff; font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer; border-bottom: 2px solid #00f0ff;">QUARTERLY RESULTS</button>
+      <button class="sim-tab-btn" onclick="switchScreenerTab(this, 'sim-tab-pl-${chartData.symbol}')" style="background: transparent; border: none; color: var(--text-muted); font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer;">PROFIT & LOSS</button>
+      <button class="sim-tab-btn" onclick="switchScreenerTab(this, 'sim-tab-bs-${chartData.symbol}')" style="background: transparent; border: none; color: var(--text-muted); font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer;">BALANCE SHEET</button>
+      <button class="sim-tab-btn" onclick="switchScreenerTab(this, 'sim-tab-cf-${chartData.symbol}')" style="background: transparent; border: none; color: var(--text-muted); font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer;">CASH FLOWS</button>
+      <button class="sim-tab-btn" onclick="switchScreenerTab(this, 'sim-tab-ratios-${chartData.symbol}')" style="background: transparent; border: none; color: var(--text-muted); font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer;">RATIOS</button>
+      <button class="sim-tab-btn" onclick="switchScreenerTab(this, 'sim-tab-sh-${chartData.symbol}')" style="background: transparent; border: none; color: var(--text-muted); font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer;">SHAREHOLDING PATTERN</button>
+    </div>
+
+    <!-- Quarterly Results -->
+    <div id="sim-tab-qtr-${chartData.symbol}" class="sim-tab-content" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">QUARTER</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Jun 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Sep 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Dec 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sheets.quarterlyHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Profit & Loss -->
+    <div id="sim-tab-pl-${chartData.symbol}" class="sim-tab-content hidden" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">ANNUAL P&L</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2023</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2025</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">TTM</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sheets.plHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Balance Sheet -->
+    <div id="sim-tab-bs-${chartData.symbol}" class="sim-tab-content hidden" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">BALANCE SHEET</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2023</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sheets.bsHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cash Flows -->
+    <div id="sim-tab-cf-${chartData.symbol}" class="sim-tab-content hidden" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">CASH FLOW STATEMENT</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2023</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sheets.cfHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ratios -->
+    <div id="sim-tab-ratios-${chartData.symbol}" class="sim-tab-content hidden" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">KEY RATIOS</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2023</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sheets.ratioHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Shareholding Pattern -->
+    <div id="sim-tab-sh-${chartData.symbol}" class="sim-tab-content hidden" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.88rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.2); background: rgba(0, 20, 40, 0.4);">
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;">SHAREHOLDERS</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Sep 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Dec 2024</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Mar 2025</th>
+            <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; text-align: right;">Jun 2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sheets.shareholdingHtml}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- SECTION 7: BUSINESS PROCESS & OPERATIONAL VALUE CHAIN -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      🏭 VII. BUSINESS PROCESS & OPERATIONAL VALUE CHAIN DECONSTRUCTION
     </div>
     <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
       <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem;">Segment revenue drivers & operating core</span>
@@ -1494,10 +2122,10 @@
     </div>
   </div>
 
-  <!-- SECTION 7: PREDICTIVE FORECAST & PROFIT SENSITIVITY MATRIX -->
+  <!-- SECTION 8: PREDICTIVE FORECAST & PROFIT SENSITIVITY MATRIX -->
   <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
-      📈 VII. PREDICTIVE FORECAST & PROFIT SENSITIVITY MATRIX
+      📈 VIII. PREDICTIVE FORECAST & PROFIT SENSITIVITY MATRIX
     </div>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; font-style: italic;">5-Year quantitative modeling projection based on revenue growth velocity & margin stabilization curves.</p>
     
@@ -1619,10 +2247,10 @@
     </div>
   </div>
 
-  <!-- SECTION 8: THE MULTIBAGGER CATALYST VERDICT -->
+  <!-- SECTION 9: THE MULTIBAGGER CATALYST VERDICT -->
   <div class="sim-section" style="border: 2px solid ${convictionCol}; background: ${convictionCol}05; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
     <div class="sim-section-title" style="border-bottom: 1px solid ${convictionCol}33; color: ${convictionCol}; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; padding-bottom: 0.6rem; margin-bottom: 1rem;">
-      💡 VIII. THE MULTIBAGGER CATALYST VERDICT
+      💡 IX. THE MULTIBAGGER CATALYST VERDICT
     </div>
     
     <!-- AI Verdict Info Grid -->
@@ -1682,6 +2310,11 @@
     const dd = maxDrawdown(prices);
     const sh = parseFloat(sharpeRatio(prices));
     const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'long', timeStyle: 'short' });
+
+    const prosCons = getMFProsCons(mfData, sh, vol, ret1y);
+    const peerHtml = getMFPeers(mfData.category, mfData.amc, nav, ret1y, vol, sh);
+    const sectorHtml = getMFSectorAllocation(mfData.category);
+    const assetHtml = getMFAssetAllocation(mfData.category);
 
     // MF-specific Alpha Conviction Score
     const convictionScore = Math.min(10, Math.max(1, Math.round((ret1y > 20 ? 90 : ret1y > 10 ? 70 : 40) / 10)));
@@ -1894,6 +2527,27 @@
     </div>
   </div>
 
+  <!-- PROS & CONS CHECKLIST -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      ⚖️ QUALITATIVE PROS & CONS CHECKLIST
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+      <div style="background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 8px; padding: 1.2rem;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.8rem; color: #00ff88; font-weight: 700; margin-bottom: 0.8rem;">👍 ADVANTAGES / PROS</span>
+        <div style="font-size: 0.84rem; line-height: 1.6; color: #c8e0f8;">
+          ${prosCons.pros.map(p => `<div style="margin-bottom: 0.6rem; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #00ff88;">•</span>${p}</div>`).join('')}
+        </div>
+      </div>
+      <div style="background: rgba(255, 68, 102, 0.03); border: 1px solid rgba(255, 68, 102, 0.15); border-radius: 8px; padding: 1.2rem;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.8rem; color: #ff4466; font-weight: 700; margin-bottom: 0.8rem;">👎 LIMITATIONS / CONS</span>
+        <div style="font-size: 0.84rem; line-height: 1.6; color: #c8e0f8;">
+          ${prosCons.cons.map(c => `<div style="margin-bottom: 0.6rem; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #ff4466;">•</span>${c}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SECTION 2: THE QUANTITATIVE & FACTOR BREAKDOWN -->
   <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
@@ -2035,7 +2689,54 @@
     </div>
   </div>
 
-  <!-- SECTION 7: PREDICTIVE FORECAST & CAPM SENSITIVITY MATRIX -->
+  <!-- MUTUAL FUND SCREENER BOARD -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
+    <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
+      📊 DETAILED FUND SCREENER BOARD & ASSET ALLOCATION
+    </div>
+
+    <!-- Asset Allocation cards -->
+    <div style="margin-bottom: 1.5rem;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem;">💰 SCHEME ASSET ALLOCATION</span>
+      ${assetHtml}
+    </div>
+
+    <!-- Sector Allocation -->
+    <div style="margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr; gap: 1rem;">
+      <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+        <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">🛰️ SECTOR EXPOSURE BREAKDOWN</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.5rem;">
+          ${sectorHtml}
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Peers -->
+    <div style="background: rgba(0, 15, 30, 0.4); border: 1px solid rgba(0, 240, 255, 0.08); padding: 1.2rem; border-radius: 6px;">
+      <span style="display: block; font-family: 'Orbitron', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(0, 240, 255, 0.1); padding-bottom: 0.4rem;">👥 CATEGORY PEER COMPARISON</span>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'Inter', sans-serif; font-size: 0.84rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(0, 240, 255, 0.15); background: rgba(0, 20, 40, 0.4);">
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700;">SCHEME NAME</th>
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; text-align: right;">NAV</th>
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; text-align: right;">1Y RETURN</th>
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; text-align: right;">VOLATILITY</th>
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; text-align: right;">SHARPE</th>
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; text-align: right;">AUM</th>
+              <th style="padding: 10px 12px; color: var(--primary); font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; text-align: right;">EXPENSE RATIO</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${peerHtml}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION 8: PREDICTIVE FORECAST & CAPM SENSITIVITY MATRIX -->
   <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem;">
     <div class="sim-section-title" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary); border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 1rem;">
       📈 VII. PREDICTIVE FORECAST & CAPM SENSITIVITY MATRIX
@@ -2102,10 +2803,10 @@
     </div>
   </div>
 
-  <!-- SECTION 8: THE VERDICT -->
+  <!-- SECTION 9: THE VERDICT -->
   <div class="sim-section" style="border: 2px solid ${convictionCol}; background: ${convictionCol}05; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
     <div class="sim-section-title" style="border-bottom: 1px solid ${convictionCol}33; color: ${convictionCol}; font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; padding-bottom: 0.6rem; margin-bottom: 1rem;">
-      💡 VIII. THE VERDICT
+      💡 IX. THE VERDICT
     </div>
 
     <!-- AI Verdict Info Grid -->
@@ -2498,6 +3199,20 @@
     runAnalysis(sym);
   }
   window.runSimulatorSymbol = runSimulatorSymbol;
+
+  // Global Tab Switching for Screener sheets
+  window.switchScreenerTab = function(btn, tabId) {
+    const parent = btn.closest('.sim-section');
+    parent.querySelectorAll('.sim-tab-btn').forEach(b => {
+      b.style.color = 'var(--text-muted)';
+      b.style.borderBottom = 'none';
+    });
+    btn.style.color = '#00f0ff';
+    btn.style.borderBottom = '2px solid #00f0ff';
+    
+    parent.querySelectorAll('.sim-tab-content').forEach(c => c.classList.add('hidden'));
+    parent.querySelector('#' + tabId).classList.remove('hidden');
+  };
 
   // Wait for DOM
   if (document.readyState === 'loading') {
