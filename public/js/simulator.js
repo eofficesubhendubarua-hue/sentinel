@@ -127,6 +127,7 @@
   };
 
   const DEFAULT_NETLIFY = 'https://leafy-granita-bc2649.netlify.app';
+  const DEFAULT_VERCEL = 'https://sentinel-eofficesubhendubarua-hues-projects.vercel.app';
   const CUSTOM_PROXY = localStorage.getItem('SENTINEL_PROXY_URL') || '';
   
   const isNetlify = window.location.hostname.includes('netlify.app');
@@ -139,6 +140,7 @@
   if (isNetlify || isVercel) {
     PROXY_BASES.push('');
   } else {
+    PROXY_BASES.push(DEFAULT_VERCEL);
     PROXY_BASES.push(DEFAULT_NETLIFY);
   }
 
