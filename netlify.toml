@@ -1,6 +1,7 @@
 [build]
   publish = "public"
   command = ""
+  ignore = "git log -1 --pretty=%B | grep -q 'SENTINEL Briefing'"
 
 [[redirects]]
   from = "/api/yahoo-chart/*"

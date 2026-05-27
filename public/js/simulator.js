@@ -126,33 +126,49 @@
     'default': { avgPE: 20, avgROE: 15, avgMargin: 12 }
   };
 
-  const NETLIFY_HOST = 'https://leafy-granita-bc2649.netlify.app';
+  const DEFAULT_NETLIFY = 'https://leafy-granita-bc2649.netlify.app';
+  const CUSTOM_PROXY = localStorage.getItem('SENTINEL_PROXY_URL') || '';
+  
   const isNetlify = window.location.hostname.includes('netlify.app');
-  const PROXY_BASE = isNetlify ? '' : NETLIFY_HOST;
+  const isVercel = window.location.hostname.includes('vercel.app');
+  
+  const PROXY_BASES = [];
+  if (CUSTOM_PROXY) {
+    PROXY_BASES.push(CUSTOM_PROXY.replace(/\/$/, ''));
+  }
+  if (isNetlify || isVercel) {
+    PROXY_BASES.push('');
+  } else {
+    PROXY_BASES.push(DEFAULT_NETLIFY);
+  }
 
   // ─── Utility: CORS-safe fetch ─────────────────────────────
   async function safeFetch(url) {
-    // 1. Try our own secure Netlify proxy first (to avoid antivirus warnings)
-    let proxyUrl = null;
+    let apiPath = null;
     if (url.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/')) {
-      const rest = url.replace('https://query1.finance.yahoo.com/v8/finance/chart/', '');
-      proxyUrl = PROXY_BASE + '/api/yahoo-chart/' + rest;
+      apiPath = '/api/yahoo-chart/' + url.replace('https://query1.finance.yahoo.com/v8/finance/chart/', '');
     } else if (url.startsWith('https://query2.finance.yahoo.com/v10/finance/quoteSummary/')) {
-      const rest = url.replace('https://query2.finance.yahoo.com/v10/finance/quoteSummary/', '');
-      proxyUrl = PROXY_BASE + '/api/yahoo-quote/' + rest;
+      apiPath = '/api/yahoo-quote/' + url.replace('https://query2.finance.yahoo.com/v10/finance/quoteSummary/', '');
     } else if (url.startsWith('https://api.mfapi.in/mf/search?q=')) {
-      const rest = url.replace('https://api.mfapi.in/mf/search?q=', '');
-      proxyUrl = PROXY_BASE + '/api/mf-search/' + rest;
+      apiPath = '/api/mf-search/' + url.replace('https://api.mfapi.in/mf/search?q=', '');
     } else if (url.startsWith('https://api.mfapi.in/mf/')) {
-      const rest = url.replace('https://api.mfapi.in/mf/', '');
-      proxyUrl = PROXY_BASE + '/api/mf-nav/' + rest;
+      apiPath = '/api/mf-nav/' + url.replace('https://api.mfapi.in/mf/', '');
     }
 
-    if (proxyUrl) {
-      try {
-        const r = await fetch(proxyUrl, { headers: { 'Accept': 'application/json' } });
-        if (r.ok) return await r.json();
-      } catch (_) {}
+    if (apiPath) {
+      for (const base of PROXY_BASES) {
+        const proxyUrl = base + apiPath;
+        try {
+          const r = await fetch(proxyUrl, { headers: { 'Accept': 'application/json' } });
+          if (r.ok) {
+            const json = await r.json();
+            // Verify we did not get a 503 usage exceeded from Netlify
+            if (json && !json.error && json.error !== 'usage_exceeded') {
+              return json;
+            }
+          }
+        } catch (_) {}
+      }
     }
 
     // 2. Direct fetch as fallback
@@ -3033,6 +3049,12 @@
     const btn = document.getElementById('sim-analyze-btn');
     const input = document.getElementById('sim-search-input');
     const suggestBox = document.getElementById('sim-suggest-box');
+    
+    const proxyInput = document.getElementById('proxy-url-input');
+    if (proxyInput) {
+      proxyInput.value = localStorage.getItem('SENTINEL_PROXY_URL') || '';
+    }
+
     if (!btn || !input || !suggestBox) return;
 
     let debounceTimer = null;
@@ -3192,6 +3214,27 @@
     runAnalysis(sym);
   }
   window.runSimulatorSymbol = runSimulatorSymbol;
+
+  // Custom proxy settings handlers
+  window.toggleProxySettings = function() {
+    const panel = document.getElementById('sim-proxy-panel');
+    if (panel) panel.classList.toggle('hidden');
+  };
+
+  window.saveProxySettings = function() {
+    const input = document.getElementById('proxy-url-input');
+    if (input) {
+      const val = input.value.trim();
+      if (val) {
+        localStorage.setItem('SENTINEL_PROXY_URL', val);
+        alert('Proxy configuration saved! Page will reload and route through: ' + val);
+      } else {
+        localStorage.removeItem('SENTINEL_PROXY_URL');
+        alert('Proxy configuration cleared. Reverted to default Netlify proxy.');
+      }
+      window.location.reload();
+    }
+  };
 
   // Global Tab Switching for Screener sheets
   window.switchScreenerTab = function(btn, tabId) {
