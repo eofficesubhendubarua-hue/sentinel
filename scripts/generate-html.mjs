@@ -800,7 +800,10 @@ function generateHTML(briefing) {
         <div style="position: relative; width: 90vw; height: 85vh; background: #050f1e; border: 1px solid var(--primary); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--neon-glow-strong); clip-path: polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%);">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(8, 17, 32, 0.9); border-bottom: 1px solid rgba(0, 240, 255, 0.15);">
                 <h3 id="chart-modal-title" style="margin: 0; font-family: var(--font-cyber); font-size: 13px; color: var(--primary); letter-spacing: 1.5px; font-weight: 800;">◈ REAL-TIME TELEMETRY GRAPH</h3>
-                <button onclick="closeChartModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button id="chart-theme-toggle" onclick="toggleChartTheme()" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 5px 12px; font-family: var(--font-cyber); font-size: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600; text-transform: uppercase;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">☀️ LIGHT MODE</button>
+                    <button onclick="closeChartModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+                </div>
             </div>
             <div id="chart-modal-container" style="flex-grow: 1; width: 100%; height: calc(100% - 50px); background: #000;">
                 <!-- TradingView Widget Injected Here -->
@@ -809,17 +812,21 @@ function generateHTML(briefing) {
     </div>
 
     <script>
+        let currentChartSymbol = "";
+        let currentChartName = "";
+        let currentChartTheme = "dark";
+
         function getTradingViewSymbol(symbol) {
-            if (symbol === "^NSEI") return "NSE:NIFTY";
-            if (symbol === "^BSESN") return "BSE:SENSEX";
-            if (symbol === "^NSEBANK") return "NSE:BANKNIFTY";
-            if (symbol === "^CNXIT") return "NSE:NIFTYIT";
-            if (symbol === "^CNXINFRA") return "NSE:NIFTYINFRA";
-            if (symbol === "^CNXMC") return "NSE:NIFTYMIDCAP100";
-            if (symbol === "^CNXSC") return "NSE:NIFTYSMALLCAP100";
-            if (symbol === "^GSPC") return "SP:SPX";
-            if (symbol === "^IXIC") return "NASDAQ:NDX";
-            if (symbol === "^DJI") return "DJ:DJI";
+            if (symbol === "^NSEI") return "CAPITALCOM:INDIA50";
+            if (symbol === "^BSESN") return "AMEX:INDY";
+            if (symbol === "^NSEBANK") return "NSE:BANKBEES";
+            if (symbol === "^CNXIT") return "NSE:ITBEES";
+            if (symbol === "^CNXINFRA") return "NSE:INFRAIETF";
+            if (symbol === "^CNXMC") return "NSE:MID150BEES";
+            if (symbol === "^CNXSC") return "NSE:SMALLCAP";
+            if (symbol === "^GSPC") return "AMEX:SPY";
+            if (symbol === "^IXIC") return "NASDAQ:QQQ";
+            if (symbol === "^DJI") return "AMEX:DIA";
             if (symbol === "BRK-B") return "NYSE:BRK.B";
             
             if (symbol.endsWith(".NS")) return "NSE:" + symbol.replace(".NS", "");
@@ -829,6 +836,9 @@ function generateHTML(briefing) {
         }
 
         function openChartModal(symbol, name) {
+            currentChartSymbol = symbol;
+            currentChartName = name;
+
             const modal = document.getElementById("chart-modal");
             const title = document.getElementById("chart-modal-title");
             const container = document.getElementById("chart-modal-container");
@@ -863,7 +873,7 @@ function generateHTML(briefing) {
                 "symbol": tvSymbol,
                 "interval": "D",
                 "timezone": "Asia/Kolkata",
-                "theme": "dark",
+                "theme": currentChartTheme,
                 "style": "1",
                 "locale": "en",
                 "enable_publishing": false,
@@ -880,6 +890,19 @@ function generateHTML(briefing) {
             
             widgetContainer.appendChild(script);
             container.appendChild(widgetContainer);
+        }
+
+        function toggleChartTheme() {
+            currentChartTheme = currentChartTheme === "dark" ? "light" : "dark";
+            const btn = document.getElementById("chart-theme-toggle");
+            if (currentChartTheme === "dark") {
+                btn.innerHTML = "☀️ LIGHT MODE";
+            } else {
+                btn.innerHTML = "🌙 DARK MODE";
+            }
+            if (currentChartSymbol) {
+                openChartModal(currentChartSymbol, currentChartName);
+            }
         }
 
         function closeChartModal() {
