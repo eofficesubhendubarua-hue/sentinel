@@ -467,7 +467,7 @@ function generateHTML(briefing) {
     <title>SENTINEL Intelligence Brief — ${meta.date}</title>
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -839,31 +839,47 @@ function generateHTML(briefing) {
             
             modal.style.display = "flex";
             
-            // Create TradingView widget loader
+            // Create container for the widget
+            const widgetContainer = document.createElement("div");
+            widgetContainer.className = "tradingview-widget-container";
+            widgetContainer.style.width = "100%";
+            widgetContainer.style.height = "100%";
+            
+            const widgetTarget = document.createElement("div");
+            widgetTarget.className = "tradingview-widget-container__widget";
+            widgetTarget.style.width = "100%";
+            widgetTarget.style.height = "100%";
+            widgetContainer.appendChild(widgetTarget);
+            
             const script = document.createElement("script");
-            script.src = "https://s3.tradingview.com/tv.js";
-            script.onload = () => {
-                new TradingView.widget({
-                    "width": "100%",
-                    "height": "100%",
-                    "symbol": tvSymbol,
-                    "interval": "D",
-                    "timezone": "Asia/Kolkata",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "en",
-                    "toolbar_bg": "#050f1e",
-                    "enable_publishing": false,
-                    "hide_side_toolbar": false,
-                    "allow_symbol_change": true,
-                    "container_id": "chart-modal-container",
-                    "studies": [
-                        "RSI@tv-basicstudies",
-                        "MASimple@tv-basicstudies"
-                    ]
-                });
+            script.type = "text/javascript";
+            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+            script.async = true;
+            
+            // Define advanced widget options as JSON string inside the script
+            const options = {
+                "width": "100%",
+                "height": "100%",
+                "symbol": tvSymbol,
+                "interval": "D",
+                "timezone": "Asia/Kolkata",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "calendar": false,
+                "studies": [
+                    "STD;RSI",
+                    "STD;MASimple"
+                ],
+                "support_host": "https://www.tradingview.com"
             };
-            document.head.appendChild(script);
+            script.text = JSON.stringify(options);
+            
+            widgetContainer.appendChild(script);
+            container.appendChild(widgetContainer);
         }
 
         function closeChartModal() {
