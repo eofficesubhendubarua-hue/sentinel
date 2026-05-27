@@ -839,6 +839,25 @@ function generateHTML(briefing) {
             currentChartSymbol = symbol;
             currentChartName = name;
 
+            // Clear TradingView saved state in localStorage and sessionStorage of the host page
+            // to prevent the widget from overriding the symbol with previously cached/saved values.
+            try {
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key && (key.startsWith("tradingview") || key.startsWith("tv_") || key.includes("chartproperties"))) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                    const key = sessionStorage.key(i);
+                    if (key && (key.startsWith("tradingview") || key.startsWith("tv_") || key.includes("chartproperties"))) {
+                        sessionStorage.removeItem(key);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to clear TradingView local storage:", e);
+            }
+
             const modal = document.getElementById("chart-modal");
             const title = document.getElementById("chart-modal-title");
             const container = document.getElementById("chart-modal-container");
@@ -880,6 +899,9 @@ function generateHTML(briefing) {
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
                 "calendar": false,
+                "disabled_features": [
+                    "use_localstorage_for_settings"
+                ],
                 "studies": [
                     "STD;RSI",
                     "STD;MASimple"
