@@ -816,102 +816,170 @@ function generateHTML(briefing) {
         let currentChartName = "";
         let currentChartTheme = "dark";
 
-        function getTradingViewSymbol(symbol) {
-            if (symbol === "^NSEI") return "CAPITALCOM:INDIA50";
-            if (symbol === "^BSESN") return "AMEX:INDY";
-            if (symbol === "^NSEBANK") return "NSE:BANKBEES";
-            if (symbol === "^CNXIT") return "NSE:ITBEES";
-            if (symbol === "^CNXINFRA") return "NSE:INFRAIETF";
-            if (symbol === "^CNXMC") return "NSE:MID150BEES";
-            if (symbol === "^CNXSC") return "NSE:SMALLCAP";
-            if (symbol === "^GSPC") return "AMEX:SPY";
-            if (symbol === "^IXIC") return "NASDAQ:QQQ";
-            if (symbol === "^DJI") return "AMEX:DIA";
-            if (symbol === "BRK-B") return "NYSE:BRK.B";
-            
-            if (symbol.endsWith(".NS")) return "NSE:" + symbol.replace(".NS", "");
-            if (symbol.endsWith(".BO")) return "BSE:" + symbol.replace(".BO", "");
-            
-            return symbol;
-        }
-
         function openChartModal(symbol, name) {
             currentChartSymbol = symbol;
             currentChartName = name;
-
-            // Clear TradingView saved state in localStorage and sessionStorage of the host page
-            // to prevent the widget from overriding the symbol with previously cached/saved values.
-            try {
-                for (let i = localStorage.length - 1; i >= 0; i--) {
-                    const key = localStorage.key(i);
-                    if (key && (key.startsWith("tradingview") || key.startsWith("tv_") || key.includes("chartproperties"))) {
-                        localStorage.removeItem(key);
-                    }
-                }
-                for (let i = sessionStorage.length - 1; i >= 0; i--) {
-                    const key = sessionStorage.key(i);
-                    if (key && (key.startsWith("tradingview") || key.startsWith("tv_") || key.includes("chartproperties"))) {
-                        sessionStorage.removeItem(key);
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to clear TradingView local storage:", e);
-            }
 
             const modal = document.getElementById("chart-modal");
             const title = document.getElementById("chart-modal-title");
             const container = document.getElementById("chart-modal-container");
             
-            const tvSymbol = getTradingViewSymbol(symbol);
-            title.innerHTML = "◈ REAL-TIME TELEMETRY GRAPH // " + name.toUpperCase() + " (" + tvSymbol + ")";
-            container.innerHTML = ""; // Clear
+            title.innerHTML = "◈ REAL-TIME TELEMETRY GRAPH // " + name.toUpperCase() + " (" + symbol + ")";
+            
+            // Clean up any existing chart instance
+            if (container.chartInstance) {
+                try {
+                    container.chartInstance.remove();
+                } catch(e) {}
+                container.chartInstance = null;
+            }
+            if (container.resizeObserverInstance) {
+                container.resizeObserverInstance.disconnect();
+                container.resizeObserverInstance = null;
+            }
+            
+            const isDark = currentChartTheme === "dark";
+            const bgColor = isDark ? "#050f1e" : "#ffffff";
+            const spinnerBorderColor = isDark ? "rgba(0, 240, 255, 0.1)" : "rgba(15, 23, 42, 0.1)";
+            const textTextColor = isDark ? "var(--primary)" : "#0f172a";
+
+            container.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-family: var(--font-cyber); gap: 15px; background: ' + bgColor + ';">' +
+                '<style>@keyframes spin { to { transform: rotate(360deg); } }</style>' +
+                '<div style="width: 40px; height: 40px; border: 3px solid ' + spinnerBorderColor + '; border-top-color: #00f0ff; border-radius: 50%; animation: spin 1s linear infinite;"></div>' +
+                '<span style="font-size: 11px; letter-spacing: 1.5px; color: ' + textTextColor + '">FETCHING REAL-TIME TELEMETRY DATA...</span>' +
+                '</div>';
             
             modal.style.display = "flex";
-            
-            // Create container for the widget
-            const widgetContainer = document.createElement("div");
-            widgetContainer.className = "tradingview-widget-container";
-            widgetContainer.style.width = "100%";
-            widgetContainer.style.height = "100%";
-            
-            const widgetTarget = document.createElement("div");
-            widgetTarget.className = "tradingview-widget-container__widget";
-            widgetTarget.style.width = "100%";
-            widgetTarget.style.height = "100%";
-            widgetContainer.appendChild(widgetTarget);
-            
-            const script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-            script.async = true;
-            
-            // Define advanced widget options as JSON string inside the script
-            const options = {
-                "width": "100%",
-                "height": "100%",
-                "symbol": tvSymbol,
-                "interval": "D",
-                "timezone": "Asia/Kolkata",
-                "theme": currentChartTheme,
-                "style": "1",
-                "locale": "en",
-                "enable_publishing": false,
-                "hide_side_toolbar": false,
-                "allow_symbol_change": true,
-                "calendar": false,
-                "disabled_features": [
-                    "use_localstorage_for_settings"
-                ],
-                "studies": [
-                    "STD;RSI",
-                    "STD;MASimple"
-                ],
-                "support_host": "https://www.tradingview.com"
-            };
-            script.text = JSON.stringify(options);
-            
-            widgetContainer.appendChild(script);
-            container.appendChild(widgetContainer);
+
+            if (typeof window.fetchYahooChartData !== "function") {
+                setTimeout(() => openChartModal(symbol, name), 100);
+                return;
+            }
+
+            window.fetchYahooChartData(symbol)
+                .then(data => {
+                    container.innerHTML = ""; // Clear loader
+                    
+                    const isDark = currentChartTheme === 'dark';
+                    const bgColor = isDark ? '#050f1e' : '#ffffff';
+                    const textColor = isDark ? '#c4d1ec' : '#0f172a';
+                    const gridColor = isDark ? 'rgba(0, 240, 255, 0.05)' : 'rgba(15, 23, 42, 0.08)';
+                    const borderColor = isDark ? 'rgba(0, 240, 255, 0.15)' : 'rgba(15, 23, 42, 0.15)';
+                    const upColor = isDark ? '#00ff88' : '#10b981';
+                    const downColor = isDark ? '#ff3b30' : '#ef4444';
+                    const smaColor = isDark ? '#00f0ff' : '#0284c7';
+
+                    const chart = LightweightCharts.createChart(container, {
+                        width: container.clientWidth || 800,
+                        height: container.clientHeight || 450,
+                        layout: {
+                            background: { type: 'solid', color: bgColor },
+                            textColor: textColor,
+                        },
+                        grid: {
+                            vertLines: { color: gridColor },
+                            horzLines: { color: gridColor },
+                        },
+                        crosshair: {
+                            mode: LightweightCharts.CrosshairMode.Normal,
+                        },
+                        rightPriceScale: {
+                            borderColor: borderColor,
+                        },
+                        timeScale: {
+                            borderColor: borderColor,
+                        },
+                    });
+
+                    const candleData = [];
+                    const volumeData = [];
+                    for (let i = 0; i < data.timestamps.length; i++) {
+                        if (data.opens[i] == null || data.highs[i] == null || data.lows[i] == null || data.closes[i] == null) {
+                            continue;
+                        }
+                        const dateObj = new Date(data.timestamps[i] * 1000);
+                        const timeStr = dateObj.toISOString().split('T')[0];
+                        candleData.push({
+                            time: timeStr,
+                            open: data.opens[i],
+                            high: data.highs[i],
+                            low: data.lows[i],
+                            close: data.closes[i],
+                        });
+                        volumeData.push({
+                            time: timeStr,
+                            value: data.volumes[i] || 0,
+                            color: data.closes[i] >= data.opens[i] ? 'rgba(0, 255, 136, 0.3)' : 'rgba(255, 59, 48, 0.3)'
+                        });
+                    }
+
+                    const candlestickSeries = chart.addCandlestickSeries({
+                        upColor: upColor,
+                        downColor: downColor,
+                        borderVisible: false,
+                        wickUpColor: upColor,
+                        wickDownColor: downColor,
+                    });
+                    candlestickSeries.setData(candleData);
+
+                    // Add Simple Moving Average (SMA 20) line
+                    const smaData = calculateSMA(candleData, 20);
+                    const smaSeries = chart.addLineSeries({
+                        color: smaColor,
+                        lineWidth: 1.5,
+                        title: 'SMA (20)',
+                    });
+                    smaSeries.setData(smaData);
+
+                    // Add Volume overlay
+                    const volumeSeries = chart.addHistogramSeries({
+                        priceFormat: { type: 'volume' },
+                        priceScaleId: '', // overlay
+                    });
+                    volumeSeries.priceScale().applyOptions({
+                        scaleMargins: {
+                            top: 0.8,
+                            bottom: 0,
+                        },
+                    });
+                    volumeSeries.setData(volumeData);
+
+                    // Setup resize observer
+                    const resizeObserver = new ResizeObserver(entries => {
+                        if (entries.length === 0 || !entries[0].contentRect) return;
+                        const { width, height } = entries[0].contentRect;
+                        chart.resize(width, height);
+                    });
+                    resizeObserver.observe(container);
+
+                    container.chartInstance = chart;
+                    container.resizeObserverInstance = resizeObserver;
+                })
+                .catch(err => {
+                    console.error("Failed to load chart data:", err);
+                    const isDark = currentChartTheme === 'dark';
+                    const bgColor = isDark ? '#050f1e' : '#ffffff';
+                    container.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #ff3b30; font-family: var(--font-cyber); gap: 10px; background: ' + bgColor + ';">' +
+                        '<span>⚠️ TELEMETRY STREAM OFFLINE</span>' +
+                        '<span style="font-size: 11px; color: var(--text-muted);">Failed to load chart data for ' + symbol + '. Please try again later.</span>' +
+                        '</div>';
+                });
+        }
+
+        function calculateSMA(data, period) {
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) continue;
+                let sum = 0;
+                for (let j = 0; j < period; j++) {
+                    sum += data[i - j].close;
+                }
+                result.push({
+                    time: data[i].time,
+                    value: sum / period
+                });
+            }
+            return result;
         }
 
         function toggleChartTheme() {
@@ -930,10 +998,22 @@ function generateHTML(briefing) {
         function closeChartModal() {
             const modal = document.getElementById("chart-modal");
             modal.style.display = "none";
-            document.getElementById("chart-modal-container").innerHTML = "";
+            const container = document.getElementById("chart-modal-container");
+            if (container.chartInstance) {
+                try {
+                    container.chartInstance.remove();
+                } catch(e) {}
+                container.chartInstance = null;
+            }
+            if (container.resizeObserverInstance) {
+                container.resizeObserverInstance.disconnect();
+                container.resizeObserverInstance = null;
+            }
+            container.innerHTML = "";
         }
     </script>
 
+    <script src="js/lightweight-charts.js"></script>
     <script src="js/auth.js?v=${Date.now()}"></script>
     <script src="js/app.js"></script>
     <script src="js/agent.js?v=${Date.now()}"></script>

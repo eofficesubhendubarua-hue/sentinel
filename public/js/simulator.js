@@ -3287,6 +3287,7 @@
     runAnalysis(sym);
   }
   window.runSimulatorSymbol = runSimulatorSymbol;
+  window.fetchYahooChartData = fetchYahooChart;
 
   // Custom proxy settings handlers
   window.toggleProxySettings = function() {
