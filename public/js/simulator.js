@@ -7,12 +7,6 @@
 (function () {
   'use strict';
 
-  // ─── CORS Proxies ──────────────────────────────────────────
-  const CORS_PROXIES = [
-    { url: 'https://api.allorigins.win/get?url=', unwrap: d => JSON.parse(d.contents) },
-    { url: 'https://corsproxy.io/?', unwrap: d => d },
-  ];
-
   const YAHOO_CHART  = 'https://query1.finance.yahoo.com/v8/finance/chart/';
   const YAHOO_QUOTE  = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/';
   const MF_SEARCH    = 'https://api.mfapi.in/mf/search?q=';
@@ -146,6 +140,12 @@
     } else if (url.startsWith('https://query2.finance.yahoo.com/v10/finance/quoteSummary/')) {
       const rest = url.replace('https://query2.finance.yahoo.com/v10/finance/quoteSummary/', '');
       proxyUrl = PROXY_BASE + '/api/yahoo-quote/' + rest;
+    } else if (url.startsWith('https://api.mfapi.in/mf/search?q=')) {
+      const rest = url.replace('https://api.mfapi.in/mf/search?q=', '');
+      proxyUrl = PROXY_BASE + '/api/mf-search/' + rest;
+    } else if (url.startsWith('https://api.mfapi.in/mf/')) {
+      const rest = url.replace('https://api.mfapi.in/mf/', '');
+      proxyUrl = PROXY_BASE + '/api/mf-nav/' + rest;
     }
 
     if (proxyUrl) {
@@ -161,13 +161,6 @@
       if (r.ok) return await r.json();
     } catch (_) {}
 
-    // 3. CORS proxy fallbacks
-    for (const proxy of CORS_PROXIES) {
-      try {
-        const r = await fetch(proxy.url + encodeURIComponent(url));
-        if (r.ok) return proxy.unwrap(await r.json());
-      } catch (_) {}
-    }
     throw new Error('Network unreachable for: ' + url);
   }
 
@@ -1097,7 +1090,7 @@
       const scale = Math.pow(1 / (1 + growth), 2 - idx);
       const cfo = revenue * opMargin * 0.7 * scale;
       const cfi = -revenue * 0.08 * scale;
-      const cff = -borrowings * 0.05 + Math.random() * 1e7;
+      const cff = -bsData[idx].borrowings * 0.05 + Math.random() * 1e7;
       const netCash = cfo + cfi + cff;
       return { yr, cfo, cfi, cff, netCash };
     });
