@@ -78,7 +78,7 @@
     'dr reddy': 'DRREDDY.NS', 'drreddy': 'DRREDDY.NS',
     'airtel': 'BHARTIARTL.NS', 'bharti airtel': 'BHARTIARTL.NS', 'bhartiartl': 'BHARTIARTL.NS',
     'vedanta': 'VEDL.NS', 'tata steel': 'TATASTEEL.NS', 'tatasteel': 'TATASTEEL.NS',
-    'tata motors': 'TATAMOTORS.NS', 'tatamotors': 'TATAMOTORS.NS',
+    'tata motors': 'TMPV.NS', 'tatamotors': 'TMPV.NS',
     'jio financial': 'JIOFIN.NS', 'jiofin': 'JIOFIN.NS',
     'zomato': 'ZOMATO.NS', 'paytm': 'PAYTM.NS',
     'nykaa': 'NYKAA.NS', 'policy bazaar': 'POLICYBZR.NS',
@@ -146,6 +146,23 @@
 
   // ─── Utility: CORS-safe fetch ─────────────────────────────
   async function safeFetch(url) {
+    // Check if it is a Yahoo Finance chart URL and if we have a pre-cached JSON available
+    if (url.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/')) {
+      const remaining = url.replace('https://query1.finance.yahoo.com/v8/finance/chart/', '');
+      const symbol = remaining.split('?')[0];
+      const staticPath = `data/charts/${symbol}.json`;
+      try {
+        const res = await fetch(staticPath, { headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.chart && json.chart.result) {
+            console.log(`📡 Loaded pre-cached static chart data for: ${symbol}`);
+            return json;
+          }
+        }
+      } catch (_) {}
+    }
+
     let apiPath = null;
     if (url.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/')) {
       apiPath = '/api/yahoo-chart/' + url.replace('https://query1.finance.yahoo.com/v8/finance/chart/', '');
@@ -692,7 +709,7 @@
       { symbol: 'BHARTIARTL.NS', name: 'Bharti Airtel Ltd.', weight: 3.1 }
     ],
     'mid cap': [
-      { symbol: 'TATAMOTORS.NS', name: 'Tata Motors Ltd.', weight: 7.5 },
+      { symbol: 'TMPV.NS', name: 'Tata Motors Passenger Vehicles Ltd.', weight: 7.5 },
       { symbol: 'BAJFINANCE.NS', name: 'Bajaj Finance Ltd.', weight: 6.8 },
       { symbol: 'ZOMATO.NS', name: 'Zomato Ltd.', weight: 6.2 },
       { symbol: 'COALINDIA.NS', name: 'Coal India Ltd.', weight: 5.5 },
@@ -722,7 +739,7 @@
       { symbol: 'INFY.NS', name: 'Infosys Ltd.', weight: 6.0 },
       { symbol: 'TCS.NS', name: 'Tata Consultancy Services Ltd.', weight: 5.0 },
       { symbol: 'ZOMATO.NS', name: 'Zomato Ltd.', weight: 4.5 },
-      { symbol: 'TATAMOTORS.NS', name: 'Tata Motors Ltd.', weight: 4.2 },
+      { symbol: 'TMPV.NS', name: 'Tata Motors Passenger Vehicles Ltd.', weight: 4.2 },
       { symbol: 'SBIN.NS', name: 'State Bank of India', weight: 3.8 },
       { symbol: 'BHARTIARTL.NS', name: 'Bharti Airtel Ltd.', weight: 3.2 },
       { symbol: 'ITC.NS', name: 'ITC Ltd.', weight: 3.0 }
@@ -927,7 +944,7 @@
       } else if (sector.toLowerCase().includes('energy') || sector.toLowerCase().includes('utilities') || sector.toLowerCase().includes('power')) {
         peerSymbols = ['NTPC.NS', 'POWERGRID.NS', 'TATAPOWER.NS', 'JSWENERGY.NS'];
       } else {
-        peerSymbols = ['RELIANCE.NS', 'LT.NS', 'TATAMOTORS.NS', 'COALINDIA.NS'];
+        peerSymbols = ['RELIANCE.NS', 'LT.NS', 'TMPV.NS', 'COALINDIA.NS'];
       }
     } else {
       if (sector.toLowerCase().includes('tech') || sector.toLowerCase().includes('software')) {

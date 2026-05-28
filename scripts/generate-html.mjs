@@ -356,7 +356,7 @@ function generateHTML(briefing) {
                     <div id="sim-error" class="sim-error hidden">
                         <div class="sim-error-icon">⚠️</div>
                         <div class="sim-error-msg" id="sim-error-msg">Analysis failed.</div>
-                        <div class="sim-error-hint">Try exact tickers: RELIANCE.NS, TATAMOTORS.NS, AAPL, ^NSEI, ^BSESN</div>
+                        <div class="sim-error-hint">Try exact tickers: RELIANCE.NS, TMPV.NS, AAPL, ^NSEI, ^BSESN</div>
                     </div>
 
                     <!-- Report Output -->

@@ -15,14 +15,14 @@ const INDICES = {
   "^NSEBANK": "BANK NIFTY",
   "^CNXIT": "NIFTY IT",
   "^CNXINFRA": "NIFTY INFRA",
-  "^CNXMC": "NIFTY MIDCAP 100",
+  "NIFTY_MIDCAP_100.NS": "NIFTY MIDCAP 100",
   "^CNXSC": "NIFTY SMALLCAP 100"
 };
 
 const ETFS = {
   "MON100.NS": "Motilal Oswal Nasdaq 100 ETF",
   "MAFANG.NS": "Mirae Asset NYSE FANG+ ETF",
-  "M50.NS": "Motilal Oswal M50 ETF",
+  "MOM50.NS": "Motilal Oswal M50 ETF",
   "GOLDBEES.NS": "Nippon India Gold BeES ETF",
   "SILVERBEES.NS": "Nippon India Silver BeES ETF"
 };
@@ -34,7 +34,7 @@ const STOCKS = [
   "SUNPHARMA.NS", "ASIANPAINT.NS", "MARUTI.NS", "TITAN.NS", "ULTRACEMCO.NS",
   "ADANIENT.NS", "ADANIPORTS.NS", "COALINDIA.NS", "NTPC.NS", "POWERGRID.NS",
   "TATASTEEL.NS", "JIOFIN.NS", "HINDALCO.NS", "JSWSTEEL.NS", "GRASIM.NS",
-  "BAJAJFINSV.NS", "BRITANNIA.NS", "BPCL.NS", "TATAMOTORS.NS", "EICHERMOT.NS",
+  "BAJAJFINSV.NS", "BRITANNIA.NS", "BPCL.NS", "TMPV.NS", "TMCV.NS", "EICHERMOT.NS",
   "HEROMOTOCO.NS", "APOLLOHOSP.NS", "CIPLA.NS", "DRREDDY.NS", "DIVISLAB.NS",
   "SBILIFE.NS", "HDFCLIFE.NS", "WIPRO.NS", "TECHM.NS", "INDUSINDBK.NS",
   "SHRIRAMFIN.NS", "BEL.NS", "HAL.NS", "JINDALSTEL.NS"
@@ -47,7 +47,7 @@ const SENSEX_STOCKS = [
   "BHARTIARTL.BO", "ITC.BO", "SBIN.BO", "HINDUNILVR.BO", "LT.BO",
   "AXISBANK.BO", "KOTAKBANK.BO", "M&M.BO", "SUNPHARMA.BO", "MARUTI.BO",
   "TITAN.BO", "ULTRACEMCO.BO", "POWERGRID.BO", "NTPC.BO", "TATASTEEL.BO",
-  "JSWSTEEL.BO", "TATAMOTORS.BO", "INDUSINDBK.BO", "TECHM.BO", "HCLTECH.BO",
+  "JSWSTEEL.BO", "TMPV.BO", "TMCV.BO", "INDUSINDBK.BO", "TECHM.BO", "HCLTECH.BO",
   "BAJFINANCE.BO", "BAJAJFINSV.BO", "ASIANPAINT.BO", "NESTLEIND.BO", "ADANIPORTS.BO"
 ];
 
@@ -182,11 +182,64 @@ function getMoveReason(changePct, type, market = "IN") {
   }
 }
 
+const PUBLIC_DIR = join(ROOT, "public");
+const CHARTS_DIR = join(PUBLIC_DIR, "data", "charts");
+
 // ─── Scrape & Generate Reports ──────────────────────────────
+
+async function cacheAllCharts() {
+  console.log("📂 Caching 1-year historical chart data...");
+  mkdirSync(CHARTS_DIR, { recursive: true });
+  
+  const allTickers = Array.from(new Set([
+    ...Object.keys(INDICES),
+    ...Object.keys(ETFS),
+    ...STOCKS,
+    ...SENSEX_STOCKS,
+    ...Object.keys(US_INDICES),
+    ...Object.keys(US_ETFS),
+    ...US_STOCKS,
+    "GC=F", "BTC-USD"
+  ]));
+  
+  console.log(`📊 Found ${allTickers.length} unique symbols to pre-cache.`);
+  
+  // Sequential batch processing to prevent Yahoo Finance block
+  const batchSize = 5;
+  for (let i = 0; i < allTickers.length; i += batchSize) {
+    const batch = allTickers.slice(i, i + batchSize);
+    await Promise.all(batch.map(async sym => {
+      try {
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1y&events=div,split`;
+        const res = await fetch(url, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+          }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.chart && json.chart.result) {
+            writeFileSync(join(CHARTS_DIR, `${sym}.json`), JSON.stringify(json), "utf-8");
+          }
+        } else {
+          console.warn(`⚠️ Failed to fetch chart data for ${sym}: Status ${res.status}`);
+        }
+      } catch (err) {
+        console.error(`❌ Error fetching chart for ${sym}:`, err.message);
+      }
+    }));
+    // Small delay between batches
+    await new Promise(r => setTimeout(r, 100));
+  }
+  console.log("✅ All chart data successfully cached!");
+}
 
 async function generateAllReports() {
   console.log("📡 Generating Premium Cyber Telemetry Markets Suite...");
   mkdirSync(DATA_DIR, { recursive: true });
+  
+  // Cache historical chart JSONs first
+  await cacheAllCharts();
   
   const indexPromises = Object.entries(INDICES).map(([sym, name]) => fetchFinancialData(sym, name));
   const indicesResults = await Promise.all(indexPromises);
@@ -245,7 +298,7 @@ async function generateNiftyReport(indices, indexMap) {
   
   const mfCategories = [
     { name: "Small Cap Mutual Funds", index: "^CNXSC", desc: "Highly volatile, high-growth equity funds tracking small-cap index." },
-    { name: "Mid Cap Mutual Funds", index: "^CNXMC", desc: "Medium-sized companies offering high-growth potential." },
+    { name: "Mid Cap Mutual Funds", index: "NIFTY_MIDCAP_100.NS", desc: "Medium-sized companies offering high-growth potential." },
     { name: "Large Cap Bluechip Mutual Funds", index: "^NSEI", desc: "Stable equity funds tracking Nifty 50 large-cap stocks." },
     { name: "Technology / IT Mutual Funds", index: "^CNXIT", desc: "Sectoral funds focused on software and tech enterprises." },
     { name: "Banking & Finance Mutual Funds", index: "^NSEBANK", desc: "Focuses on private and public sector banking systems." },
