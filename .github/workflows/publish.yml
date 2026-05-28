@@ -82,6 +82,11 @@ jobs:
             sleep 15
           done
 
+      - name: 🔍 Debug public directory contents
+        run: |
+          echo "Listing public directory structure:"
+          ls -R public > public/debug-files.txt
+
       - name: 📤 Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
