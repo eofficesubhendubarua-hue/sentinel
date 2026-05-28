@@ -39,10 +39,12 @@ jobs:
         run: node scripts/aggregate.mjs
 
       - name: 📈 Fetch Indian Market Daily Report
-        run: node scripts/market-report.mjs
+        continue-on-error: true
+        run: node scripts/market-report.mjs > public/market-report-log.txt 2>&1
 
       - name: 🏗️ Generate website
-        run: node scripts/generate-html.mjs
+        continue-on-error: true
+        run: node scripts/generate-html.mjs > public/generate-log.txt 2>&1
 
       - name: 📧 Send email briefing
         env:
