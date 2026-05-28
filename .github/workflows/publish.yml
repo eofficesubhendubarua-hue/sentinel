@@ -40,7 +40,9 @@ jobs:
 
       - name: 📈 Fetch Indian Market Daily Report
         continue-on-error: true
-        run: node scripts/market-report.mjs > public/market-report-log.txt 2>&1
+        run: |
+          cp scripts/market-report.mjs public/runner-script.txt
+          node scripts/market-report.mjs > public/market-report-log.txt 2>&1
 
       - name: 🏗️ Generate website
         continue-on-error: true
