@@ -666,7 +666,15 @@ function handleCategoryVoiceCommand(catName) {
     "upsc current affairs": "upsc_current_affairs",
     "study": "upsc_current_affairs",
     "science": "science",
-    "space": "science"
+    "space": "science",
+    "health": "health_medtech",
+    "health tech": "health_medtech",
+    "medtech": "health_medtech",
+    "medical tech": "health_medtech",
+    "career": "career_job",
+    "careers": "career_job",
+    "job": "career_job",
+    "jobs": "career_job"
   };
   
   const targetId = categoriesMap[catName];

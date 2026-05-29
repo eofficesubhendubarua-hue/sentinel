@@ -116,6 +116,30 @@ export const CATEGORIES = {
     icon: "🎓",
     priority: 13,
   },
+  science: {
+    id: "science",
+    name: "Science",
+    shortName: "Science",
+    description: "Discoveries, space exploration, physics, and scientific breakthroughs",
+    icon: "🔬",
+    priority: 10.2,
+  },
+  health_medtech: {
+    id: "health_medtech",
+    name: "Health & Medical Tech",
+    shortName: "Health",
+    description: "Medical breakthroughs, health IT, biotechnology, and medical advancements",
+    icon: "🧬",
+    priority: 10.4,
+  },
+  career_job: {
+    id: "career_job",
+    name: "Career & Job",
+    shortName: "Careers",
+    description: "Job notifications, career advice, and hiring announcements from Google, FreeJobAlert, and top employment resources",
+    icon: "👔",
+    priority: 10.6,
+  },
 };
 
 export const FEEDS = {
@@ -530,6 +554,60 @@ export const FEEDS = {
     {
       name: "ForumIAS Blog",
       url: "https://blog.forumias.com/feed/",
+    },
+  ],
+  science: [
+    {
+      name: "ScienceDaily - Top Science",
+      url: "https://www.sciencedaily.com/rss/top/science.xml",
+    },
+    {
+      name: "Nature News",
+      url: "http://feeds.nature.com/nature/rss/current",
+    },
+    {
+      name: "Space.com",
+      url: "https://www.space.com/feeds/all",
+    },
+    {
+      name: "Wired Science",
+      url: "https://www.wired.com/feed/category/science/rss",
+    },
+  ],
+  health_medtech: [
+    {
+      name: "Medgadget",
+      url: "https://www.medgadget.com/feed",
+    },
+    {
+      name: "Healthcare IT News",
+      url: "https://www.healthcareitnews.com/news/feed",
+    },
+    {
+      name: "MobiHealthNews",
+      url: "https://mobihealthnews.com/feed",
+    },
+    {
+      name: "ScienceDaily - Top Health",
+      url: "https://www.sciencedaily.com/rss/top/health.xml",
+    },
+  ],
+  career_job: [
+    {
+      name: "Google Blog - Careers",
+      url: "https://blog.google/rss/",
+    },
+    {
+      name: "FreeJobAlert",
+      url: "https://currentaffairs.freejobalert.com/feed",
+    },
+    {
+      name: "RojgarLive",
+      url: "https://www.rojgarlive.com/category/sarkari-naukri/feed",
+    },
+    {
+      name: "Hacker News Jobs",
+      url: "https://hnrss.org/jobs",
     },
   ],
 };
