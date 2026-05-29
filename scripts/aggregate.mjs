@@ -19,7 +19,7 @@ const parser = new RSSParser({
   timeout: 15000,
   headers: {
     "User-Agent":
-      "SENTINEL-Intelligence-Brief/1.0 (RSS Aggregator; +https://github.com)",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     Accept: "application/rss+xml, application/xml, text/xml, */*",
   },
   maxRedirects: 5,
@@ -51,7 +51,25 @@ function getTimePeriod() {
 
 function cleanText(text) {
   if (!text) return "";
-  return text
+  let str = "";
+  if (typeof text === "string") {
+    str = text;
+  } else if (typeof text === "object") {
+    if (text._ && typeof text._ === "string") {
+      str = text._;
+    } else if (text.title && typeof text.title === "string") {
+      str = text.title;
+    } else {
+      try {
+        str = JSON.stringify(text);
+      } catch (e) {
+        str = "";
+      }
+    }
+  } else {
+    str = String(text);
+  }
+  return str
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
@@ -402,9 +420,18 @@ async function fetchFeed(feedConfig) {
       description: truncate(
         cleanText(item.contentSnippet || item.content || item.summary || "")
       ),
-      pubDate: item.pubDate
-        ? new Date(item.pubDate).toISOString()
-        : new Date().toISOString(),
+      pubDate: (() => {
+        if (!item.pubDate) return new Date().toISOString();
+        try {
+          const parsed = new Date(item.pubDate);
+          if (isNaN(parsed.getTime())) {
+            return new Date().toISOString();
+          }
+          return parsed.toISOString();
+        } catch (e) {
+          return new Date().toISOString();
+        }
+      })(),
       source: feedConfig.name,
       image: extractImageUrl(item),
     }));

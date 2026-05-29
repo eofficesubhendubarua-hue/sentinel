@@ -566,6 +566,14 @@ export const FEEDS = {
       url: "http://feeds.nature.com/nature/rss/current",
     },
     {
+      name: "Science Magazine Express",
+      url: "https://www.science.org/rss/express.xml",
+    },
+    {
+      name: "Phys.org",
+      url: "https://phys.org/rss-feed/",
+    },
+    {
       name: "Space.com",
       url: "https://www.space.com/feeds/all",
     },
@@ -576,20 +584,20 @@ export const FEEDS = {
   ],
   health_medtech: [
     {
-      name: "Medgadget",
-      url: "https://www.medgadget.com/feed",
-    },
-    {
-      name: "Healthcare IT News",
-      url: "https://www.healthcareitnews.com/news/feed",
-    },
-    {
-      name: "MobiHealthNews",
-      url: "https://mobihealthnews.com/feed",
-    },
-    {
       name: "ScienceDaily - Top Health",
       url: "https://www.sciencedaily.com/rss/top/health.xml",
+    },
+    {
+      name: "Medical Xpress",
+      url: "https://medicalxpress.com/rss-feed/",
+    },
+    {
+      name: "Fierce Biotech",
+      url: "https://www.fiercebiotech.com/rss/xml",
+    },
+    {
+      name: "Fierce Healthcare",
+      url: "https://www.fiercehealthcare.com/rss/xml",
     },
   ],
   career_job: [
@@ -602,8 +610,16 @@ export const FEEDS = {
       url: "https://currentaffairs.freejobalert.com/feed",
     },
     {
+      name: "FreeJobAlert Latest",
+      url: "https://www.freejobalert.com/feed/",
+    },
+    {
       name: "RojgarLive",
       url: "https://www.rojgarlive.com/category/sarkari-naukri/feed",
+    },
+    {
+      name: "JobRasta",
+      url: "https://jobrasta.com/feed/",
     },
     {
       name: "Hacker News Jobs",
