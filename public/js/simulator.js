@@ -143,6 +143,7 @@
     PROXY_BASES.push(DEFAULT_VERCEL);
     PROXY_BASES.push(DEFAULT_NETLIFY);
   }
+  const PROXY_BASE = PROXY_BASES[0] || '';
 
   // ─── Utility: CORS-safe fetch ─────────────────────────────
   async function safeFetch(url) {
@@ -150,7 +151,14 @@
     if (url.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/')) {
       const remaining = url.replace('https://query1.finance.yahoo.com/v8/finance/chart/', '');
       const symbol = remaining.split('?')[0];
-      const staticPath = `data/charts/${symbol}.json`;
+      const path = window.location.pathname;
+      let baseDir = '/';
+      if (path.startsWith('/sentinel')) {
+        baseDir = '/sentinel/';
+      } else {
+        baseDir = path.substring(0, path.lastIndexOf('/') + 1);
+      }
+      const staticPath = `${window.location.origin}${baseDir}data/charts/${symbol}.json`;
       try {
         const res = await fetch(staticPath, { headers: { 'Accept': 'application/json' } });
         if (res.ok) {

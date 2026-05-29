@@ -801,8 +801,8 @@ function generateHTML(briefing) {
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(8, 17, 32, 0.9); border-bottom: 1px solid rgba(0, 240, 255, 0.15);">
                 <h3 id="chart-modal-title" style="margin: 0; font-family: var(--font-cyber); font-size: 13px; color: var(--primary); letter-spacing: 1.5px; font-weight: 800;">◈ REAL-TIME TELEMETRY GRAPH</h3>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <button id="chart-theme-toggle" onclick="toggleChartTheme()" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 5px 12px; font-family: var(--font-cyber); font-size: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600; text-transform: uppercase;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">☀️ LIGHT MODE</button>
-                    <button onclick="closeChartModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+                    <button id="chart-theme-toggle" onclick="toggleChartTheme(); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 5px 12px; font-family: var(--font-cyber); font-size: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600; text-transform: uppercase;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">☀️ LIGHT MODE</button>
+                    <button onclick="closeChartModal(); event.stopPropagation();" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
                 </div>
             </div>
             <div id="chart-modal-container" style="flex-grow: 1; width: 100%; height: calc(100% - 50px); background: #000;">
@@ -1010,6 +1010,8 @@ function generateHTML(briefing) {
                 container.resizeObserverInstance = null;
             }
             container.innerHTML = "";
+            currentChartSymbol = "";
+            currentChartName = "";
         }
     </script>
 
