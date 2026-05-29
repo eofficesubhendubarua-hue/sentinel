@@ -913,7 +913,7 @@ function generateHTML(briefing) {
                         });
                     }
 
-                    const candlestickSeries = chart.addCandlestickSeries({
+                    const candlestickSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
                         upColor: upColor,
                         downColor: downColor,
                         borderVisible: false,
@@ -924,7 +924,7 @@ function generateHTML(briefing) {
 
                     // Add Simple Moving Average (SMA 20) line
                     const smaData = calculateSMA(candleData, 20);
-                    const smaSeries = chart.addLineSeries({
+                    const smaSeries = chart.addSeries(LightweightCharts.LineSeries, {
                         color: smaColor,
                         lineWidth: 1.5,
                         title: 'SMA (20)',
@@ -932,7 +932,7 @@ function generateHTML(briefing) {
                     smaSeries.setData(smaData);
 
                     // Add Volume overlay
-                    const volumeSeries = chart.addHistogramSeries({
+                    const volumeSeries = chart.addSeries(LightweightCharts.HistogramSeries, {
                         priceFormat: { type: 'volume' },
                         priceScaleId: '', // overlay
                     });
