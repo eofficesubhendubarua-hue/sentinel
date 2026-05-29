@@ -798,15 +798,38 @@ function generateHTML(briefing) {
     <!-- Interactive TradingView Chart Modal -->
     <div id="chart-modal" style="position: fixed; inset: 0; background: rgba(3, 7, 12, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100000; display: none; align-items: center; justify-content: center; padding: 20px;">
         <div style="position: relative; width: 90vw; height: 85vh; background: #050f1e; border: 1px solid var(--primary); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--neon-glow-strong); clip-path: polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%);">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(8, 17, 32, 0.9); border-bottom: 1px solid rgba(0, 240, 255, 0.15);">
-                <h3 id="chart-modal-title" style="margin: 0; font-family: var(--font-cyber); font-size: 13px; color: var(--primary); letter-spacing: 1.5px; font-weight: 800;">◈ REAL-TIME TELEMETRY GRAPH</h3>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <button id="chart-theme-toggle" onclick="toggleChartTheme(); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 5px 12px; font-family: var(--font-cyber); font-size: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600; text-transform: uppercase;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">☀️ LIGHT MODE</button>
-                    <button onclick="closeChartModal(); event.stopPropagation();" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 20px; background: rgba(8, 17, 32, 0.9); border-bottom: 1px solid rgba(0, 240, 255, 0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                        <h3 id="chart-modal-title" style="margin: 0; font-family: var(--font-cyber); font-size: 14px; color: var(--primary); letter-spacing: 1px; font-weight: 800;">◈ REAL-TIME TELEMETRY GRAPH</h3>
+                        <span id="chart-ltp-container" style="font-family: var(--font-cyber); font-size: 15px; font-weight: 800; color: #00ff88; min-width: 80px;">—</span>
+                        <span id="chart-change-container" style="font-family: var(--font-mono); font-size: 11px; color: #00ff88;">—</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <button id="chart-theme-toggle" onclick="toggleChartTheme(); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 5px 12px; font-family: var(--font-cyber); font-size: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600; text-transform: uppercase;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">☀️ LIGHT MODE</button>
+                        <button onclick="closeChartModal(); event.stopPropagation();" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; font-family: var(--font-cyber);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); flex-wrap: wrap; gap: 10px;">
+                    <div id="chart-legend" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span>O: <span id="legend-open" style="color: var(--text-normal); font-weight: 600;">—</span></span>
+                        <span>H: <span id="legend-high" style="color: var(--text-normal); font-weight: 600;">—</span></span>
+                        <span>L: <span id="legend-low" style="color: var(--text-normal); font-weight: 600;">—</span></span>
+                        <span>C: <span id="legend-close" style="color: var(--text-normal); font-weight: 600;">—</span></span>
+                        <span>Vol: <span id="legend-vol" style="color: var(--text-normal); font-weight: 600;">—</span></span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span style="font-family: var(--font-cyber); font-size: 8px; letter-spacing: 1px; color: var(--text-muted); font-weight: 600;">INDICATORS:</span>
+                        <button id="btn-toggle-sma" onclick="toggleIndicator('sma'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: var(--font-cyber); transition: all 0.2s;">SMA 20</button>
+                        <button id="btn-toggle-ema" onclick="toggleIndicator('ema'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: var(--font-cyber); transition: all 0.2s;">EMA 50</button>
+                        <button id="btn-toggle-rsi" onclick="toggleIndicator('rsi'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: var(--font-cyber); transition: all 0.2s;">RSI 14</button>
+                        <span style="border-left: 1px solid rgba(0, 240, 255, 0.15); height: 12px; margin: 0 5px;"></span>
+                        <button id="btn-toggle-style" onclick="toggleChartStyle(); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: var(--font-cyber); transition: all 0.2s;">CANDLESTICK</button>
+                    </div>
                 </div>
             </div>
-            <div id="chart-modal-container" style="flex-grow: 1; width: 100%; height: calc(100% - 50px); background: #000;">
-                <!-- TradingView Widget Injected Here -->
+            <div id="chart-modal-container" style="flex-grow: 1; width: 100%; height: calc(100% - 90px); background: #000; display: flex; flex-direction: column;">
+                <!-- Split layouts are injected here -->
             </div>
         </div>
     </div>
@@ -816,6 +839,21 @@ function generateHTML(briefing) {
         let currentChartName = "";
         let currentChartTheme = "dark";
 
+        // Persistent UI choices (LTP, indicators, chart styles)
+        let activeIndicators = { sma: false, ema: false, rsi: false };
+        let currentChartStyle = "candlestick"; // candlestick, line
+
+        // Lightweight Charts objects
+        let mainChart = null;
+        let rsiChart = null;
+        let mainSeries = null;
+        let smaSeries = null;
+        let emaSeries = null;
+        let rsiSeries = null;
+        let volumeSeries = null;
+        let chartData = [];
+        let volumeData = [];
+
         function openChartModal(symbol, name) {
             currentChartSymbol = symbol;
             currentChartName = name;
@@ -824,19 +862,10 @@ function generateHTML(briefing) {
             const title = document.getElementById("chart-modal-title");
             const container = document.getElementById("chart-modal-container");
             
-            title.innerHTML = "◈ REAL-TIME TELEMETRY GRAPH // " + name.toUpperCase() + " (" + symbol + ")";
+            title.innerHTML = "◈ " + name.toUpperCase() + " (" + symbol + ")";
             
-            // Clean up any existing chart instance
-            if (container.chartInstance) {
-                try {
-                    container.chartInstance.remove();
-                } catch(e) {}
-                container.chartInstance = null;
-            }
-            if (container.resizeObserverInstance) {
-                container.resizeObserverInstance.disconnect();
-                container.resizeObserverInstance = null;
-            }
+            // Clean up any existing chart instances
+            cleanupCharts();
             
             const isDark = currentChartTheme === "dark";
             const bgColor = isDark ? "#050f1e" : "#ffffff";
@@ -858,7 +887,12 @@ function generateHTML(briefing) {
 
             window.fetchYahooChartData(symbol)
                 .then(data => {
-                    container.innerHTML = ""; // Clear loader
+                    // Recreate visual layout containers
+                    container.innerHTML = '<div id="main-chart-container" style="width: 100%; height: 100%; position: relative;"></div>' +
+                                          '<div id="rsi-chart-container" style="width: 100%; height: 0px; border-top: 1px solid rgba(0, 240, 255, 0.15); display: none; position: relative;"></div>';
+
+                    const mainContainer = document.getElementById("main-chart-container");
+                    const rsiContainer = document.getElementById("rsi-chart-container");
                     
                     const isDark = currentChartTheme === 'dark';
                     const bgColor = isDark ? '#050f1e' : '#ffffff';
@@ -867,11 +901,10 @@ function generateHTML(briefing) {
                     const borderColor = isDark ? 'rgba(0, 240, 255, 0.15)' : 'rgba(15, 23, 42, 0.15)';
                     const upColor = isDark ? '#00ff88' : '#10b981';
                     const downColor = isDark ? '#ff3b30' : '#ef4444';
-                    const smaColor = isDark ? '#00f0ff' : '#0284c7';
 
-                    const chart = LightweightCharts.createChart(container, {
-                        width: container.clientWidth || 800,
-                        height: container.clientHeight || 450,
+                    mainChart = LightweightCharts.createChart(mainContainer, {
+                        width: mainContainer.clientWidth || 800,
+                        height: mainContainer.clientHeight || 450,
                         layout: {
                             background: { type: 'solid', color: bgColor },
                             textColor: textColor,
@@ -891,15 +924,15 @@ function generateHTML(briefing) {
                         },
                     });
 
-                    const candleData = [];
-                    const volumeData = [];
+                    chartData = [];
+                    volumeData = [];
                     for (let i = 0; i < data.timestamps.length; i++) {
                         if (data.opens[i] == null || data.highs[i] == null || data.lows[i] == null || data.closes[i] == null) {
                             continue;
                         }
                         const dateObj = new Date(data.timestamps[i] * 1000);
                         const timeStr = dateObj.toISOString().split('T')[0];
-                        candleData.push({
+                        chartData.push({
                             time: timeStr,
                             open: data.opens[i],
                             high: data.highs[i],
@@ -909,32 +942,35 @@ function generateHTML(briefing) {
                         volumeData.push({
                             time: timeStr,
                             value: data.volumes[i] || 0,
-                            color: data.closes[i] >= data.opens[i] ? 'rgba(0, 255, 136, 0.3)' : 'rgba(255, 59, 48, 0.3)'
+                            color: data.closes[i] >= data.opens[i] ? 'rgba(0, 255, 136, 0.25)' : 'rgba(255, 59, 48, 0.25)'
                         });
                     }
 
-                    const candlestickSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
-                        upColor: upColor,
-                        downColor: downColor,
-                        borderVisible: false,
-                        wickUpColor: upColor,
-                        wickDownColor: downColor,
-                    });
-                    candlestickSeries.setData(candleData);
+                    // Render base layout (candlestick or line)
+                    if (currentChartStyle === "candlestick") {
+                        mainSeries = mainChart.addSeries(LightweightCharts.CandlestickSeries, {
+                            upColor: upColor,
+                            downColor: downColor,
+                            borderVisible: false,
+                            wickUpColor: upColor,
+                            wickDownColor: downColor,
+                        });
+                        mainSeries.setData(chartData);
+                    } else {
+                        const lineData = chartData.map(c => ({ time: c.time, value: c.close }));
+                        const lineColor = isDark ? '#00f0ff' : '#0284c7';
+                        mainSeries = mainChart.addSeries(LightweightCharts.LineSeries, {
+                            color: lineColor,
+                            lineWidth: 2,
+                            title: 'PRICE',
+                        });
+                        mainSeries.setData(lineData);
+                    }
 
-                    // Add Simple Moving Average (SMA 20) line
-                    const smaData = calculateSMA(candleData, 20);
-                    const smaSeries = chart.addSeries(LightweightCharts.LineSeries, {
-                        color: smaColor,
-                        lineWidth: 1.5,
-                        title: 'SMA (20)',
-                    });
-                    smaSeries.setData(smaData);
-
-                    // Add Volume overlay
-                    const volumeSeries = chart.addSeries(LightweightCharts.HistogramSeries, {
+                    // Volume Overlay
+                    volumeSeries = mainChart.addSeries(LightweightCharts.HistogramSeries, {
                         priceFormat: { type: 'volume' },
-                        priceScaleId: '', // overlay
+                        priceScaleId: '', // Overlay
                     });
                     volumeSeries.priceScale().applyOptions({
                         scaleMargins: {
@@ -944,16 +980,68 @@ function generateHTML(briefing) {
                     });
                     volumeSeries.setData(volumeData);
 
+                    // Re-apply/Draw Indicators if they were active in state
+                    if (activeIndicators.sma) {
+                        drawIndicator('sma');
+                    }
+                    if (activeIndicators.ema) {
+                        drawIndicator('ema');
+                    }
+                    if (activeIndicators.rsi) {
+                        renderRsiLayout();
+                    }
+
+                    // Calculate LTP & Daily absolute/percentage change
+                    if (chartData.length > 0) {
+                        const latest = chartData[chartData.length - 1];
+                        const prev = chartData.length > 1 ? chartData[chartData.length - 2] : latest;
+                        const ltp = latest.close;
+                        const change = ltp - prev.close;
+                        const pctChange = (change / prev.close) * 100;
+
+                        const ltpContainer = document.getElementById("chart-ltp-container");
+                        const changeContainer = document.getElementById("chart-change-container");
+
+                        ltpContainer.innerText = ltp.toFixed(2) + " " + (data.currency || "INR");
+                        changeContainer.innerText = (change >= 0 ? "+" : "") + change.toFixed(2) + " (" + (change >= 0 ? "+" : "") + pctChange.toFixed(2) + "%)";
+
+                        if (change >= 0) {
+                            ltpContainer.style.color = "#00ff88";
+                            changeContainer.style.color = "#00ff88";
+                        } else {
+                            ltpContainer.style.color = "#ff3b30";
+                            changeContainer.style.color = "#ff3b30";
+                        }
+
+                        // Load initial legend info
+                        updateLegend(latest, volumeData[volumeData.length - 1]);
+                    }
+
+                    // Crosshair move listener to update OHLCV legend
+                    mainChart.subscribeCrosshairMove((param) => {
+                        if (param.time) {
+                            const pricePoint = param.seriesData.get(mainSeries);
+                            const volPoint = param.seriesData.get(volumeSeries);
+                            updateLegend(pricePoint, volPoint);
+                        } else {
+                            if (chartData.length > 0) {
+                                updateLegend(chartData[chartData.length - 1], volumeData[volumeData.length - 1]);
+                            }
+                        }
+                    });
+
                     // Setup resize observer
                     const resizeObserver = new ResizeObserver(entries => {
                         if (entries.length === 0 || !entries[0].contentRect) return;
-                        const { width, height } = entries[0].contentRect;
-                        chart.resize(width, height);
+                        if (mainChart) mainChart.resize(mainContainer.clientWidth, mainContainer.clientHeight);
+                        if (rsiChart) rsiChart.resize(rsiContainer.clientWidth, rsiContainer.clientHeight);
                     });
                     resizeObserver.observe(container);
 
-                    container.chartInstance = chart;
+                    container.chartInstance = mainChart;
                     container.resizeObserverInstance = resizeObserver;
+                    
+                    updateButtonStates();
                 })
                 .catch(err => {
                     console.error("Failed to load chart data:", err);
@@ -966,6 +1054,310 @@ function generateHTML(briefing) {
                 });
         }
 
+        function cleanupCharts() {
+            const container = document.getElementById("chart-modal-container");
+            if (mainChart) {
+                try { mainChart.remove(); } catch(e) {}
+                mainChart = null;
+            }
+            if (rsiChart) {
+                try { rsiChart.remove(); } catch(e) {}
+                rsiChart = null;
+            }
+            if (container.resizeObserverInstance) {
+                container.resizeObserverInstance.disconnect();
+                container.resizeObserverInstance = null;
+            }
+            mainSeries = null;
+            smaSeries = null;
+            emaSeries = null;
+            rsiSeries = null;
+            volumeSeries = null;
+        }
+
+        // Toggles SMA, EMA, RSI state
+        function toggleIndicator(type) {
+            activeIndicators[type] = !activeIndicators[type];
+            updateButtonStates();
+
+            if (!mainChart) return;
+
+            if (type === 'sma') {
+                if (activeIndicators.sma) {
+                    drawIndicator('sma');
+                } else {
+                    if (smaSeries) {
+                        mainChart.removeSeries(smaSeries);
+                        smaSeries = null;
+                    }
+                }
+            } else if (type === 'ema') {
+                if (activeIndicators.ema) {
+                    drawIndicator('ema');
+                } else {
+                    if (emaSeries) {
+                        mainChart.removeSeries(emaSeries);
+                        emaSeries = null;
+                    }
+                }
+            } else if (type === 'rsi') {
+                renderRsiLayout();
+            }
+        }
+
+        // Computes and renders standard indicators
+        function drawIndicator(type) {
+            const isDark = currentChartTheme === 'dark';
+            if (type === 'sma') {
+                const smaColor = isDark ? '#00f0ff' : '#0284c7';
+                const smaData = calculateSMA(chartData, 20);
+                smaSeries = mainChart.addSeries(LightweightCharts.LineSeries, {
+                    color: smaColor,
+                    lineWidth: 1.5,
+                    title: 'SMA (20)',
+                });
+                smaSeries.setData(smaData);
+            } else if (type === 'ema') {
+                const emaColor = isDark ? '#ff007f' : '#b91c1c';
+                const emaData = calculateEMA(chartData, 50);
+                emaSeries = mainChart.addSeries(LightweightCharts.LineSeries, {
+                    color: emaColor,
+                    lineWidth: 1.5,
+                    title: 'EMA (50)',
+                });
+                emaSeries.setData(emaData);
+            }
+        }
+
+        // Toggles Candle vs Line chart type
+        function toggleChartStyle() {
+            currentChartStyle = currentChartStyle === "candlestick" ? "line" : "candlestick";
+            updateButtonStates();
+
+            if (!mainChart || chartData.length === 0) return;
+
+            const isDark = currentChartTheme === 'dark';
+            const upColor = isDark ? '#00ff88' : '#10b981';
+            const downColor = isDark ? '#ff3b30' : '#ef4444';
+            const lineColor = isDark ? '#00f0ff' : '#0284c7';
+
+            if (mainSeries) {
+                mainChart.removeSeries(mainSeries);
+            }
+
+            if (currentChartStyle === "candlestick") {
+                mainSeries = mainChart.addSeries(LightweightCharts.CandlestickSeries, {
+                    upColor: upColor,
+                    downColor: downColor,
+                    borderVisible: false,
+                    wickUpColor: upColor,
+                    wickDownColor: downColor,
+                });
+                mainSeries.setData(chartData);
+            } else {
+                const lineData = chartData.map(c => ({ time: c.time, value: c.close }));
+                mainSeries = mainChart.addSeries(LightweightCharts.LineSeries, {
+                    color: lineColor,
+                    lineWidth: 2,
+                    title: 'PRICE',
+                });
+                mainSeries.setData(lineData);
+            }
+        }
+
+        // Setup double-pane layouts for RSI
+        function renderRsiLayout() {
+            const mainContainer = document.getElementById("main-chart-container");
+            const rsiContainer = document.getElementById("rsi-chart-container");
+            if (!mainContainer || !rsiContainer) return;
+
+            const isDark = currentChartTheme === 'dark';
+            const bgColor = isDark ? '#050f1e' : '#ffffff';
+            const textColor = isDark ? '#c4d1ec' : '#0f172a';
+            const gridColor = isDark ? 'rgba(0, 240, 255, 0.05)' : 'rgba(15, 23, 42, 0.08)';
+            const borderColor = isDark ? 'rgba(0, 240, 255, 0.15)' : 'rgba(15, 23, 42, 0.15)';
+            const rsiColor = isDark ? '#e0a96d' : '#d97706';
+
+            if (activeIndicators.rsi) {
+                mainContainer.style.height = "70%";
+                rsiContainer.style.height = "30%";
+                rsiContainer.style.display = "block";
+
+                if (mainChart) {
+                    mainChart.resize(mainContainer.clientWidth, mainContainer.clientHeight);
+                    mainChart.applyOptions({ timeScale: { visible: false } });
+                }
+
+                if (!rsiChart) {
+                    rsiChart = LightweightCharts.createChart(rsiContainer, {
+                        width: rsiContainer.clientWidth || 800,
+                        height: rsiContainer.clientHeight || 150,
+                        layout: {
+                            background: { type: 'solid', color: bgColor },
+                            textColor: textColor,
+                        },
+                        grid: {
+                            vertLines: { color: gridColor },
+                            horzLines: { color: gridColor },
+                        },
+                        crosshair: {
+                            mode: LightweightCharts.CrosshairMode.Normal,
+                        },
+                        rightPriceScale: {
+                            borderColor: borderColor,
+                        },
+                        timeScale: {
+                            borderColor: borderColor,
+                            visible: true,
+                        },
+                    });
+
+                    const rsiData = calculateRSI(chartData, 14);
+                    rsiSeries = rsiChart.addSeries(LightweightCharts.LineSeries, {
+                        color: rsiColor,
+                        lineWidth: 1.5,
+                        title: 'RSI (14)',
+                    });
+                    rsiSeries.setData(rsiData);
+
+                    // Add 30/70 horizontal reference bounds
+                    rsiSeries.createPriceLine({
+                        price: 70,
+                        color: isDark ? 'rgba(255, 59, 48, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+                        lineWidth: 1,
+                        lineStyle: LightweightCharts.LineStyle.Dashed,
+                        axisLabelVisible: true,
+                        title: '70',
+                    });
+                    rsiSeries.createPriceLine({
+                        price: 30,
+                        color: isDark ? 'rgba(0, 255, 136, 0.4)' : 'rgba(16, 185, 129, 0.4)',
+                        lineWidth: 1,
+                        lineStyle: LightweightCharts.LineStyle.Dashed,
+                        axisLabelVisible: true,
+                        title: '30',
+                    });
+
+                    // Sync visible scrolls
+                    mainChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+                        if (rsiChart) rsiChart.timeScale().setVisibleLogicalRange(range);
+                    });
+                    rsiChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+                        if (mainChart) mainChart.timeScale().setVisibleLogicalRange(range);
+                    });
+                }
+            } else {
+                mainContainer.style.height = "100%";
+                rsiContainer.style.height = "0px";
+                rsiContainer.style.display = "none";
+
+                if (rsiChart) {
+                    try { rsiChart.remove(); } catch(e) {}
+                    rsiChart = null;
+                    rsiSeries = null;
+                }
+
+                if (mainChart) {
+                    mainChart.applyOptions({ timeScale: { visible: true } });
+                    mainChart.resize(mainContainer.clientWidth, mainContainer.clientHeight);
+                }
+            }
+        }
+
+        // Toggles styled cyan glowing indicators buttons states
+        function updateButtonStates() {
+            const btnSma = document.getElementById("btn-toggle-sma");
+            const btnEma = document.getElementById("btn-toggle-ema");
+            const btnRsi = document.getElementById("btn-toggle-rsi");
+            const btnStyle = document.getElementById("btn-toggle-style");
+
+            if (!btnSma || !btnEma || !btnRsi || !btnStyle) return;
+
+            if (activeIndicators.sma) {
+                btnSma.style.background = "rgba(0, 240, 255, 0.15)";
+                btnSma.style.borderColor = "var(--primary)";
+                btnSma.style.color = "var(--primary)";
+                btnSma.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.3)";
+            } else {
+                btnSma.style.background = "rgba(0, 240, 255, 0.05)";
+                btnSma.style.borderColor = "rgba(0, 240, 255, 0.2)";
+                btnSma.style.color = "var(--text-muted)";
+                btnSma.style.boxShadow = "none";
+            }
+
+            if (activeIndicators.ema) {
+                btnEma.style.background = "rgba(0, 240, 255, 0.15)";
+                btnEma.style.borderColor = "var(--primary)";
+                btnEma.style.color = "var(--primary)";
+                btnEma.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.3)";
+            } else {
+                btnEma.style.background = "rgba(0, 240, 255, 0.05)";
+                btnEma.style.borderColor = "rgba(0, 240, 255, 0.2)";
+                btnEma.style.color = "var(--text-muted)";
+                btnEma.style.boxShadow = "none";
+            }
+
+            if (activeIndicators.rsi) {
+                btnRsi.style.background = "rgba(0, 240, 255, 0.15)";
+                btnRsi.style.borderColor = "var(--primary)";
+                btnRsi.style.color = "var(--primary)";
+                btnRsi.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.3)";
+            } else {
+                btnRsi.style.background = "rgba(0, 240, 255, 0.05)";
+                btnRsi.style.borderColor = "rgba(0, 240, 255, 0.2)";
+                btnRsi.style.color = "var(--text-muted)";
+                btnRsi.style.boxShadow = "none";
+            }
+
+            btnStyle.innerHTML = currentChartStyle === "candlestick" ? "LINE STYLE" : "CANDLESTICK";
+        }
+
+        // Live legends update values handler
+        function updateLegend(pricePoint, volPoint) {
+            const openSpan = document.getElementById("legend-open");
+            const highSpan = document.getElementById("legend-high");
+            const lowSpan = document.getElementById("legend-low");
+            const closeSpan = document.getElementById("legend-close");
+            const volSpan = document.getElementById("legend-vol");
+
+            if (!openSpan || !highSpan || !lowSpan || !closeSpan || !volSpan) return;
+
+            if (pricePoint) {
+                if (pricePoint.open !== undefined) {
+                    openSpan.innerText = pricePoint.open.toFixed(2);
+                    highSpan.innerText = pricePoint.high.toFixed(2);
+                    lowSpan.innerText = pricePoint.low.toFixed(2);
+                    closeSpan.innerText = pricePoint.close.toFixed(2);
+                } else {
+                    openSpan.innerText = pricePoint.value.toFixed(2);
+                    highSpan.innerText = pricePoint.value.toFixed(2);
+                    lowSpan.innerText = pricePoint.value.toFixed(2);
+                    closeSpan.innerText = pricePoint.value.toFixed(2);
+                }
+            } else {
+                openSpan.innerText = "—";
+                highSpan.innerText = "—";
+                lowSpan.innerText = "—";
+                closeSpan.innerText = "—";
+            }
+
+            if (volPoint && volPoint.value !== undefined) {
+                volSpan.innerText = formatVolume(volPoint.value);
+            } else {
+                volSpan.innerText = "—";
+            }
+        }
+
+        function formatVolume(val) {
+            if (val >= 1000000) {
+                return (val / 1000000).toFixed(2) + "M";
+            } else if (val >= 1000) {
+                return (val / 1000).toFixed(1) + "K";
+            }
+            return val.toString();
+        }
+
+        // ─── Mathematical Indicators Calculations ───
         function calculateSMA(data, period) {
             const result = [];
             for (let i = 0; i < data.length; i++) {
@@ -977,6 +1369,61 @@ function generateHTML(briefing) {
                 result.push({
                     time: data[i].time,
                     value: sum / period
+                });
+            }
+            return result;
+        }
+
+        function calculateEMA(data, period) {
+            const result = [];
+            if (data.length < period) return result;
+            const k = 2 / (period + 1);
+            let sum = 0;
+            for (let i = 0; i < period; i++) {
+                sum += data[i].close;
+            }
+            let emaVal = sum / period;
+            result.push({ time: data[period - 1].time, value: emaVal });
+            for (let i = period; i < data.length; i++) {
+                emaVal = (data[i].close * k) + (emaVal * (1 - k));
+                result.push({ time: data[i].time, value: emaVal });
+            }
+            return result;
+        }
+
+        function calculateRSI(data, period = 14) {
+            const result = [];
+            if (data.length <= period) return result;
+
+            let gains = 0;
+            let losses = 0;
+
+            for (let i = 1; i <= period; i++) {
+                const diff = data[i].close - data[i - 1].close;
+                if (diff > 0) gains += diff;
+                else losses -= diff;
+            }
+
+            let avgGain = gains / period;
+            let avgLoss = losses / period;
+            
+            result.push({
+                time: data[period].time,
+                value: avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss))
+            });
+
+            for (let i = period + 1; i < data.length; i++) {
+                const diff = data[i].close - data[i - 1].close;
+                const gain = diff > 0 ? diff : 0;
+                const loss = diff < 0 ? -diff : 0;
+
+                avgGain = ((avgGain * (period - 1)) + gain) / period;
+                avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+
+                const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+                result.push({
+                    time: data[i].time,
+                    value: avgLoss === 0 ? 100 : 100 - (100 / (1 + rs))
                 });
             }
             return result;
@@ -998,18 +1445,7 @@ function generateHTML(briefing) {
         function closeChartModal() {
             const modal = document.getElementById("chart-modal");
             modal.style.display = "none";
-            const container = document.getElementById("chart-modal-container");
-            if (container.chartInstance) {
-                try {
-                    container.chartInstance.remove();
-                } catch(e) {}
-                container.chartInstance = null;
-            }
-            if (container.resizeObserverInstance) {
-                container.resizeObserverInstance.disconnect();
-                container.resizeObserverInstance = null;
-            }
-            container.innerHTML = "";
+            cleanupCharts();
             currentChartSymbol = "";
             currentChartName = "";
         }
