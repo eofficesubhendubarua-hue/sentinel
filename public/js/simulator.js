@@ -1399,6 +1399,7 @@
   // ─── Main buildReport ───────────────────────────────────────
 
   function buildReport(chartData, fundamentals, techResult, fundResult, forecast, verdict) {
+    const uniqueId = 'analyzer_' + chartData.symbol.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Math.floor(Math.random() * 1000000);
     const fund = fundamentals || {};
     const closes = chartData.closes.filter(c => c != null);
     const highs  = chartData.highs.filter(h => h != null);
@@ -1634,6 +1635,29 @@
       <div class="sim-rpt-verdict-badge" style="display: inline-block; padding: 0.4rem 1rem; border-radius: 4px; font-family: 'Orbitron', monospace; font-size: 0.8rem; font-weight: 700; margin-top: 0.6rem; background:${verdict.color}15; color:${verdict.color}; border:1px solid ${verdict.color}55">
         ${verdict.icon} ${verdict.rating}
       </div>
+    </div>
+  </div>
+
+  <!-- LIVE PRICE TELEMETRY CHART -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary);">📊 LIVE PRICE TELEMETRY CHART</span>
+        <span id="analyzer-legend-${uniqueId}" style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: rgba(0, 240, 255, 0.7); font-weight: 500;"></span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+          <span style="font-family: 'Orbitron', sans-serif; font-size: 8px; letter-spacing: 1px; color: var(--text-muted); font-weight: 600;">INDICATORS:</span>
+          <button id="btn-analyzer-toggle-sma-${uniqueId}" onclick="toggleAnalyzerIndicator('${uniqueId}', 'sma'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">SMA 20</button>
+          <button id="btn-analyzer-toggle-ema-${uniqueId}" onclick="toggleAnalyzerIndicator('${uniqueId}', 'ema'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">EMA 50</button>
+          <button id="btn-analyzer-toggle-rsi-${uniqueId}" onclick="toggleAnalyzerIndicator('${uniqueId}', 'rsi'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">RSI 14</button>
+          <span style="border-left: 1px solid rgba(0, 240, 255, 0.15); height: 12px; margin: 0 5px;"></span>
+          <button id="btn-analyzer-toggle-style-${uniqueId}" onclick="toggleAnalyzerChartStyle('${uniqueId}'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">LINE STYLE</button>
+      </div>
+    </div>
+    <!-- Dynamically loaded chart pane inside AI Analyzer -->
+    <div id="analyzer-chart-container-${uniqueId}" class="analyzer-chart-container" data-symbol="${chartData.symbol}" data-unique-id="${uniqueId}" style="width: 100%; height: 350px; background: #000; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div id="analyzer-main-chart-${uniqueId}" style="width: 100%; height: 100%; position: relative;"></div>
+        <div id="analyzer-rsi-chart-${uniqueId}" style="width: 100%; height: 0px; border-top: 1px solid rgba(0, 240, 255, 0.15); display: none; position: relative;"></div>
     </div>
   </div>
 
@@ -2399,6 +2423,7 @@
   // ═══════════════════════════════════════════════════════════
 
   function buildMFReport(mfData, resolvedHoldings = []) {
+    const uniqueId = 'analyzer_' + mfData.schemeCode + '_' + Math.floor(Math.random() * 1000000);
     const prices = mfData.prices;
     if (!prices || prices.length < 30) return '<div class="sim-error-msg">Insufficient NAV history for analysis.</div>';
     const nav = prices[prices.length - 1];
@@ -2585,6 +2610,29 @@
       <div class="sim-rpt-verdict-badge" style="display: inline-block; padding: 0.4rem 1rem; border-radius: 4px; font-family: 'Orbitron', monospace; font-size: 0.8rem; font-weight: 700; margin-top: 0.6rem; background:${convictionCol}15; color:${convictionCol}; border:1px solid ${convictionCol}55">
         ${ret1y > 15 ? '🚀 STRONG COMPOUNDER' : '⚖️ STABLE CORE'}
       </div>
+    </div>
+  </div>
+
+  <!-- LIVE PRICE TELEMETRY CHART -->
+  <div class="sim-section" style="margin-bottom: 2rem; background: rgba(10, 25, 50, 0.3); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 240, 255, 0.2); padding-bottom: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--primary);">📊 HISTORICAL NAV TREND CHART</span>
+        <span id="analyzer-legend-${uniqueId}" style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: rgba(0, 240, 255, 0.7); font-weight: 500;"></span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+          <span style="font-family: 'Orbitron', sans-serif; font-size: 8px; letter-spacing: 1px; color: var(--text-muted); font-weight: 600;">INDICATORS:</span>
+          <button id="btn-analyzer-toggle-sma-${uniqueId}" onclick="toggleAnalyzerIndicator('${uniqueId}', 'sma'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">SMA 20</button>
+          <button id="btn-analyzer-toggle-ema-${uniqueId}" onclick="toggleAnalyzerIndicator('${uniqueId}', 'ema'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">EMA 50</button>
+          <button id="btn-analyzer-toggle-rsi-${uniqueId}" onclick="toggleAnalyzerIndicator('${uniqueId}', 'rsi'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--text-muted); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">RSI 14</button>
+          <span style="border-left: 1px solid rgba(0, 240, 255, 0.15); height: 12px; margin: 0 5px;"></span>
+          <button id="btn-analyzer-toggle-style-${uniqueId}" onclick="toggleAnalyzerChartStyle('${uniqueId}'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">LINE STYLE</button>
+      </div>
+    </div>
+    <!-- Dynamically loaded chart pane inside AI Analyzer -->
+    <div id="analyzer-chart-container-${uniqueId}" class="analyzer-chart-container" data-symbol="${mfData.schemeCode}" data-unique-id="${uniqueId}" style="width: 100%; height: 350px; background: #000; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div id="analyzer-main-chart-${uniqueId}" style="width: 100%; height: 100%; position: relative;"></div>
+        <div id="analyzer-rsi-chart-${uniqueId}" style="width: 100%; height: 0px; border-top: 1px solid rgba(0, 240, 255, 0.15); display: none; position: relative;"></div>
     </div>
   </div>
 
@@ -3007,6 +3055,7 @@
     
     resultEl.classList.remove('hidden');
     reportItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return reportItem;
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -3044,7 +3093,12 @@
           const holdings = await fetchHoldingsData(mfData.category);
           step('Computing NAV trend analysis and SIP projection...');
           const html = buildMFReport(mfData, holdings);
-          renderReport(html);
+          const rptItem = renderReport(html);
+          const containerEl = rptItem.querySelector('.analyzer-chart-container');
+          if (containerEl) {
+            const uid = containerEl.getAttribute('data-unique-id');
+            window.renderAnalyzerChart(uid, mfData.schemeCode, mfData, true);
+          }
           return;
         }
       }
@@ -3071,7 +3125,12 @@
           const holdings = await fetchHoldingsData(mfData.category);
           step('Computing analysis report...');
           const html = buildMFReport(mfData, holdings);
-          renderReport(html);
+          const rptItem = renderReport(html);
+          const containerEl = rptItem.querySelector('.analyzer-chart-container');
+          if (containerEl) {
+            const uid = containerEl.getAttribute('data-unique-id');
+            window.renderAnalyzerChart(uid, mfData.schemeCode, mfData, true);
+          }
           return;
         }
         throw new Error(`Could not find data for "${query}". Try the exact ticker symbol (e.g., RELIANCE.NS, AAPL, ^NSEI).`);
@@ -3130,7 +3189,12 @@
       step('Generating institutional intelligence report...');
       const html = buildReport(chartData, fundamentals, techResult, fundResult, forecast, verdictData);
 
-      renderReport(html);
+      const rptItem = renderReport(html);
+      const containerEl = rptItem.querySelector('.analyzer-chart-container');
+      if (containerEl) {
+        const uid = containerEl.getAttribute('data-unique-id');
+        window.renderAnalyzerChart(uid, chartData.symbol, chartData, false);
+      }
 
     } catch (err) {
       loadingEl.classList.add('hidden');
@@ -3347,6 +3411,545 @@
     
     parent.querySelectorAll('.sim-tab-content').forEach(c => c.classList.add('hidden'));
     parent.querySelector('#' + tabId).classList.remove('hidden');
+  };
+
+  // ─── Mathematical Indicators Calculations ───
+  function calculateSMA(data, period) {
+    const result = [];
+    for (let i = 0; i < data.length; i++) {
+      if (i < period - 1) continue;
+      let sum = 0;
+      for (let j = 0; j < period; j++) {
+        sum += data[i - j].close;
+      }
+      result.push({
+        time: data[i].time,
+        value: sum / period
+      });
+    }
+    return result;
+  }
+
+  function calculateEMA(data, period) {
+    const result = [];
+    if (data.length < period) return result;
+    const k = 2 / (period + 1);
+    let sum = 0;
+    for (let i = 0; i < period; i++) {
+      sum += data[i].close;
+    }
+    let emaVal = sum / period;
+    result.push({ time: data[period - 1].time, value: emaVal });
+    for (let i = period; i < data.length; i++) {
+      emaVal = (data[i].close * k) + (emaVal * (1 - k));
+      result.push({ time: data[i].time, value: emaVal });
+    }
+    return result;
+  }
+
+  function calculateRSI(data, period = 14) {
+    const result = [];
+    if (data.length <= period) return result;
+
+    let gains = 0;
+    let losses = 0;
+
+    for (let i = 1; i <= period; i++) {
+      const diff = data[i].close - data[i - 1].close;
+      if (diff > 0) gains += diff;
+      else losses -= diff;
+    }
+
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
+    
+    result.push({
+      time: data[period].time,
+      value: avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss))
+    });
+
+    for (let i = period + 1; i < data.length; i++) {
+      const diff = data[i].close - data[i - 1].close;
+      const gain = diff > 0 ? diff : 0;
+      const loss = diff < 0 ? -diff : 0;
+
+      avgGain = ((avgGain * (period - 1)) + gain) / period;
+      avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+
+      const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+      result.push({
+        time: data[i].time,
+        value: avgLoss === 0 ? 100 : 100 - (100 / (1 + rs))
+      });
+    }
+    return result;
+  }
+
+  function formatVolume(val) {
+    if (val >= 1000000) {
+      return (val / 1000000).toFixed(2) + "M";
+    } else if (val >= 1000) {
+      return (val / 1000).toFixed(1) + "K";
+    }
+    return val.toString();
+  }
+
+  window.analyzerChartsRegistry = window.analyzerChartsRegistry || {};
+
+  window.renderAnalyzerChart = function(uniqueId, symbol, rawData, isMF) {
+    const mainDiv = document.getElementById("analyzer-main-chart-" + uniqueId);
+    const containerDiv = document.getElementById("analyzer-chart-container-" + uniqueId);
+    if (!mainDiv || !containerDiv) {
+      console.warn("Chart divs not found for uniqueId: " + uniqueId);
+      return;
+    }
+
+    let chartData = [];
+    let volumeData = [];
+
+    if (isMF) {
+      const history = rawData.history || [];
+      chartData = history.map(d => {
+        const [dd, mm, yyyy] = d.date.split('-');
+        const val = parseFloat(d.nav);
+        return {
+          time: `${yyyy}-${mm}-${dd}`,
+          open: val,
+          high: val,
+          low: val,
+          close: val,
+          value: val
+        };
+      });
+    } else {
+      const closes = rawData.closes || [];
+      const opens = rawData.opens || [];
+      const highs = rawData.highs || [];
+      const lows = rawData.lows || [];
+      const volumes = rawData.volumes || [];
+      const timestamps = rawData.timestamps || [];
+
+      for (let i = 0; i < timestamps.length; i++) {
+        if (opens[i] == null || highs[i] == null || lows[i] == null || closes[i] == null) {
+          continue;
+        }
+        const dateObj = new Date(timestamps[i] * 1000);
+        const timeStr = dateObj.toISOString().split('T')[0];
+        chartData.push({
+          time: timeStr,
+          open: opens[i],
+          high: highs[i],
+          low: lows[i],
+          close: closes[i],
+        });
+        volumeData.push({
+          time: timeStr,
+          value: volumes[i] || 0,
+          color: closes[i] >= opens[i] ? 'rgba(0, 255, 136, 0.25)' : 'rgba(255, 59, 48, 0.25)'
+        });
+      }
+    }
+
+    if (chartData.length === 0) {
+      mainDiv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);">No chart data available</div>';
+      return;
+    }
+
+    window.analyzerChartsRegistry[uniqueId] = {
+      chart: null,
+      rsiChart: null,
+      mainSeries: null,
+      volumeSeries: null,
+      smaSeries: null,
+      emaSeries: null,
+      rsiSeries: null,
+      chartData: chartData,
+      volumeData: volumeData,
+      chartStyle: isMF ? 'line' : 'candlestick',
+      activeIndicators: { sma: false, ema: false, rsi: false },
+      isMF: isMF,
+      symbol: symbol,
+      uniqueId: uniqueId,
+      resizeObserver: null
+    };
+
+    const state = window.analyzerChartsRegistry[uniqueId];
+
+    const isDark = true;
+    const bgColor = '#050f1e';
+    const textColor = '#c4d1ec';
+    const gridColor = 'rgba(0, 240, 255, 0.05)';
+    const borderColor = 'rgba(0, 240, 255, 0.15)';
+    const upColor = '#00ff88';
+    const downColor = '#ff3b30';
+
+    const mainChart = LightweightCharts.createChart(mainDiv, {
+      width: mainDiv.clientWidth || 800,
+      height: mainDiv.clientHeight || 350,
+      layout: {
+        background: { type: 'solid', color: bgColor },
+        textColor: textColor,
+      },
+      grid: {
+        vertLines: { color: gridColor },
+        horzLines: { color: gridColor },
+      },
+      crosshair: {
+        mode: LightweightCharts.CrosshairMode.Normal,
+      },
+      rightPriceScale: {
+        borderColor: borderColor,
+      },
+      timeScale: {
+        borderColor: borderColor,
+      },
+    });
+
+    state.chart = mainChart;
+
+    if (state.chartStyle === 'candlestick') {
+      state.mainSeries = mainChart.addSeries(LightweightCharts.CandlestickSeries, {
+        upColor: upColor,
+        downColor: downColor,
+        borderVisible: false,
+        wickUpColor: upColor,
+        wickDownColor: downColor,
+      });
+      state.mainSeries.setData(chartData);
+    } else {
+      const seriesClass = isMF ? LightweightCharts.AreaSeries : LightweightCharts.LineSeries;
+      const options = isMF ? {
+        topColor: 'rgba(0, 240, 255, 0.2)',
+        bottomColor: 'rgba(0, 240, 255, 0.01)',
+        lineColor: '#00f0ff',
+        lineWidth: 2,
+        title: 'NAV'
+      } : {
+        color: '#00f0ff',
+        lineWidth: 2,
+        title: 'PRICE'
+      };
+      state.mainSeries = mainChart.addSeries(seriesClass, options);
+      state.mainSeries.setData(chartData.map(c => ({ time: c.time, value: c.close })));
+    }
+
+    if (!isMF && volumeData.length > 0) {
+      state.volumeSeries = mainChart.addSeries(LightweightCharts.HistogramSeries, {
+        priceFormat: { type: 'volume' },
+        priceScaleId: '',
+      });
+      state.volumeSeries.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.8,
+          bottom: 0,
+        },
+      });
+      state.volumeSeries.setData(volumeData);
+    }
+
+    const legendEl = document.getElementById("analyzer-legend-" + uniqueId);
+    
+    function updateLegendText(pricePoint, volPoint) {
+      if (!legendEl) return;
+      if (isMF) {
+        if (pricePoint) {
+          legendEl.innerHTML = `Date: ${pricePoint.time} | NAV: ₹${pricePoint.value.toFixed(2)}`;
+        } else {
+          const latest = chartData[chartData.length - 1];
+          legendEl.innerHTML = `Date: ${latest.time} | NAV: ₹${latest.value.toFixed(2)}`;
+        }
+      } else {
+        if (pricePoint) {
+          const o = pricePoint.open.toFixed(2);
+          const h = pricePoint.high.toFixed(2);
+          const l = pricePoint.low.toFixed(2);
+          const c = pricePoint.close.toFixed(2);
+          const v = volPoint ? formatVolume(volPoint.value) : '0';
+          legendEl.innerHTML = `O: ${o} H: ${h} L: ${l} C: ${c} V: ${v}`;
+        } else {
+          const latest = chartData[chartData.length - 1];
+          const latestVol = volumeData.length > 0 ? volumeData[volumeData.length - 1] : null;
+          const o = latest.open.toFixed(2);
+          const h = latest.high.toFixed(2);
+          const l = latest.low.toFixed(2);
+          const c = latest.close.toFixed(2);
+          const v = latestVol ? formatVolume(latestVol.value) : '0';
+          legendEl.innerHTML = `O: ${o} H: ${h} L: ${l} C: ${c} V: ${v}`;
+        }
+      }
+    }
+
+    updateLegendText(null, null);
+
+    mainChart.subscribeCrosshairMove((param) => {
+      if (param.time) {
+        const pricePoint = param.seriesData.get(state.mainSeries);
+        const volPoint = state.volumeSeries ? param.seriesData.get(state.volumeSeries) : null;
+        updateLegendText(pricePoint, volPoint);
+      } else {
+        updateLegendText(null, null);
+      }
+    });
+
+    const resizeObserver = new ResizeObserver(entries => {
+      if (entries.length === 0 || !entries[0].contentRect) return;
+      if (state.chart) state.chart.resize(mainDiv.clientWidth, mainDiv.clientHeight);
+      const rsiDiv = document.getElementById("analyzer-rsi-chart-" + uniqueId);
+      if (state.rsiChart && rsiDiv) state.rsiChart.resize(rsiDiv.clientWidth, rsiDiv.clientHeight);
+    });
+    resizeObserver.observe(containerDiv);
+    state.resizeObserver = resizeObserver;
+
+    window.updateAnalyzerButtonStates(uniqueId);
+  };
+
+  window.toggleAnalyzerIndicator = function(uniqueId, type) {
+    const state = window.analyzerChartsRegistry[uniqueId];
+    if (!state || !state.chart) return;
+
+    state.activeIndicators[type] = !state.activeIndicators[type];
+    window.updateAnalyzerButtonStates(uniqueId);
+
+    const mainChart = state.chart;
+
+    if (type === 'sma') {
+      if (state.activeIndicators.sma) {
+        const smaColor = '#00f0ff';
+        const smaData = calculateSMA(state.chartData, 20);
+        state.smaSeries = mainChart.addSeries(LightweightCharts.LineSeries, {
+          color: smaColor,
+          lineWidth: 1.5,
+          title: 'SMA (20)',
+        });
+        state.smaSeries.setData(smaData);
+      } else {
+        if (state.smaSeries) {
+          mainChart.removeSeries(state.smaSeries);
+          state.smaSeries = null;
+        }
+      }
+    } else if (type === 'ema') {
+      if (state.activeIndicators.ema) {
+        const emaColor = '#ff007f';
+        const emaData = calculateEMA(state.chartData, 50);
+        state.emaSeries = mainChart.addSeries(LightweightCharts.LineSeries, {
+          color: emaColor,
+          lineWidth: 1.5,
+          title: 'EMA (50)',
+        });
+        state.emaSeries.setData(emaData);
+      } else {
+        if (state.emaSeries) {
+          mainChart.removeSeries(state.emaSeries);
+          state.emaSeries = null;
+        }
+      }
+    } else if (type === 'rsi') {
+      window.renderAnalyzerRsiLayout(uniqueId);
+    }
+  };
+
+  window.toggleAnalyzerChartStyle = function(uniqueId) {
+    const state = window.analyzerChartsRegistry[uniqueId];
+    if (!state || !state.chart) return;
+
+    state.chartStyle = state.chartStyle === 'candlestick' ? 'line' : 'candlestick';
+    window.updateAnalyzerButtonStates(uniqueId);
+
+    const mainChart = state.chart;
+    const upColor = '#00ff88';
+    const downColor = '#ff3b30';
+
+    if (state.mainSeries) {
+      mainChart.removeSeries(state.mainSeries);
+    }
+
+    if (state.chartStyle === 'candlestick') {
+      state.mainSeries = mainChart.addSeries(LightweightCharts.CandlestickSeries, {
+        upColor: upColor,
+        downColor: downColor,
+        borderVisible: false,
+        wickUpColor: upColor,
+        wickDownColor: downColor,
+      });
+      state.mainSeries.setData(state.chartData);
+    } else {
+      const seriesClass = state.isMF ? LightweightCharts.AreaSeries : LightweightCharts.LineSeries;
+      const options = state.isMF ? {
+        topColor: 'rgba(0, 240, 255, 0.2)',
+        bottomColor: 'rgba(0, 240, 255, 0.01)',
+        lineColor: '#00f0ff',
+        lineWidth: 2,
+        title: 'NAV'
+      } : {
+        color: '#00f0ff',
+        lineWidth: 2,
+        title: 'PRICE'
+      };
+      state.mainSeries = mainChart.addSeries(seriesClass, options);
+      state.mainSeries.setData(state.chartData.map(c => ({ time: c.time, value: c.close })));
+    }
+  };
+
+  window.renderAnalyzerRsiLayout = function(uniqueId) {
+    const state = window.analyzerChartsRegistry[uniqueId];
+    if (!state || !state.chart) return;
+
+    const mainDiv = document.getElementById("analyzer-main-chart-" + uniqueId);
+    const rsiDiv = document.getElementById("analyzer-rsi-chart-" + uniqueId);
+    if (!mainDiv || !rsiDiv) return;
+
+    const mainChart = state.chart;
+    const bgColor = '#050f1e';
+    const textColor = '#c4d1ec';
+    const gridColor = 'rgba(0, 240, 255, 0.05)';
+    const borderColor = 'rgba(0, 240, 255, 0.15)';
+    const rsiColor = '#e0a96d';
+
+    if (state.activeIndicators.rsi) {
+      mainDiv.style.height = "70%";
+      rsiDiv.style.height = "30%";
+      rsiDiv.style.display = "block";
+
+      mainChart.resize(mainDiv.clientWidth, mainDiv.clientHeight);
+      mainChart.applyOptions({ timeScale: { visible: false } });
+
+      if (!state.rsiChart) {
+        state.rsiChart = LightweightCharts.createChart(rsiDiv, {
+          width: rsiDiv.clientWidth || 800,
+          height: rsiDiv.clientHeight || 100,
+          layout: {
+            background: { type: 'solid', color: bgColor },
+            textColor: textColor,
+          },
+          grid: {
+            vertLines: { color: gridColor },
+            horzLines: { color: gridColor },
+          },
+          crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+          },
+          rightPriceScale: {
+            borderColor: borderColor,
+          },
+          timeScale: {
+            borderColor: borderColor,
+            visible: true,
+          },
+        });
+
+        const rsiData = calculateRSI(state.chartData, 14);
+        state.rsiSeries = state.rsiChart.addSeries(LightweightCharts.LineSeries, {
+          color: rsiColor,
+          lineWidth: 1.5,
+          title: 'RSI (14)',
+        });
+        state.rsiSeries.setData(rsiData);
+
+        state.rsiSeries.createPriceLine({
+          price: 70,
+          color: 'rgba(255, 59, 48, 0.4)',
+          lineWidth: 1,
+          lineStyle: LightweightCharts.LineStyle.Dashed,
+          axisLabelVisible: true,
+          title: '70',
+        });
+        state.rsiSeries.createPriceLine({
+          price: 30,
+          color: 'rgba(0, 255, 136, 0.4)',
+          lineWidth: 1,
+          lineStyle: LightweightCharts.LineStyle.Dashed,
+          axisLabelVisible: true,
+          title: '30',
+        });
+
+        mainChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+          if (state.rsiChart) state.rsiChart.timeScale().setVisibleLogicalRange(range);
+        });
+        state.rsiChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+          if (state.chart) state.chart.timeScale().setVisibleLogicalRange(range);
+        });
+      }
+    } else {
+      mainDiv.style.height = "100%";
+      rsiDiv.style.height = "0px";
+      rsiDiv.style.display = "none";
+
+      if (state.rsiChart) {
+        try { state.rsiChart.remove(); } catch(e) {}
+        state.rsiChart = null;
+        state.rsiSeries = null;
+      }
+
+      mainChart.applyOptions({ timeScale: { visible: true } });
+      mainChart.resize(mainDiv.clientWidth, mainDiv.clientHeight);
+    }
+  };
+
+  window.updateAnalyzerButtonStates = function(uniqueId) {
+    const state = window.analyzerChartsRegistry[uniqueId];
+    if (!state) return;
+
+    const btnSma = document.getElementById("btn-analyzer-toggle-sma-" + uniqueId);
+    const btnEma = document.getElementById("btn-analyzer-toggle-ema-" + uniqueId);
+    const btnRsi = document.getElementById("btn-analyzer-toggle-rsi-" + uniqueId);
+    const btnStyle = document.getElementById("btn-analyzer-toggle-style-" + uniqueId);
+
+    if (btnSma) {
+      if (state.activeIndicators.sma) {
+        btnSma.style.background = "rgba(0, 240, 255, 0.15)";
+        btnSma.style.borderColor = "var(--primary)";
+        btnSma.style.color = "var(--primary)";
+        btnSma.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.3)";
+      } else {
+        btnSma.style.background = "rgba(0, 240, 255, 0.05)";
+        btnSma.style.borderColor = "rgba(0, 240, 255, 0.2)";
+        btnSma.style.color = "var(--text-muted)";
+        btnSma.style.boxShadow = "none";
+      }
+    }
+
+    if (btnEma) {
+      if (state.activeIndicators.ema) {
+        btnEma.style.background = "rgba(0, 240, 255, 0.15)";
+        btnEma.style.borderColor = "var(--primary)";
+        btnEma.style.color = "var(--primary)";
+        btnEma.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.3)";
+      } else {
+        btnEma.style.background = "rgba(0, 240, 255, 0.05)";
+        btnEma.style.borderColor = "rgba(0, 240, 255, 0.2)";
+        btnEma.style.color = "var(--text-muted)";
+        btnEma.style.boxShadow = "none";
+      }
+    }
+
+    if (btnRsi) {
+      if (state.activeIndicators.rsi) {
+        btnRsi.style.background = "rgba(0, 240, 255, 0.15)";
+        btnRsi.style.borderColor = "var(--primary)";
+        btnRsi.style.color = "var(--primary)";
+        btnRsi.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.3)";
+      } else {
+        btnRsi.style.background = "rgba(0, 240, 255, 0.05)";
+        btnRsi.style.borderColor = "rgba(0, 240, 255, 0.2)";
+        btnRsi.style.color = "var(--text-muted)";
+        btnRsi.style.boxShadow = "none";
+      }
+    }
+
+    if (btnStyle) {
+      if (state.chartStyle === 'line') {
+        btnStyle.textContent = 'CANDLESTYLE';
+        btnStyle.style.background = "rgba(0, 240, 255, 0.15)";
+        btnStyle.style.borderColor = "var(--primary)";
+        btnStyle.style.color = "var(--primary)";
+      } else {
+        btnStyle.textContent = 'LINE STYLE';
+        btnStyle.style.background = "rgba(0, 240, 255, 0.05)";
+        btnStyle.style.borderColor = "rgba(0, 240, 255, 0.2)";
+        btnStyle.style.color = "var(--text-muted)";
+      }
+    }
   };
 
   // Wait for DOM
