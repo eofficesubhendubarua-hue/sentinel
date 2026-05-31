@@ -1456,6 +1456,178 @@ function generateHTML(briefing) {
     <script src="js/app.js"></script>
     <script src="js/agent.js?v=${Date.now()}"></script>
     <script src="js/simulator.js?v=${Date.now()}"></script>
+
+    <!-- Smart HUD Scroll Navigator -->
+    <style>
+        .scroll-hud-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(20px) scale(0.9);
+        }
+        .scroll-hud-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+        .scroll-hud-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+            pointer-events: none;
+        }
+        .scroll-hud-fill {
+            transition: stroke-dashoffset 0.1s linear;
+            filter: drop-shadow(0 0 5px var(--primary, #00f0ff));
+        }
+        .scroll-hud-main-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(10, 25, 45, 0.9);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            color: var(--primary, #00f0ff);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        .scroll-hud-main-btn:hover {
+            background: var(--primary, #00f0ff);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary, #00f0ff);
+            border-color: var(--primary, #00f0ff);
+        }
+        .scroll-hud-main-btn:active {
+            transform: scale(0.92);
+        }
+        .scroll-hud-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 0;
+            opacity: 0;
+            height: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(15px);
+        }
+        .scroll-hud-container:hover .scroll-hud-controls {
+            opacity: 1;
+            height: 90px;
+            margin-bottom: 12px;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .scroll-hud-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(10, 25, 45, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: var(--text-primary, #ffffff);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        .scroll-hud-btn:hover {
+            border-color: var(--secondary, #9d4edd);
+            color: var(--secondary, #9d4edd);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
+            transform: scale(1.08);
+        }
+        .scroll-hud-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+
+    <div id="cyber-scroll-hud" class="scroll-hud-container">
+        <svg class="scroll-hud-svg" width="56" height="56" viewBox="0 0 56 56">
+            <circle class="scroll-hud-bg" cx="28" cy="28" r="24" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="3" />
+            <circle id="scroll-hud-progress" class="scroll-hud-fill" cx="28" cy="28" r="24" fill="none" stroke="var(--primary, #00f0ff)" stroke-width="3" 
+                    stroke-dasharray="150.79" stroke-dashoffset="150.79" stroke-linecap="round" />
+        </svg>
+        <button id="scroll-hud-main-btn" class="scroll-hud-main-btn" onclick="scrollToTopSmooth()" title="Scroll to Top">
+            <span class="scroll-hud-icon">▲</span>
+        </button>
+        <div class="scroll-hud-controls">
+            <button class="scroll-hud-btn" onclick="scrollToSection('section-market-tools')" title="Market Hub Quick-Jump">
+                📊
+            </button>
+            <button class="scroll-hud-btn" onclick="scrollToBottomSmooth()" title="Scroll to Bottom">
+                ▼
+            </button>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const scrollHud = document.getElementById('cyber-scroll-hud');
+            const progressCircle = document.getElementById('scroll-hud-progress');
+            if (!scrollHud || !progressCircle) return;
+            
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            
+            if (docHeight <= 0) return;
+            
+            const scrollPercent = scrollTop / docHeight;
+            
+            if (scrollTop > 300) {
+                scrollHud.classList.add('visible');
+            } else {
+                scrollHud.classList.remove('visible');
+            }
+            
+            const circumference = 150.79;
+            const offset = circumference - (scrollPercent * circumference);
+            progressCircle.style.strokeDashoffset = offset;
+        });
+
+        function scrollToTopSmooth() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function scrollToBottomSmooth() {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    </script>
 </body>
 </html>`;
 
