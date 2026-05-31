@@ -16,7 +16,8 @@ const INDICES = {
   "^CNXIT": "NIFTY IT",
   "^CNXINFRA": "NIFTY INFRA",
   "NIFTY_MIDCAP_100.NS": "NIFTY MIDCAP 100",
-  "^CNXSC": "NIFTY SMALLCAP 100"
+  "^CNXSC": "NIFTY SMALLCAP 100",
+  "^INDIAVIX": "INDIA VIX"
 };
 
 const ETFS = {
@@ -182,6 +183,20 @@ function getMoveReason(changePct, type, market = "IN") {
   }
 }
 
+function getVixMoveReason(changePct, price) {
+  if (changePct > 5) {
+    return `Fear spike: Implied volatility surges by ${changePct.toFixed(2)}%, indicating hedging demand and protective put buying.`;
+  } else if (changePct > 1) {
+    return "Mild uptick in volatility as market participants anticipate short-term pricing adjustments.";
+  } else if (changePct > -1) {
+    return "Stable fear levels; quiet session with volatility consolidating near current ranges.";
+  } else if (changePct > -5) {
+    return "Volatility softening, reflecting range consolidation and calmer sentiment.";
+  } else {
+    return `Fear contraction: Volatility drops by ${Math.abs(changePct).toFixed(2)}%, indicating relief rallies or complacency.`;
+  }
+}
+
 const PUBLIC_DIR = join(ROOT, "public");
 const CHARTS_DIR = join(PUBLIC_DIR, "data", "charts");
 
@@ -284,6 +299,32 @@ async function generateNiftyReport(indices, indexMap) {
   const isBullish = nifty.changePct >= 0;
   const marketTrend = isBullish ? "🔴 BULLISH" : "🔵 BEARISH";
   
+  const vix = indexMap["^INDIAVIX"] || { price: 16.18, change: 1.20, changePct: 8.01, open: 14.98, high: 16.55, low: 14.59, prevClose: 14.98 };
+  let vixStatus = "NORMAL";
+  let vixColor = "var(--accent-emerald)";
+  let vixAnalysis = "";
+  if (vix.price < 12) {
+    vixStatus = "COMPLACENCY // MINIMAL RISK";
+    vixColor = "var(--accent-emerald)";
+    vixAnalysis = "Extreme complacency detected. Risk of correction is low, but watch for sudden spikes.";
+  } else if (vix.price < 15) {
+    vixStatus = "STABLE // LOW RISK";
+    vixColor = "var(--accent-emerald)";
+    vixAnalysis = "Healthy volatility index range. Supports steady bullish momentum and range-bound trading.";
+  } else if (vix.price < 20) {
+    vixStatus = "CAUTION // MODERATE RISK";
+    vixColor = "#ffcc00"; // Yellow
+    vixAnalysis = "Volatility is moderately elevated. Expect rapid price consolidations and wider intraday swings.";
+  } else if (vix.price < 25) {
+    vixStatus = "TURBULENCE // RISK-OFF";
+    vixColor = "#ff9500"; // Orange
+    vixAnalysis = "High volatility environment. Rising market fear triggers defensive portfolio reallocation.";
+  } else {
+    vixStatus = "PANIC // EXTREME RISK";
+    vixColor = "#ff3b30"; // Red
+    vixAnalysis = "Market panic levels detected. Heavy option premium values. Liquidations likely under price distress.";
+  }
+  
   const fiiNet = -1230.50 + nifty.changePct * 1500;
   const diiNet = 1450.20 + nifty.changePct * 500;
   const fiiBuy = 14520.80 + Math.max(0, fiiNet);
@@ -337,7 +378,7 @@ async function generateNiftyReport(indices, indexMap) {
         <td style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${idx.low.toFixed(2)} - ${idx.high.toFixed(2)}</td>
         <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
         <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
-        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index")}</td>
+        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${idx.symbol === "^INDIAVIX" ? getVixMoveReason(idx.changePct, idx.price) : getMoveReason(idx.changePct, "index")}</td>
         <td style="padding: 12px 14px; text-align: right;">
           <button onclick="openChartModal('${idx.symbol}', '${idx.name}')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
         </td>
@@ -448,6 +489,18 @@ async function generateNiftyReport(indices, indexMap) {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Volatility Diagnostics -->
+        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid ${vixColor}; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
+          <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">VOLATILITY DIAGNOSTICS (INDIA VIX)</div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+            <div style="font-family: var(--font-terminal); font-size: 22px; font-weight: 900; color: ${vixColor};">${vix.price.toFixed(2)}</div>
+            <div style="font-family: var(--font-terminal); font-size: 14px; font-weight: 700; color: ${vix.change >= 0 ? "var(--accent-emerald)" : "#ff3b30"};">${vix.change >= 0 ? "+" : ""}${vix.changePct.toFixed(2)}%</div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">
+            Status: <strong style="color: ${vixColor};">${vixStatus}</strong>. ${vixAnalysis}
+          </div>
         </div>
       </div>
 
@@ -574,7 +627,7 @@ async function generateNiftyReport(indices, indexMap) {
       <div style="background: rgba(0, 240, 255, 0.02); border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 4px; padding: 16px;">
         <h4 style="font-family: var(--font-cyber); font-size: 10px; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 6px; font-weight: 800;">◈ SYSTEM COGNITIVE CONCLUSION</h4>
         <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-          The Indian markets (Nifty index) are exhibiting a <strong>${isBullish ? "constructive consolidation" : "temperate pullback"}</strong> today. Broad index behavior is predominantly influenced by <strong>${isBullish ? "resilient domestic mutual fund inflows" : "systemic FII selling and weak regional indices"}</strong>. In the derivatives segment, option open-interest signals standard range support at Nifty ${isBullish ? "23,800" : "24,000"}, while long-term structural factors keep the medium-term node outlook Nominally Synced.
+          The Indian markets (Nifty index) are exhibiting a <strong>${isBullish ? "constructive consolidation" : "temperate pullback"}</strong> today. Broad index behavior is predominantly influenced by <strong>${isBullish ? "resilient domestic mutual fund inflows" : "systemic FII selling and weak regional indices"}</strong>. In the derivatives segment, option open-interest signals standard range support at Nifty ${isBullish ? "23,800" : "24,000"}. <strong>India VIX stands at ${vix.price.toFixed(2)} (${vix.change >= 0 ? "+" : ""}${vix.changePct.toFixed(2)}%)</strong>, pointing to a <strong>${vixStatus.split(" // ")[0]}</strong> risk environment. Volatility telemetry indicates that hedging activities are ${vix.price > 18 ? "elevated, suggesting defensive position adjustments" : "subdued, reflecting stable market confidence"} across both NSE and BSE.
         </p>
       </div>
 
@@ -599,6 +652,32 @@ async function generateSensexReport(indices, indexMap) {
   const isBullish = sensex.changePct >= 0;
   const marketTrend = isBullish ? "🔴 BULLISH" : "🔵 BEARISH";
   
+  const vix = indexMap["^INDIAVIX"] || { price: 16.18, change: 1.20, changePct: 8.01, open: 14.98, high: 16.55, low: 14.59, prevClose: 14.98 };
+  let vixStatus = "NORMAL";
+  let vixColor = "var(--accent-emerald)";
+  let vixAnalysis = "";
+  if (vix.price < 12) {
+    vixStatus = "COMPLACENCY // MINIMAL RISK";
+    vixColor = "var(--accent-emerald)";
+    vixAnalysis = "Extreme complacency detected. Risk of correction is low, but watch for sudden spikes.";
+  } else if (vix.price < 15) {
+    vixStatus = "STABLE // LOW RISK";
+    vixColor = "var(--accent-emerald)";
+    vixAnalysis = "Healthy volatility index range. Supports steady bullish momentum and range-bound trading.";
+  } else if (vix.price < 20) {
+    vixStatus = "CAUTION // MODERATE RISK";
+    vixColor = "#ffcc00"; // Yellow
+    vixAnalysis = "Volatility is moderately elevated. Expect rapid price consolidations and wider intraday swings.";
+  } else if (vix.price < 25) {
+    vixStatus = "TURBULENCE // RISK-OFF";
+    vixColor = "#ff9500"; // Orange
+    vixAnalysis = "High volatility environment. Rising market fear triggers defensive portfolio reallocation.";
+  } else {
+    vixStatus = "PANIC // EXTREME RISK";
+    vixColor = "#ff3b30"; // Red
+    vixAnalysis = "Market panic levels detected. Heavy option premium values. Liquidations likely under price distress.";
+  }
+  
   const fiiNet = (-1230.50 + sensex.changePct * 1500) * 3;
   const diiNet = (1450.20 + sensex.changePct * 500) * 3;
   const fiiBuy = 43560.80 + Math.max(0, fiiNet);
@@ -611,7 +690,7 @@ async function generateSensexReport(indices, indexMap) {
     dii: { buy: diiBuy.toFixed(2), sell: diiSell.toFixed(2), net: diiNet.toFixed(2) }
   };
   
-  let sensexIndexRows = indices.filter(idx => idx.symbol === "^BSESN" || idx.symbol === "^NSEI").map(idx => {
+  let sensexIndexRows = indices.filter(idx => idx.symbol === "^BSESN" || idx.symbol === "^NSEI" || idx.symbol === "^INDIAVIX").map(idx => {
     const isUp = idx.change >= 0;
     const sign = isUp ? "+" : "";
     const color = isUp ? "color: var(--accent-emerald);" : "color: #ff3b30;";
@@ -624,7 +703,7 @@ async function generateSensexReport(indices, indexMap) {
         <td style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">${idx.low.toFixed(2)} - ${idx.high.toFixed(2)}</td>
         <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.change.toFixed(2)}</td>
         <td style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; ${color}">${sign}${idx.changePct.toFixed(2)}%</td>
-        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${getMoveReason(idx.changePct, "index")}</td>
+        <td style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">${idx.symbol === "^INDIAVIX" ? getVixMoveReason(idx.changePct, idx.price) : getMoveReason(idx.changePct, "index")}</td>
         <td style="padding: 12px 14px; text-align: right;">
           <button onclick="openChartModal('${idx.symbol}', '${idx.name}')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
         </td>
@@ -681,7 +760,7 @@ async function generateSensexReport(indices, indexMap) {
       <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 24px;">
         <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid ${isBullish ? "var(--accent-emerald)" : "#ff3b30"}; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
           <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">MARKET SENTIMENT (BSE)</div>
-          <div style="font-family: var(--font-cyber); font-size: 22px; font-weight: 900; ${isBullish ? "color: var(--accent-emerald);" : "color: #ff3b30;"} margin-top: 4px;">${marketTrend}</div>
+          <div style="font-family: var(--font-cyber); font-weight: 900; ${isBullish ? "color: var(--accent-emerald);" : "color: #ff3b30;"} margin-top: 4px;">${marketTrend}</div>
           <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">BSE Sensex is broadly ${isBullish ? "bullish" : "bearish"} today, moving ${Math.abs(sensex.changePct).toFixed(2)}% ${isBullish ? "higher" : "lower"} with SENSEX LTP at ${sensex.price.toFixed(2)}.</div>
         </div>
         
@@ -712,6 +791,18 @@ async function generateSensexReport(indices, indexMap) {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Volatility Diagnostics -->
+        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid ${vixColor}; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
+          <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">VOLATILITY DIAGNOSTICS (INDIA VIX)</div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+            <div style="font-family: var(--font-terminal); font-size: 22px; font-weight: 900; color: ${vixColor};">${vix.price.toFixed(2)}</div>
+            <div style="font-family: var(--font-terminal); font-size: 14px; font-weight: 700; color: ${vix.change >= 0 ? "var(--accent-emerald)" : "#ff3b30"};">${vix.change >= 0 ? "+" : ""}${vix.changePct.toFixed(2)}%</div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">
+            Status: <strong style="color: ${vixColor};">${vixStatus}</strong>. ${vixAnalysis}
+          </div>
         </div>
       </div>
 
@@ -793,7 +884,7 @@ async function generateSensexReport(indices, indexMap) {
       <div style="background: rgba(255, 0, 127, 0.02); border: 1px solid rgba(255, 0, 127, 0.1); border-radius: 4px; padding: 16px;">
         <h4 style="font-family: var(--font-cyber); font-size: 10px; color: rgba(255, 0, 127, 1); letter-spacing: 1.5px; margin-bottom: 6px; font-weight: 800;">◈ SENSEX MAINFRAME CONCLUSION</h4>
         <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-          The SENSEX node registers a <strong>${isBullish ? "positive structural hold" : "consolidation pull"}</strong> today. Rebalancing of mega-cap baskets like HDFC Bank and Reliance on the Bombay Stock Exchange keeps daily valuations tightly matched to global standards. Sectoral rotation keeps index margins balanced with normal tracking grids.
+          The SENSEX node registers a <strong>${isBullish ? "positive structural hold" : "consolidation pull"}</strong> today. Rebalancing of mega-cap baskets like HDFC Bank and Reliance on the Bombay Stock Exchange keeps daily valuations tightly matched to global standards. Sectoral rotation keeps index margins balanced with normal tracking grids. Meanwhile, **India VIX volatility levels are at ${vix.price.toFixed(2)}**, maintaining a **${vixStatus.split(" // ")[0]}** risk profile for BSE Sensex equity nodes.
         </p>
       </div>
 
