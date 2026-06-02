@@ -1456,6 +1456,7 @@ function generateHTML(briefing) {
     <script src="js/app.js"></script>
     <script src="js/agent.js?v=${Date.now()}"></script>
     <script src="js/simulator.js?v=${Date.now()}"></script>
+    <script src="js/realtime-market.js?v=${Date.now()}"></script>
 
     <!-- Smart HUD Scroll Navigator -->
     <style>
