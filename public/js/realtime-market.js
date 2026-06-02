@@ -3,11 +3,10 @@
 // ============================================================
 
 (function () {
-    const SYNC_INTERVAL_MS = 10000; // Refresh indices every 10 seconds during market hours
-    const SLOW_SYNC_INTERVAL_MS = 60000; // Refresh off-market hours
+    const SYNC_INTERVAL_MS = 1500; // Ultra-low latency 1.5s refresh during market hours
+    const SLOW_SYNC_INTERVAL_MS = 5000; // 5s refresh off-market hours
     
     let syncTimer = null;
-    let countdownSec = 10;
     let liveQuotes = {};
     let activeStockBatchIdx = 0;
     
@@ -361,13 +360,19 @@
         // Pulse indicator light
         document.querySelectorAll('.realtime-status-dot').forEach(dot => dot.classList.add('pulse-sync-active'));
 
-        // Sequential fetches with minor stagger to prevent rate limit blocks
-        for (const symbol of symbolsToFetch) {
-            const data = await fetchLiveQuote(symbol);
-            if (data) {
-                liveQuotes[symbol] = data;
+        // Parallel fetches with chunking to prevent rate limits while maximizing speed
+        const chunkSize = 10;
+        for (let i = 0; i < symbolsToFetch.length; i += chunkSize) {
+            const chunk = symbolsToFetch.slice(i, i + chunkSize);
+            const results = await Promise.all(chunk.map(symbol => fetchLiveQuote(symbol)));
+            results.forEach(data => {
+                if (data) {
+                    liveQuotes[data.symbol] = data;
+                }
+            });
+            if (i + chunkSize < symbolsToFetch.length) {
+                await new Promise(r => setTimeout(r, 20)); // minor 20ms stagger between chunks
             }
-            await new Promise(r => setTimeout(r, 40)); // 40ms stagger delay
         }
 
         // Apply to DOM
@@ -399,28 +404,22 @@
     }
 
     function startTimer() {
-        if (syncTimer) clearInterval(syncTimer);
+        if (syncTimer) clearTimeout(syncTimer);
         
-        let cycleCountdown = isAnyMarketOpen() ? 10 : 60;
+        const openNow = isAnyMarketOpen();
+        const activeInterval = openNow ? SYNC_INTERVAL_MS : SLOW_SYNC_INTERVAL_MS;
         
-        syncTimer = setInterval(async () => {
-            cycleCountdown--;
-            
-            // Render countdown on card header label
-            const openNow = isAnyMarketOpen();
-            const timerLabel = openNow ? `LIVE SYNC [${cycleCountdown}s]` : `SYNC [${cycleCountdown}s] // CLOSED`;
-            document.querySelectorAll('.realtime-status-label').forEach(label => {
-                if (!label.textContent.includes("FETCHING") && !label.textContent.includes("PAUSED")) {
-                    label.textContent = `TELEMETRY: ${timerLabel}`;
-                }
-            });
-            
-            if (cycleCountdown <= 0) {
-                clearInterval(syncTimer);
-                await executeSyncCycle();
-                startTimer();
+        const timerLabel = openNow ? "LIVE SYNC [ULTRA-LOW LATENCY]" : "OFF-MARKET SYNC [5s]";
+        document.querySelectorAll('.realtime-status-label').forEach(label => {
+            if (!label.textContent.includes("FETCHING") && !label.textContent.includes("PAUSED")) {
+                label.textContent = `TELEMETRY: ${timerLabel}`;
             }
-        }, 1000);
+        });
+        
+        syncTimer = setTimeout(async () => {
+            await executeSyncCycle();
+            startTimer();
+        }, activeInterval);
     }
 
     // Initialize Real-time telemetry on page load
