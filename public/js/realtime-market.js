@@ -8,7 +8,7 @@
     
     let syncTimer = null;
     let liveQuotes = {};
-    let activeStockBatchIdx = 0;
+    const visibleSymbols = new Set();
     
     // Core Indices & ETFs to refresh on every cycle
     const CORE_SYMBOLS = [
@@ -339,23 +339,10 @@
 
         updateHUDLabels(true, "FETCHING_TELEMETRY...");
 
-        // Collect all target symbols from the DOM
-        const rowSymbols = Array.from(document.querySelectorAll('.realtime-row')).map(r => r.getAttribute('data-symbol'));
-        const uniqueSymbols = Array.from(new Set([...CORE_SYMBOLS, ...rowSymbols])).filter(Boolean);
-        
-        // Filter out stocks from indices/ETFs
-        const stockSymbols = uniqueSymbols.filter(s => !CORE_SYMBOLS.includes(s));
-        
-        // Rotating stock batching to limit client requests (fetch 10 stocks on each cycle)
-        const batchSize = 10;
-        const startIdx = activeStockBatchIdx * batchSize;
-        const activeStockBatch = stockSymbols.slice(startIdx, startIdx + batchSize);
-        
-        // Advance pointer
-        activeStockBatchIdx = (startIdx + batchSize >= stockSymbols.length) ? 0 : activeStockBatchIdx + 1;
-        
-        // Merge core symbols with current stock batch
-        const symbolsToFetch = [...CORE_SYMBOLS, ...activeStockBatch];
+        // Collect visible symbols + core symbols to fetch
+        const symbolsToFetchSet = new Set([...CORE_SYMBOLS]);
+        visibleSymbols.forEach(s => symbolsToFetchSet.add(s));
+        const symbolsToFetch = Array.from(symbolsToFetchSet).filter(Boolean);
         
         // Pulse indicator light
         document.querySelectorAll('.realtime-status-dot').forEach(dot => dot.classList.add('pulse-sync-active'));
@@ -385,6 +372,39 @@
         
         // Stop pulse animation
         document.querySelectorAll('.realtime-status-dot').forEach(dot => dot.classList.remove('pulse-sync-active'));
+    }
+
+    function setupViewportObserver() {
+        if (!window.IntersectionObserver) return;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const target = entry.target;
+                const symbol = target.getAttribute('data-symbol');
+                const idxSymbol = target.getAttribute('data-index-symbol');
+                const vixSymbol = target.getAttribute('data-vix-symbol');
+                
+                if (entry.isIntersecting) {
+                    if (symbol) visibleSymbols.add(symbol);
+                    if (idxSymbol) visibleSymbols.add(idxSymbol);
+                    if (vixSymbol) visibleSymbols.add(vixSymbol);
+                } else {
+                    if (symbol) visibleSymbols.delete(symbol);
+                    if (idxSymbol) visibleSymbols.delete(idxSymbol);
+                    if (vixSymbol) visibleSymbols.delete(vixSymbol);
+                }
+            });
+        }, {
+            root: null, // viewport
+            rootMargin: '120px', // fetch slightly before they scroll into view
+            threshold: 0.05
+        });
+        
+        // Observe all real-time target elements
+        const targets = document.querySelectorAll(
+            '.realtime-row, .realtime-row-mf, .realtime-sentiment-card, .realtime-vix-card, .realtime-forecast-block, .realtime-conclusion-card'
+        );
+        targets.forEach(t => observer.observe(t));
     }
 
     function updateHUDLabels(isSyncing, statusText) {
@@ -425,6 +445,7 @@
     // Initialize Real-time telemetry on page load
     document.addEventListener("DOMContentLoaded", () => {
         injectPulsingStyle();
+        setupViewportObserver();
         // Trigger first sync cycle after page bootloader fades out
         setTimeout(async () => {
             await executeSyncCycle();
