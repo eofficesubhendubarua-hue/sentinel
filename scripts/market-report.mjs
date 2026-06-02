@@ -425,18 +425,18 @@ async function generateNiftyReport(indices, indexMap) {
   
   let gainerRows = topGainers.map((stk, idx) => `
     <tr class="realtime-row" data-symbol="${stk.symbol}" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(1)}</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(2)}</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(2)}-${stk.high.toFixed(2)}</td>
       <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   let loserRows = topLosers.map((stk, idx) => `
     <tr class="realtime-row" data-symbol="${stk.symbol}" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(1)}</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(2)}</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(2)}-${stk.high.toFixed(2)}</td>
       <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
@@ -719,18 +719,18 @@ async function generateSensexReport(indices, indexMap) {
   
   let gainerRows = topGainers.map((stk, idx) => `
     <tr class="realtime-row" data-symbol="${stk.symbol}" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(1)}</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(2)}</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(2)}-${stk.high.toFixed(2)}</td>
       <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   let loserRows = topLosers.map((stk, idx) => `
     <tr class="realtime-row" data-symbol="${stk.symbol}" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name.split(".")[0]}</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(1)}</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">${idx+1}. ${stk.name.split(".")[0]}</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(2)}</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(2)}-${stk.high.toFixed(2)}</td>
       <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name.split(".")[0]}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
@@ -1005,18 +1005,18 @@ async function generateUSReport(usIndices, usIndexMap) {
   
   let gainerRows = topGainers.map((stk, idx) => `
     <tr class="realtime-row" data-symbol="${stk.symbol}" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--accent-emerald);">${idx+1}. ${stk.name}</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(1)}</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">${idx+1}. ${stk.name}</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">${stk.price.toFixed(2)}</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(2)}-${stk.high.toFixed(2)}</td>
       <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+${stk.changePct.toFixed(2)}%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");
 
   let loserRows = topLosers.map((stk, idx) => `
     <tr class="realtime-row" data-symbol="${stk.symbol}" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: #ff3b30;">${idx+1}. ${stk.name}</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(1)}</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(1)}-${stk.high.toFixed(1)}</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">${idx+1}. ${stk.name}</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.price.toFixed(2)}</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">${stk.low.toFixed(2)}-${stk.high.toFixed(2)}</td>
       <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">${stk.changePct.toFixed(2)}%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('${stk.symbol}', '${stk.name}')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>`).join("");

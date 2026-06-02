@@ -71,8 +71,8 @@
 
     // ─── Yahoo Finance Chart Client-Side Fetch ─────────────
     async function fetchLiveQuote(symbol) {
-        // Build direct path mapped via Netlify/Vercel redirects
-        const url = `/api/yahoo-chart/${symbol}?interval=1d&range=1d`;
+        // Build direct path mapped via Netlify/Vercel redirects and query timestamp to bypass browser/CDN caching
+        const url = `/api/yahoo-chart/${symbol}?interval=1d&range=1d&_=${Date.now()}`;
         try {
             const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
             if (!res.ok) return null;
@@ -195,7 +195,10 @@
             const color = isUp ? "var(--accent-emerald)" : "#ff3b30";
             
             const ltpEl = row.querySelector('.realtime-ltp');
-            if (ltpEl) ltpEl.textContent = quote.price.toFixed(type === "stock" ? 1 : 2);
+            if (ltpEl) {
+                ltpEl.textContent = quote.price.toFixed(2);
+                ltpEl.style.color = color;
+            }
             
             const openEl = row.querySelector('.realtime-open');
             if (openEl) openEl.textContent = quote.open.toFixed(2);
