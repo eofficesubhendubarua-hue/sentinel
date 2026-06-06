@@ -198,8 +198,12 @@ export const FEEDS = {
       url: "https://www.rt.com/rss/",
     },
     {
-      name: "China Daily",
-      url: "http://www.chinadaily.com.cn/rss/world_rss.xml",
+      name: "SCMP - China News",
+      url: "https://www.scmp.com/rss/91/feed",
+    },
+    {
+      name: "Sixth Tone - China",
+      url: "https://www.sixthtone.com/rss",
     },
     {
       name: "WION",
