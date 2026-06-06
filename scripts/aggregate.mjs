@@ -113,8 +113,8 @@ function isGenericOrLogo(url) {
   return genericTerms.some(term => lower.includes(term));
 }
 
-async function fetchOpenGraphImage(url) {
-  if (!url || url === '#' || !url.startsWith('http')) return null;
+async function fetchOpenGraphData(url) {
+  if (!url || url === '#' || !url.startsWith('http')) return { image: null, description: null };
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2500); // Strict 2.5s timeout
@@ -128,29 +128,43 @@ async function fetchOpenGraphImage(url) {
     });
     
     clearTimeout(timeoutId);
-    if (!response.ok) return null;
+    if (!response.ok) return { image: null, description: null };
     const html = await response.text();
     
+    let image = null;
     const ogImageRegex = /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i;
     const ogImageRegex2 = /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i;
     const twitterImageRegex = /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i;
     const twitterImageRegex2 = /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i;
     
-    const match = html.match(ogImageRegex) || html.match(ogImageRegex2) || html.match(twitterImageRegex) || html.match(twitterImageRegex2);
-    if (match && match[1]) {
-      let imgUrl = match[1].trim();
+    const imgMatch = html.match(ogImageRegex) || html.match(ogImageRegex2) || html.match(twitterImageRegex) || html.match(twitterImageRegex2);
+    if (imgMatch && imgMatch[1]) {
+      let imgUrl = imgMatch[1].trim();
       if (imgUrl.startsWith('//')) {
         imgUrl = 'https:' + imgUrl;
       } else if (imgUrl.startsWith('/')) {
         const parsedUrl = new URL(url);
         imgUrl = parsedUrl.origin + imgUrl;
       }
-      return imgUrl;
+      image = imgUrl;
     }
+
+    let description = null;
+    const ogDescRegex = /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i;
+    const ogDescRegex2 = /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i;
+    const descRegex = /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i;
+    const descRegex2 = /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i;
+
+    const descMatch = html.match(ogDescRegex) || html.match(ogDescRegex2) || html.match(descRegex) || html.match(descRegex2);
+    if (descMatch && descMatch[1]) {
+      description = cleanText(descMatch[1].trim());
+    }
+
+    return { image, description };
   } catch (e) {
     // Silent fail
   }
-  return null;
+  return { image: null, description: null };
 }
 
 function extractImageUrl(item) {
@@ -404,7 +418,87 @@ function getCategoryPlaceholder(categoryId, article = {}) {
 
 // ─── Feed Fetching ────────────────────────────────────────
 
+async function scrapeChinaDaily() {
+  const urls = [
+    "https://www.chinadaily.com.cn/china/",
+    "https://www.chinadaily.com.cn/world/"
+  ];
+  const articles = [];
+  const seenLinks = new Set();
+  const maxPerCategory = 5;
+
+  for (const pageUrl of urls) {
+    let categoryCount = 0;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      
+      const response = await fetch(pageUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        }
+      });
+      clearTimeout(timeoutId);
+      if (!response.ok) continue;
+      const html = await response.text();
+
+      const regex = /href=\s*["']([^"']+\/a\/(\d{4})(\d{2})\/(\d{2})\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+      let match;
+      while ((match = regex.exec(html)) !== null) {
+        if (categoryCount >= maxPerCategory) break;
+
+        let link = match[1].trim();
+        if (link.startsWith('//')) {
+          link = 'https:' + link;
+        } else if (link.startsWith('/')) {
+          link = 'https://www.chinadaily.com.cn' + link;
+        }
+        
+        if (seenLinks.has(link) || !link.includes('chinadaily.com.cn')) continue;
+        
+        let titleText = cleanText(match[5]);
+        
+        if (!titleText || titleText.length < 5) {
+          continue;
+        }
+
+        if (titleText.toLowerCase().includes('click here') || titleText.toLowerCase().includes('read more')) {
+          continue;
+        }
+
+        // Set pubDate spaced out from current time to mix properly with other live feeds
+        const offsetMs = articles.length * 45 * 60 * 1000;
+        const pubDate = new Date(Date.now() - offsetMs).toISOString();
+
+        articles.push({
+          title: titleText,
+          link: link,
+          description: "", // filled in concurrently later
+          pubDate: pubDate,
+          source: "China Daily",
+          image: null // filled in concurrently later
+        });
+        seenLinks.add(link);
+        categoryCount++;
+      }
+    } catch (err) {
+      console.log(`  ❌ China Daily Scrape error for ${pageUrl}: ${err.message}`);
+    }
+  }
+
+  console.log(`  ✅ China Daily Scrape: ${articles.length} articles`);
+  return articles;
+}
+
 async function fetchFeed(feedConfig) {
+  if (feedConfig.isCustomScrape) {
+    if (feedConfig.name === "China Daily") {
+      return await scrapeChinaDaily();
+    }
+  }
+
   const absoluteTimeout = new Promise((_, reject) =>
     setTimeout(() => reject(new Error("Absolute timeout exceeded")), 20000)
   );
@@ -477,15 +571,24 @@ async function fetchCategory(categoryId) {
   // Scrape Open Graph images concurrently for articles that need it
   console.log(`🔍 Resolving high-fidelity original news images for ${CATEGORIES[categoryId]?.name || categoryId}...`);
   const scrapePromises = topArticles.map(async (article) => {
-    if (!article.image || isGenericOrLogo(article.image)) {
-      const ogImage = await fetchOpenGraphImage(article.link);
-      if (ogImage && !isGenericOrLogo(ogImage)) {
-        article.image = ogImage;
+    const needImage = !article.image || isGenericOrLogo(article.image);
+    const needDesc = !article.description;
+    if (needImage || needDesc) {
+      const ogData = await fetchOpenGraphData(article.link);
+      if (needImage && ogData.image && !isGenericOrLogo(ogData.image)) {
+        article.image = ogData.image;
+      }
+      if (needDesc && ogData.description) {
+        article.description = truncate(ogData.description);
       }
     }
     // If still no image or generic, fallback to keyword placeholder or category placeholder
     if (!article.image || isGenericOrLogo(article.image)) {
       article.image = getCategoryPlaceholder(categoryId, article);
+    }
+    // If still no description, fallback to title
+    if (!article.description) {
+      article.description = article.title;
     }
   });
 

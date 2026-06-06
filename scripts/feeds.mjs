@@ -206,6 +206,11 @@ export const FEEDS = {
       url: "https://www.sixthtone.com/rss",
     },
     {
+      name: "China Daily",
+      url: "https://www.chinadaily.com.cn/",
+      isCustomScrape: true
+    },
+    {
       name: "WION",
       url: "https://www.wionews.com/rss",
     },
