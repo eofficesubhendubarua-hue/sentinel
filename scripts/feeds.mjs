@@ -152,8 +152,8 @@ export const FEEDS = {
       url: "http://feeds.bbci.co.uk/news/rss.xml",
     },
     {
-      name: "Reuters - Top News",
-      url: "https://feeds.reuters.com/reuters/topNews",
+      name: "DW News - Top Stories",
+      url: "https://rss.dw.com/rdf/rss-en-top",
     },
     {
       name: "NDTV - Latest",
@@ -178,16 +178,16 @@ export const FEEDS = {
       url: "http://feeds.bbci.co.uk/news/world/rss.xml",
     },
     {
-      name: "Reuters World",
-      url: "https://feeds.reuters.com/Reuters/worldNews",
+      name: "DW News - World",
+      url: "https://rss.dw.com/rdf/rss-en-all",
     },
     {
       name: "The Guardian - World",
       url: "https://www.theguardian.com/world/rss",
     },
     {
-      name: "AP News",
-      url: "https://rsshub.app/apnews/topics/apf-topnews",
+      name: "NPR World News",
+      url: "https://feeds.npr.org/1004/rss.xml",
     },
     {
       name: "New York Times",
@@ -211,8 +211,8 @@ export const FEEDS = {
       isCustomScrape: true
     },
     {
-      name: "WION",
-      url: "https://www.wionews.com/rss",
+      name: "France 24 English",
+      url: "https://www.france24.com/en/rss",
     },
   ],
 
@@ -237,12 +237,8 @@ export const FEEDS = {
       url: "https://feeds.feedburner.com/ndtvnews-india-news",
     },
     {
-      name: "The Wire",
-      url: "https://thewire.in/feed",
-    },
-    {
-      name: "ThePrint",
-      url: "https://theprint.in/feed/",
+      name: "Scroll.in",
+      url: "https://feeds.feedburner.com/Scrollin",
     },
     {
       name: "Scroll.in",
@@ -281,16 +277,8 @@ export const FEEDS = {
       url: "https://economictimes.indiatimes.com/rssfeedsdefault.cms",
     },
     {
-      name: "Moneycontrol",
-      url: "https://www.moneycontrol.com/rss/latestnews.xml",
-    },
-    {
       name: "LiveMint",
       url: "https://www.livemint.com/rss/news",
-    },
-    {
-      name: "Business Standard",
-      url: "https://www.business-standard.com/rss/home_page_top_stories.rss",
     },
   ],
 
@@ -299,20 +287,12 @@ export const FEEDS = {
   // ─────────────────────────────────────────────
   daily_market_news: [
     {
-      name: "ET Now - Latest",
-      url: "https://www.etnownews.com/feeds/gns-etn-latest",
-    },
-    {
       name: "CNBC - Finance",
       url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
     },
     {
       name: "Economic Times - Markets",
       url: "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
-    },
-    {
-      name: "Moneycontrol News",
-      url: "https://www.moneycontrol.com/rss/latestnews.xml",
     },
     {
       name: "LiveMint Markets",
@@ -334,20 +314,12 @@ export const FEEDS = {
       url: "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
     },
     {
-      name: "Moneycontrol - Markets",
-      url: "https://www.moneycontrol.com/rss/marketreports.xml",
-    },
-    {
       name: "LiveMint - Markets",
       url: "https://www.livemint.com/rss/market",
     },
     {
       name: "ET - Mutual Funds",
       url: "https://economictimes.indiatimes.com/mf/rssfeeds/2146842.cms",
-    },
-    {
-      name: "Moneycontrol - MF",
-      url: "https://www.moneycontrol.com/rss/mfnews.xml",
     },
     // ── US & International Markets ──
     {
@@ -410,10 +382,6 @@ export const FEEDS = {
       name: "The Decoder",
       url: "https://the-decoder.com/feed/",
     },
-    {
-      name: "AI News",
-      url: "https://www.artificialintelligence-news.com/feed/",
-    },
   ],
 
   // ─────────────────────────────────────────────
@@ -459,8 +427,8 @@ export const FEEDS = {
       url: "https://foreignpolicy.com/feed/",
     },
     {
-      name: "Defense One",
-      url: "https://www.defenseone.com/rss/",
+      name: "Defense News",
+      url: "https://www.defensenews.com/arc/outboundfeeds/rss/category/global/?size=20",
     },
     {
       name: "The Intercept",
@@ -485,12 +453,8 @@ export const FEEDS = {
   // ─────────────────────────────────────────────
   education: [
     {
-      name: "NDTV Education",
-      url: "https://feeds.feedburner.com/ndtvnews-education-news",
-    },
-    {
-      name: "India Today Education",
-      url: "https://www.indiatoday.in/rss/education",
+      name: "Hindustan Times Education",
+      url: "https://www.hindustantimes.com/feeds/rss/education/news/rssfeed.xml",
     },
     {
       name: "The Hindu - Education",
@@ -507,8 +471,8 @@ export const FEEDS = {
       url: "https://www.cisa.gov/cybersecurity-advisories/all.xml",
     },
     {
-      name: "Google Mandiant Threat Intel",
-      url: "https://cloud.google.com/blog/topics/threat-intelligence/rss/",
+      name: "Palo Alto Unit 42",
+      url: "https://unit42.paloaltonetworks.com/feed/",
     },
     {
       name: "SANS ISC",
@@ -533,10 +497,6 @@ export const FEEDS = {
       url: "https://www.clearias.com/feed/",
     },
     {
-      name: "Drishti IAS",
-      url: "https://www.drishtiias.com/rss-feed.xml",
-    },
-    {
       name: "The Hindu Editorial",
       url: "https://www.thehindu.com/opinion/editorial/feeder/default.rss",
     },
@@ -547,18 +507,6 @@ export const FEEDS = {
     {
       name: "Indian Express Explained",
       url: "https://indianexpress.com/section/explained/feed/",
-    },
-    {
-      name: "PRS Legislative",
-      url: "https://prsindia.org/rss/bills",
-    },
-    {
-      name: "Civilsdaily",
-      url: "https://www.civilsdaily.com/feed/",
-    },
-    {
-      name: "GK Today",
-      url: "https://www.gktoday.in/feed/",
     },
     {
       name: "ForumIAS Blog",
@@ -579,8 +527,8 @@ export const FEEDS = {
       url: "https://www.science.org/rss/express.xml",
     },
     {
-      name: "Phys.org",
-      url: "https://phys.org/rss-feed/",
+      name: "Scientific American",
+      url: "http://rss.sciam.com/ScientificAmerican-News",
     },
     {
       name: "Space.com",
@@ -597,8 +545,8 @@ export const FEEDS = {
       url: "https://www.sciencedaily.com/rss/top/health.xml",
     },
     {
-      name: "Medical Xpress",
-      url: "https://medicalxpress.com/rss-feed/",
+      name: "World Health Organization (WHO) News",
+      url: "https://www.who.int/rss-feeds/news-english.xml",
     },
     {
       name: "Fierce Biotech",
