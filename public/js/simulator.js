@@ -1690,7 +1690,7 @@
           <button id="btn-analyzer-toggle-style-${uniqueId}" onclick="toggleAnalyzerChartStyle('${uniqueId}'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">LINE STYLE</button>
       </div>
     </div>
-    <!-- Dynamically loaded chart pane inside AI Analyzer -->
+    <!-- Dynamically loaded chart pane inside Stock Analyzer (Advanced) -->
     <div id="analyzer-chart-container-${uniqueId}" class="analyzer-chart-container" data-symbol="${chartData.symbol}" data-unique-id="${uniqueId}" style="width: 100%; height: 350px; background: #000; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
         <div id="analyzer-main-chart-${uniqueId}" style="width: 100%; height: 100%; position: relative;"></div>
         <div id="analyzer-rsi-chart-${uniqueId}" style="width: 100%; height: 0px; border-top: 1px solid rgba(0, 240, 255, 0.15); display: none; position: relative;"></div>
@@ -2665,7 +2665,7 @@
           <button id="btn-analyzer-toggle-style-${uniqueId}" onclick="toggleAnalyzerChartStyle('${uniqueId}'); event.stopPropagation();" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 3px 8px; font-size: 9px; border-radius: 3px; cursor: pointer; font-weight: 600; font-family: 'Orbitron', sans-serif; transition: all 0.2s;">LINE STYLE</button>
       </div>
     </div>
-    <!-- Dynamically loaded chart pane inside AI Analyzer -->
+    <!-- Dynamically loaded chart pane inside Stock Analyzer (Advanced) -->
     <div id="analyzer-chart-container-${uniqueId}" class="analyzer-chart-container" data-symbol="${mfData.schemeCode}" data-unique-id="${uniqueId}" style="width: 100%; height: 350px; background: #000; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
         <div id="analyzer-main-chart-${uniqueId}" style="width: 100%; height: 100%; position: relative;"></div>
         <div id="analyzer-rsi-chart-${uniqueId}" style="width: 100%; height: 0px; border-top: 1px solid rgba(0, 240, 255, 0.15); display: none; position: relative;"></div>

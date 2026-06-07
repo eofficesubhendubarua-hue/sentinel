@@ -568,7 +568,7 @@ function generateHTML(briefing) {
         <div class="cat-scroll">
             <button class="cat-btn active" data-category="all" onclick="filterCategory('all')">🌐 All</button>
             ${categoryNav}
-            <button class="cat-btn" data-category="ai-analyzer" onclick="filterCategory('ai-analyzer')" style="background:linear-gradient(135deg,#0d2a1a,#0a1a2e);border-color:#00ff8855;color:#00ff88">🤖 AI Analyzer</button>
+            <button class="cat-btn" data-category="ai-analyzer" onclick="filterCategory('ai-analyzer')" style="background:linear-gradient(135deg,#0d2a1a,#0a1a2e);border-color:#00ff8855;color:#00ff88">🤖 Stock Analyzer (Advanced)</button>
             <button class="cat-btn telemetry-toggle-btn" id="telemetryToggleBtn" onclick="toggleTelemetryHUD()">
                 <span>⚙️ TELEMETRY SYSTEM</span> <span id="telemetry-arrow">▼</span>
             </button>

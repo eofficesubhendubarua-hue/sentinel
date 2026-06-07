@@ -17,7 +17,7 @@ import puppeteer from 'puppeteer';
   console.log("Navigating to local site...");
   await page.goto('http://localhost:3000/', { waitUntil: 'domcontentloaded' });
   
-  // Switch to AI Analyzer tab if needed, wait, runAnalysis does it or we can run it directly
+  // Switch to Stock Analyzer (Advanced) tab if needed, wait, runAnalysis does it or we can run it directly
   console.log("Testing Stock search: RELIANCE...");
   await page.evaluate(async () => {
     window.runSimulatorSymbol('RELIANCE');
@@ -36,7 +36,7 @@ import puppeteer from 'puppeteer';
 
   console.log(`VERIFICATION - Stock chart container rendered: ${stockChartExists}`);
   if (!stockChartExists) {
-    throw new Error('Stock chart failed to render in AI Analyzer!');
+    throw new Error('Stock chart failed to render in Stock Analyzer (Advanced)!');
   }
 
   // Get the unique ID from the container
@@ -102,7 +102,7 @@ import puppeteer from 'puppeteer';
   const mfChartExists = containersInfo.some(c => c.hasMainChart && !isNaN(c.symbol));
   console.log(`VERIFICATION - MF chart container rendered: ${mfChartExists}`);
   if (!mfChartExists) {
-    throw new Error('Mutual Fund chart failed to render in AI Analyzer!');
+    throw new Error('Mutual Fund chart failed to render in Stock Analyzer (Advanced)!');
   }
 
   console.log("Closing browser...");
