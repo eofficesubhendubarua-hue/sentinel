@@ -506,4 +506,164 @@
             return `Fear contraction: Volatility drops by ${Math.abs(changePct).toFixed(2)}%, indicating relief rallies or complacency.`;
         }
     }
+
+    // ─── News Auto-Refresh Engine ───────────────────────────
+    const CHECK_INTERVAL = 300000; // Check for briefing updates every 5 minutes
+    
+    async function checkForUpdates() {
+        try {
+            const res = await fetch(`/data/build-time.json?_=${Date.now()}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            const serverBuildTime = parseInt(data.timestamp);
+            if (isNaN(serverBuildTime)) return;
+            
+            const localBuildTime = parseInt(window.SENTINEL_BUILD_TIME);
+            if (serverBuildTime > localBuildTime) {
+                console.log(`[📡] New briefing detected: Server build time ${serverBuildTime} > Local build time ${localBuildTime}. Synchronizing...`);
+                await synchronizeContent(serverBuildTime);
+            }
+        } catch (err) {
+            console.error('[📡] Error checking for briefing updates:', err);
+        }
+    }
+    
+    async function synchronizeContent(newBuildTime) {
+        showSyncHUD("📡 NEW SYSTEM BRIEFING INCOMING — SYNCHRONIZING...");
+        
+        try {
+            const res = await fetch(`/index.html?_=${Date.now()}`);
+            if (!res.ok) throw new Error('Failed to fetch new index.html');
+            const htmlText = await res.text();
+            
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+            
+            // 1. Hot-swap news grids and category section headers
+            const localSections = document.querySelectorAll('.category-section');
+            localSections.forEach(localSec => {
+                const secId = localSec.id;
+                const newSec = newDoc.getElementById(secId);
+                if (newSec) {
+                    // Update section header count if exists
+                    const localCount = localSec.querySelector('.article-count');
+                    const newCount = newSec.querySelector('.article-count');
+                    if (localCount && newCount) {
+                        localCount.textContent = newCount.textContent;
+                    }
+                    
+                    // Update news grid if exists
+                    const localGrid = localSec.querySelector('.news-grid');
+                    const newGrid = newSec.querySelector('.news-grid');
+                    if (localGrid && newGrid) {
+                        localGrid.innerHTML = newGrid.innerHTML;
+                    }
+                }
+            });
+            
+            // 2. Hot-swap stats bar
+            const localStatsBar = document.querySelector('.stats-bar');
+            const newStatsBar = newDoc.querySelector('.stats-bar');
+            if (localStatsBar && newStatsBar) {
+                localStatsBar.innerHTML = newStatsBar.innerHTML;
+            }
+            
+            // 3. Hot-swap header meta info (Date & Last Refresh values)
+            const localMetaItems = document.querySelectorAll('.header-meta .meta-item');
+            const newMetaItems = newDoc.querySelectorAll('.header-meta .meta-item');
+            if (localMetaItems.length && newMetaItems.length) {
+                localMetaItems.forEach((localItem, idx) => {
+                    const newItem = newMetaItems[idx];
+                    if (newItem) {
+                        const labelEl = localItem.querySelector('.meta-label');
+                        if (labelEl && labelEl.textContent.trim() === 'LAST REFRESH') {
+                            const valEl = localItem.querySelector('.meta-value');
+                            const newValEl = newItem.querySelector('.meta-value');
+                            if (valEl && newValEl) {
+                                valEl.innerHTML = newValEl.innerHTML;
+                            }
+                        } else if (labelEl && labelEl.textContent.trim() === 'DATE') {
+                            const valEl = localItem.querySelector('.meta-value');
+                            const newValEl = newItem.querySelector('.meta-value');
+                            if (valEl && newValEl) {
+                                valEl.innerHTML = newValEl.innerHTML;
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 4. Update window build time
+            window.SENTINEL_BUILD_TIME = newBuildTime;
+            
+            // 5. Update title date
+            const newTitle = newDoc.querySelector('title');
+            if (newTitle) {
+                document.title = newTitle.textContent;
+            }
+            
+            showSyncHUD("📡 SYNCHRONIZATION COMPLETE — SYSTEM SECURE.", 3000);
+            console.log('[📡] System briefing successfully synchronized!');
+        } catch (err) {
+            console.error('[📡] Error synchronizing briefing:', err);
+            showSyncHUD("❌ SYNCHRONIZATION ERROR — MANUAL RETRY ADVISED.", 5000);
+        }
+    }
+    
+    let hudTimer = null;
+    function showSyncHUD(message, autoHideMs = null) {
+        let hud = document.getElementById('sentinel-sync-hud');
+        if (!hud) {
+            hud = document.createElement('div');
+            hud.id = 'sentinel-sync-hud';
+            hud.style.position = 'fixed';
+            hud.style.top = '20px';
+            hud.style.left = '50%';
+            hud.style.transform = 'translateX(-50%)';
+            hud.style.zIndex = '99999';
+            hud.style.background = 'rgba(10, 25, 50, 0.9)';
+            hud.style.border = '1px solid #00f0ff';
+            hud.style.boxShadow = '0 0 20px rgba(0, 240, 255, 0.4)';
+            hud.style.borderRadius = '4px';
+            hud.style.padding = '10px 20px';
+            hud.style.color = '#00f0ff';
+            hud.style.fontFamily = "'Orbitron', monospace";
+            hud.style.fontSize = '0.8rem';
+            hud.style.letterSpacing = '1px';
+            hud.style.pointerEvents = 'none';
+            hud.style.transition = 'all 0.3s ease';
+            hud.style.opacity = '0';
+            hud.style.transform = 'translateX(-50%) translateY(-20px)';
+            document.body.appendChild(hud);
+        }
+        
+        hud.textContent = message;
+        hud.style.display = 'block';
+        hud.offsetHeight; // force reflow
+        
+        hud.style.opacity = '1';
+        hud.style.transform = 'translateX(-50%) translateY(0)';
+        
+        if (hudTimer) clearTimeout(hudTimer);
+        
+        if (autoHideMs) {
+            hudTimer = setTimeout(() => {
+                hud.style.opacity = '0';
+                hud.style.transform = 'translateX(-50%) translateY(-20px)';
+                hudTimer = setTimeout(() => {
+                    hud.style.display = 'none';
+                }, 300);
+            }, autoHideMs);
+        }
+    }
+    
+    // Start Polling loop
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        setInterval(checkForUpdates, CHECK_INTERVAL);
+        setTimeout(checkForUpdates, 10000); // Check 10s after initial load
+    } else {
+        // For local development, check every 15 seconds to make testing instant
+        setInterval(checkForUpdates, 15000);
+        console.log('[📡] Local development environment: News auto-updater running every 15s.');
+    }
 })();

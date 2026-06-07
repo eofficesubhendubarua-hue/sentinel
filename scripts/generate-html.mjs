@@ -61,7 +61,7 @@ function escapeHtml(str) {
 
 // ─── Generate HTML ────────────────────────────────────────
 
-function generateHTML(briefing) {
+function generateHTML(briefing, buildTime) {
   const { meta, categories } = briefing;
   const categoryEntries = Object.entries(categories).sort(
     (a, b) => a[1].priority - b[1].priority
@@ -461,6 +461,7 @@ function generateHTML(briefing) {
         if (self !== top) {
             top.location = self.location;
         }
+        window.SENTINEL_BUILD_TIME = ${buildTime || Date.now()};
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1645,9 +1646,14 @@ function main() {
   // Ensure public directories exist
   mkdirSync(join(PUBLIC_DIR, "css"), { recursive: true });
   mkdirSync(join(PUBLIC_DIR, "js"), { recursive: true });
+  mkdirSync(join(PUBLIC_DIR, "data"), { recursive: true });
+
+  const buildTime = Date.now();
+  writeFileSync(join(PUBLIC_DIR, "data", "build-time.json"), JSON.stringify({ timestamp: buildTime }));
+  console.log("✅ Generated: public/data/build-time.json");
 
   // Generate HTML
-  const html = generateHTML(briefing);
+  const html = generateHTML(briefing, buildTime);
   writeFileSync(join(PUBLIC_DIR, "index.html"), html);
   console.log("✅ Generated: public/index.html");
 
