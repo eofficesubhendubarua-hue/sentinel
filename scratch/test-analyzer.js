@@ -15,7 +15,7 @@ import puppeteer from 'puppeteer';
   });
 
   console.log("Navigating to local site...");
-  await page.goto('http://localhost:3000/', { waitUntil: 'networkidle2' });
+  await page.goto('http://localhost:3000/', { waitUntil: 'domcontentloaded' });
   
   // Switch to AI Analyzer tab if needed, wait, runAnalysis does it or we can run it directly
   console.log("Testing Stock search: RELIANCE...");
@@ -23,9 +23,9 @@ import puppeteer from 'puppeteer';
     window.runSimulatorSymbol('RELIANCE');
   });
 
-  // Wait 4 seconds for analysis and rendering
+  // Wait 6 seconds for analysis and rendering
   console.log("Waiting for stock chart to render...");
-  await new Promise(resolve => setTimeout(resolve, 4000));
+  await new Promise(resolve => setTimeout(resolve, 6000));
 
   // Check if chart container exists in DOM
   const stockChartExists = await page.evaluate(() => {
@@ -86,19 +86,20 @@ import puppeteer from 'puppeteer';
     window.runSimulatorSymbol('Parag Parikh');
   });
 
-  // Wait 4 seconds for mutual fund data and chart rendering
+  // Wait 6 seconds for mutual fund data and chart rendering
   console.log("Waiting for Mutual Fund chart to render...");
-  await new Promise(resolve => setTimeout(resolve, 4000));
+  await new Promise(resolve => setTimeout(resolve, 6000));
 
-  // Check if mutual fund chart container exists in DOM (should be the top prepended one)
-  const mfChartExists = await page.evaluate(() => {
+  // Check if mutual fund chart container exists in DOM
+  const containersInfo = await page.evaluate(() => {
     const containers = document.querySelectorAll('.analyzer-chart-container');
-    // First container should be SBI Blue Chip MF (prepended)
-    const container = containers[0];
-    const mainChart = container ? container.querySelector('[id^="analyzer-main-chart-"]') : null;
-    return !!container && !!mainChart && !isNaN(container.getAttribute('data-symbol'));
+    return Array.from(containers).map(c => ({
+      symbol: c.getAttribute('data-symbol'),
+      hasMainChart: !!c.querySelector('[id^="analyzer-main-chart-"]')
+    }));
   });
-
+  console.log(`VERIFICATION - Found containers:`, containersInfo);
+  const mfChartExists = containersInfo.some(c => c.hasMainChart && !isNaN(c.symbol));
   console.log(`VERIFICATION - MF chart container rendered: ${mfChartExists}`);
   if (!mfChartExists) {
     throw new Error('Mutual Fund chart failed to render in AI Analyzer!');

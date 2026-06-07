@@ -343,7 +343,7 @@ async function fetchGemini(apiKey, modelName, text, imgB64, imgMime) {
     contents.push({ role: "user", parts: parts });
 
     let requestBody = {};
-    if (modelName.includes("1.5")) {
+    if (modelName.startsWith("gemini")) {
         requestBody = {
             system_instruction: { parts: [{ text: buildSystemContext() }] },
             contents: contents,
