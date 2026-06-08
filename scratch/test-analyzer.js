@@ -86,9 +86,9 @@ import puppeteer from 'puppeteer';
     window.runSimulatorSymbol('Parag Parikh');
   });
 
-  // Wait 6 seconds for mutual fund data and chart rendering
+  // Wait 8 seconds for mutual fund data and chart rendering
   console.log("Waiting for Mutual Fund chart to render...");
-  await new Promise(resolve => setTimeout(resolve, 6000));
+  await new Promise(resolve => setTimeout(resolve, 8000));
 
   // Check if mutual fund chart container exists in DOM
   const containersInfo = await page.evaluate(() => {

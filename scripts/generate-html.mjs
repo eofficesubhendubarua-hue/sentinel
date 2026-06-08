@@ -453,6 +453,26 @@ function generateHTML(briefing, buildTime) {
             </div>
         </div>`;
 
+  // Get headline articles for the 2045 quantum marquee
+  const allArticles = Object.values(categories)
+    .flatMap(c => c.articles)
+    .slice(0, 10);
+  
+  const tickerItemsHTML = allArticles
+    .map(a => `<span class="ticker-item">${escapeHtml(a.title)}</span>`)
+    .join('');
+  
+  const tickerHTML = `
+    <div class="headline-ticker">
+        <span class="ticker-title">📡 QUANTUM FEED 2045</span>
+        <div style="overflow: hidden; width: 100%;">
+            <div class="ticker-wrap">
+                ${tickerItemsHTML}
+            </div>
+        </div>
+    </div>
+  `;
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -465,7 +485,7 @@ function generateHTML(briefing, buildTime) {
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SENTINEL Intelligence Brief — ${meta.date}</title>
+    <title>SENTINEL QUANTUM DAILY — ${meta.date} (2045 Edition)</title>
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
@@ -517,7 +537,7 @@ function generateHTML(briefing, buildTime) {
                 </div>
                 <div class="logo-info">
                     <h1>SENTINEL</h1>
-                    <p class="tagline">Intelligence Brief</p>
+                    <p class="tagline">QUANTUM NEURAL BRIEFING · EST. 2045</p>
                 </div>
             </div>
             <div class="header-meta">
@@ -551,6 +571,9 @@ function generateHTML(briefing, buildTime) {
             </div>
         </div>
     </header>
+
+    <!-- 2045 Headlines Ticker -->
+    ${tickerHTML}
 
     <!-- Stats -->
     ${statsHTML}
@@ -714,7 +737,7 @@ function generateHTML(briefing, buildTime) {
             <div class="footer-brand">
                 <span class="footer-logo">◈ SENTINEL</span>
                 <p class="footer-attribution" style="color: var(--primary); font-family: var(--font-cyber); font-size: 11px; font-weight: 700; letter-spacing: 0.5px; margin: 6px 0 10px 0; text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); text-transform: uppercase;">made by <span style="color: var(--secondary); text-shadow: 0 0 10px rgba(157, 78, 221, 0.85);">SUBHENDU BARUA X</span> for your convenience</p>
-                <p>Automated Intelligence Briefing System</p>
+                <p>Autonomous Quantum Neural Press System of 2045</p>
                 <p class="footer-update">Last updated: ${meta.date} ${meta.time}</p>
             </div>
             <div class="footer-info">
