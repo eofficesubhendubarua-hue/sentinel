@@ -3,31 +3,32 @@
    ================================================================ */
 
 :root {
-  --bg-primary: #03000a; /* Obsidian Deep Amethyst */
-  --bg-secondary: #0a0314; /* Deep Space Violet */
-  --bg-card: rgba(22, 10, 38, 0.4); /* Translucent Neon Violet */
-  --bg-card-hover: rgba(38, 18, 64, 0.65); /* Tech Amethyst Hover */
-  --primary: #00ffaa; /* Electric Neon Mint */
-  --secondary: #bd3df2; /* Electric Cyber Violet */
+  --bg-primary: #02040a; /* Obsidian Cobalt Void */
+  --bg-secondary: #050a18; /* Deep Space Cobalt */
+  --bg-card: rgba(10, 22, 46, 0.45); /* Translucent Cobalt Card */
+  --bg-card-hover: rgba(18, 38, 77, 0.7); /* Cobalt Tech Hover */
+  --primary: #00e5ff; /* Electric Neon Cyan */
+  --secondary: #ffb700; /* Neural Cyber Gold */
   --accent-emerald: #00ffaa;
-  --accent-amber: #ffaa00;
+  --accent-amber: #ffb700;
   --accent-purple: #bd3df2;
-  --text-primary: #f5f0fa; /* Warm Purplish White */
-  --text-secondary: #beb2cc; /* Muted Lavender */
-  --text-muted: #6b5c7e; /* Dark Lavender */
-  --border-color: rgba(189, 61, 242, 0.15); /* Purple Tech Border */
-  --border-glow: rgba(189, 61, 242, 0.35); /* Amethyst Glow */
-  --border-glow-purple: rgba(189, 61, 242, 0.5);
+  --text-primary: #f0f4ff; /* Warm Cobalt White */
+  --text-secondary: #b2c5e5; /* Muted Cobalt Blue */
+  --text-muted: #5a74a6; /* Dark Cobalt Blue */
+  --border-color: rgba(0, 229, 255, 0.15); /* Electric Cyan Tech Border */
+  --border-glow: rgba(0, 229, 255, 0.35); /* Cyan Glow */
+  --border-glow-purple: rgba(255, 183, 0, 0.4); /* Gold Glow */
   --border-card: rgba(255, 255, 255, 0.03);
   --max-width: 1320px;
   --font-sans: "Inter", -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-cyber: "Orbitron", sans-serif;
   --font-terminal: "Share Tech Mono", monospace;
+  --font-newspaper: "Playfair Display", Georgia, serif;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --neon-glow: 0 0 15px rgba(189, 61, 242, 0.2);
-  --neon-glow-strong: 0 0 30px rgba(189, 61, 242, 0.45);
-  --neon-glow-purple: 0 0 15px rgba(189, 61, 242, 0.3);
+  --neon-glow: 0 0 15px rgba(0, 229, 255, 0.2);
+  --neon-glow-strong: 0 0 30px rgba(0, 229, 255, 0.45);
+  --neon-glow-purple: 0 0 15px rgba(255, 183, 0, 0.25);
 }
 
 *, *::before, *::after {
@@ -87,7 +88,7 @@ a:hover {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(30, 10, 60, 0.25) 0%, #03000a 85%);
+  background: radial-gradient(circle at 50% 50%, rgba(10, 25, 60, 0.3) 0%, var(--bg-primary) 85%);
   pointer-events: none;
 }
 
@@ -173,13 +174,13 @@ a:hover {
 }
 
 .logo-info h1 {
-  font-family: var(--font-cyber);
-  font-size: 24px;
+  font-family: var(--font-newspaper);
+  font-size: 28px;
   font-weight: 900;
-  letter-spacing: 5px;
+  letter-spacing: 2px;
   line-height: 1;
   color: var(--text-primary);
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
   background: linear-gradient(to right, #ffffff, var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -467,26 +468,25 @@ a:hover {
   justify-content: space-between;
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .section-header h2 {
-  font-family: var(--font-cyber);
-  font-size: 20px;
+  font-family: var(--font-newspaper);
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: 2px;
-  text-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+  letter-spacing: 0.5px;
 }
 
 .article-count {
   font-family: var(--font-terminal);
   font-size: 13px;
   color: var(--primary);
-  background: rgba(0, 240, 255, 0.08);
+  background: rgba(0, 229, 255, 0.08);
   padding: 4px 12px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(0, 229, 255, 0.2);
 }
 
 .section-desc {
@@ -676,10 +676,10 @@ a:hover {
   font-size: 11px;
   font-weight: 600;
   color: var(--primary);
-  background: rgba(0, 240, 255, 0.08);
+  background: rgba(0, 229, 255, 0.08);
   padding: 4px 10px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(0, 229, 255, 0.2);
   text-transform: uppercase;
 }
 
@@ -690,10 +690,10 @@ a:hover {
 }
 
 .card-title {
-  font-family: var(--font-sans);
-  font-size: 16px;
+  font-family: var(--font-newspaper);
+  font-size: 18px;
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.35;
   margin-bottom: 12px;
   flex-grow: 1;
 }
@@ -704,7 +704,7 @@ a:hover {
 
 .card-title a:hover {
   color: var(--primary);
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
 }
 
 .card-desc {
@@ -2495,8 +2495,8 @@ a:hover {
 
 /* ─── 2045 Headlines Ticker Styles ─────────────────────── */
 .headline-ticker {
-  background: rgba(18, 10, 38, 0.65);
-  border-bottom: 1px solid rgba(189, 61, 242, 0.25);
+  background: rgba(5, 10, 24, 0.8);
+  border-bottom: 1px solid var(--border-color);
   padding: 8px 0;
   overflow: hidden;
   white-space: nowrap;
@@ -2513,14 +2513,14 @@ a:hover {
 
 .ticker-title {
   background: var(--secondary);
-  color: #fff;
+  color: #03070c;
   padding: 4px 12px;
   font-family: var(--font-cyber);
   font-weight: 900;
   font-size: 0.72rem;
   text-transform: uppercase;
   margin-right: 15px;
-  box-shadow: 0 0 12px rgba(189, 61, 242, 0.45);
+  box-shadow: 0 0 12px rgba(255, 183, 0, 0.45);
   border-radius: 2px;
   position: relative;
   z-index: 12;
@@ -2548,4 +2548,33 @@ a:hover {
 @keyframes ticker-scroll {
   0% { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* ─── 2045 Quantum Newspaper Badges ───────────────────── */
+.card-verifiability {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-terminal);
+  font-size: 9px;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(0, 229, 255, 0.08);
+  padding-top: 10px;
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+}
+
+.verifiability-badge {
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.verifiability-hash {
+  font-family: var(--font-mono);
+  opacity: 0.7;
 }

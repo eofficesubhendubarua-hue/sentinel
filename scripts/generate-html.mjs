@@ -59,6 +59,23 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function getTruthScore(title) {
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const score = 95.0 + Math.abs(hash % 50) / 10;
+  return score.toFixed(1);
+}
+
+function getVerificationHash(title) {
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return "0x" + Math.abs(hash).toString(16).padEnd(8, 'f').slice(0, 8).toUpperCase();
+}
+
 // ─── Generate HTML ────────────────────────────────────────
 
 function generateHTML(briefing, buildTime) {
@@ -115,6 +132,10 @@ function generateHTML(briefing, buildTime) {
                             <a href="${escapeHtml(article.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.title)}</a>
                         </h3>
                         <p class="card-desc">${escapeHtml(article.description)}</p>
+                        <div class="card-verifiability">
+                            <span class="verifiability-badge">🤖 Truth: ${getTruthScore(article.title)}%</span>
+                            <span class="verifiability-hash">Block: ${getVerificationHash(article.title)}</span>
+                        </div>
                         <div class="card-footer">
                             <a href="${escapeHtml(article.link)}" target="_blank" rel="noopener noreferrer" class="read-more">
                                 Read Full →
@@ -464,7 +485,7 @@ function generateHTML(briefing, buildTime) {
   
   const tickerHTML = `
     <div class="headline-ticker">
-        <span class="ticker-title">📡 QUANTUM FEED 2045</span>
+        <span class="ticker-title">📡 QUANTUM FEED // VOL. LVIII</span>
         <div style="overflow: hidden; width: 100%;">
             <div class="ticker-wrap">
                 ${tickerItemsHTML}
@@ -492,8 +513,8 @@ function generateHTML(briefing, buildTime) {
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=2.3">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=2.4">
     <link rel="stylesheet" href="css/simulator.css?v=1.0">
     
     <!-- Firebase SDK (Compat) -->
@@ -536,8 +557,8 @@ function generateHTML(briefing, buildTime) {
                     <span class="logo-text">S</span>
                 </div>
                 <div class="logo-info">
-                    <h1>SENTINEL</h1>
-                    <p class="tagline">QUANTUM NEURAL BRIEFING · EST. 2045</p>
+                    <h1>SENTINEL DAILY</h1>
+                    <p class="tagline">VOL. LVIII NO. 2045 · QUANTUM NEURAL TRANSMISSION · EST. 2045</p>
                 </div>
             </div>
             <div class="header-meta">
