@@ -759,14 +759,49 @@ function generateHTML(briefing, buildTime) {
             top.location = self.location;
         }
         window.SENTINEL_BUILD_TIME = ${buildTime || Date.now()};
+
+        /* Self-Healing Client-Side Version Cache-Buster */
+        (async function checkVersion() {
+            try {
+                // Fetch the latest build timestamp from the server with cache-busting query parameter
+                const res = await fetch('data/build-time.json?t=' + Date.now(), { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.timestamp && data.timestamp > window.SENTINEL_BUILD_TIME) {
+                        const lastReload = sessionStorage.getItem('sentinel_last_reload');
+                        const now = Date.now();
+                        // Prevent rapid reload loops by limiting to once every 10 seconds
+                        if (!lastReload || (now - parseInt(lastReload, 10) > 10000)) {
+                            sessionStorage.setItem('sentinel_last_reload', now.toString());
+                            console.log("Newer build detected on server:", data.timestamp, "Current:", window.SENTINEL_BUILD_TIME, ". Reloading...");
+                            if ('caches' in window) {
+                                try {
+                                    const keys = await caches.keys();
+                                    for (const key of keys) {
+                                        await caches.delete(key);
+                                    }
+                                } catch (e) {}
+                            }
+                            // Redirect to URL with query param to force network bypass of HTML cache
+                            window.location.href = window.location.pathname + '?v=' + now;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to check version:", e);
+            }
+        })();
     </script>
     <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SENTINEL QUANTUM DAILY — ${meta.date} (2045 Edition)</title>
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com https://cdn.jsdelivr.net; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com https://cdn.jsdelivr.net https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv; media-src 'self' blob: data: https://*.youtube.com https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv; worker-src 'self' blob:; child-src 'self' blob:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com https://cdn.jsdelivr.net; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com https://cdn.jsdelivr.net https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv; media-src 'self' blob: data: https://*.youtube.com https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv; worker-src 'self' blob:; child-src 'self' blob:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -777,7 +812,7 @@ function generateHTML(briefing, buildTime) {
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <!-- HLS IPTV Engine SDK -->
-    <script src="js/hls.min.js"></script>
+    <script src="js/hls.min.js?v=${buildTime || Date.now()}"></script>
 </head>
 <body>
     <!-- Maincore System Decryption Bootloader Overlay -->
