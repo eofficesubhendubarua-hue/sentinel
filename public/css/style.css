@@ -3122,3 +3122,75 @@ a:hover {
   color: var(--text-primary);
   text-shadow: 0 0 5px var(--primary);
 }
+
+/* ─── Sports Video Telecast Monitor ─── */
+.sports-video-monitor {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.sports-video-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sports-video-live-badge {
+  font-family: var(--font-terminal);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sports-video-chips {
+  display: flex;
+  gap: 6px;
+}
+
+.sports-vid-chip {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  font-family: var(--font-terminal);
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.sports-vid-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.sports-vid-chip.active {
+  border-color: var(--primary);
+  color: #03070c;
+  background: var(--primary);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
+  font-weight: 700;
+}
+
+.sports-video-wrapper {
+  padding-top: 56.25%; /* 16:9 ratio */
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+

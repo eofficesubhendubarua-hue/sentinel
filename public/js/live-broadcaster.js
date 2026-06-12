@@ -10,39 +10,94 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ─── Live News Stream Viewport Switcher ───────────────────
 const LIVE_CHANNELS = {
-    dw: {
-        name: "DW News Global Feed",
-        url: "https://www.youtube.com/embed/gCNeDWCI0To",
-        badge: "DW LIVE"
-    },
     aljazeera: {
         name: "Al Jazeera English Broadcast",
-        url: "https://www.youtube.com/embed/bNyUyrR0PHo",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCnye-wNBqNL5ZzHSJj3l8Bg",
         badge: "AJE LIVE"
+    },
+    dw: {
+        name: "DW News Global Feed",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCMUnYjPscN6N6jZ4w8K30uA",
+        badge: "DW LIVE"
     },
     skynews: {
         name: "Sky News Live Stream",
-        url: "https://www.youtube.com/embed/9AuqeyyFGBs",
+        url: "https://www.youtube.com/embed/live_stream?channel=UC9_1s3S2145k49P2Q8624Vw",
         badge: "SKY LIVE"
     },
     france24: {
         name: "France 24 English Live",
-        url: "https://www.youtube.com/embed/h3MuIUNywtI",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCQfwfsi5VrQ8yKZ-UWmAEFg",
         badge: "F24 LIVE"
     },
-    nasatv: {
-        name: "NASA TV Spacecast",
-        url: "https://www.youtube.com/embed/21X5lGlDOfg",
-        badge: "NASA LIVE"
+    abcnews: {
+        name: "ABC News Live Stream",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCQjl2mmarJ5412sFz9G7h4w",
+        badge: "ABC LIVE"
+    },
+    cbsnews: {
+        name: "CBS News Live Stream",
+        url: "https://www.youtube.com/embed/live_stream?channel=UC8p1vwvGViqHeH5402H5X1g",
+        badge: "CBS LIVE"
+    },
+    nbcnews: {
+        name: "NBC News NOW Stream",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCeY0bbntWzzVIaj2z3QigXg",
+        badge: "NBC LIVE"
+    },
+    bloomberg: {
+        name: "Bloomberg Global Television",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCCIidzs5spLGKWbqV_L2HjA",
+        badge: "BLOOMBERG LIVE"
+    },
+    cna: {
+        name: "CNA Live Asia Broadcast",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCxS4U2kX9z8e05ZtJ1Wp3pA",
+        badge: "CNA LIVE"
+    }
+};
+
+const LIVE_FIFA_VIDEOS = {
+    live: {
+        url: "https://www.youtube.com/embed/live_stream?channel=UCpcAaORfUac4vi_KZYboBAA"
+    },
+    intro: {
+        url: "https://www.youtube.com/embed/OYg505-5cYU"
+    },
+    highlights: {
+        url: "https://www.youtube.com/embed/videoseries?list=PL859A3D063A482A3A"
+    }
+};
+
+const LIVE_CRICKET_VIDEOS = {
+    live: {
+        url: "https://www.youtube.com/embed/live_stream?channel=UC15e1QZp1w_8wD9l5gQ1-4A"
+    },
+    highlights: {
+        url: "https://www.youtube.com/embed/videoseries?list=PLw2bX2l_L8vL8-tqY2T71e27aZ97tL9Z8"
+    },
+    bcci: {
+        url: "https://www.youtube.com/embed/videoseries?list=PLb8d_K2XJ4c1Zg-r3T3hXwOqVj4k0_B1a"
     }
 };
 
 function initLiveStreamViewport() {
     const iframe = document.getElementById("live-stream-viewport");
-    if (!iframe) return;
+    if (iframe) {
+        // Set default channel (Al Jazeera English)
+        switchBroadcastChannel("aljazeera");
+    }
 
-    // Set default channel (Al Jazeera English)
-    switchBroadcastChannel("aljazeera");
+    // Set default FIFA and Cricket videos
+    const fifaIframe = document.getElementById("fifa-video-viewport");
+    if (fifaIframe) {
+        switchFIFAVideo("live");
+    }
+
+    const cricketIframe = document.getElementById("cricket-video-viewport");
+    if (cricketIframe) {
+        switchCricketVideo("live");
+    }
 
     // Start fluctuating telemetry metadata
     setInterval(updateStreamTelemetry, 3000);
@@ -66,8 +121,37 @@ function switchBroadcastChannel(channelId) {
     });
 }
 
-// Make it global so HTML onclick attributes can access it
+function switchFIFAVideo(vidType) {
+    const video = LIVE_FIFA_VIDEOS[vidType];
+    if (!video) return;
+
+    const iframe = document.getElementById("fifa-video-viewport");
+    if (iframe) iframe.src = video.url;
+
+    // Toggle active class on buttons
+    document.querySelectorAll("[data-fifa-vid]").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.fifaVid === vidType);
+    });
+}
+
+function switchCricketVideo(vidType) {
+    const video = LIVE_CRICKET_VIDEOS[vidType];
+    if (!video) return;
+
+    const iframe = document.getElementById("cricket-video-viewport");
+    if (iframe) iframe.src = video.url;
+
+    // Toggle active class on buttons
+    document.querySelectorAll("[data-cricket-vid]").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.cricketVid === vidType);
+    });
+}
+
+// Make them global so HTML onclick attributes can access them
 window.switchBroadcastChannel = switchBroadcastChannel;
+window.switchFIFAVideo = switchFIFAVideo;
+window.switchCricketVideo = switchCricketVideo;
+
 
 function updateStreamTelemetry() {
     const bitRateEl = document.getElementById("telemetry-bitrate");

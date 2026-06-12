@@ -362,23 +362,39 @@ function generateHTML(briefing, buildTime) {
                         <h3 class="switcher-title">◈ Select Live News Stream</h3>
                         <div class="stream-chips-list">
                             <button class="stream-chip active" data-channel="aljazeera" onclick="switchBroadcastChannel('aljazeera')">
-                                <span>🌐 Al Jazeera English Live</span>
+                                <span>🌐 Al Jazeera English</span>
                                 <span class="chip-status-dot"></span>
                             </button>
                             <button class="stream-chip" data-channel="dw" onclick="switchBroadcastChannel('dw')">
-                                <span>🇩🇪 DW News Live Global</span>
+                                <span>🇩🇪 DW News Global</span>
                                 <span class="chip-status-dot"></span>
                             </button>
                             <button class="stream-chip" data-channel="skynews" onclick="switchBroadcastChannel('skynews')">
-                                <span>🇬🇧 Sky News Live UK</span>
+                                <span>🇬🇧 Sky News UK</span>
                                 <span class="chip-status-dot"></span>
                             </button>
                             <button class="stream-chip" data-channel="france24" onclick="switchBroadcastChannel('france24')">
-                                <span>🇫🇷 France 24 English Live</span>
+                                <span>🇫🇷 France 24 Live</span>
                                 <span class="chip-status-dot"></span>
                             </button>
-                            <button class="stream-chip" data-channel="nasatv" onclick="switchBroadcastChannel('nasatv')">
-                                <span>🚀 NASA TV Spacecast</span>
+                            <button class="stream-chip" data-channel="abcnews" onclick="switchBroadcastChannel('abcnews')">
+                                <span>🇺🇸 ABC News Live</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="cbsnews" onclick="switchBroadcastChannel('cbsnews')">
+                                <span>🇺🇸 CBS News Live</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="nbcnews" onclick="switchBroadcastChannel('nbcnews')">
+                                <span>🇺🇸 NBC News NOW</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="bloomberg" onclick="switchBroadcastChannel('bloomberg')">
+                                <span>📈 Bloomberg Global</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="cna" onclick="switchBroadcastChannel('cna')">
+                                <span>🇸🇬 CNA Live Asia</span>
                                 <span class="chip-status-dot"></span>
                             </button>
                         </div>
@@ -395,6 +411,23 @@ function generateHTML(briefing, buildTime) {
                             <span class="arena-title">🏆 FIFA World Cup 2026 Arena</span>
                             <span class="arena-status-badge" style="background: rgba(0, 229, 255, 0.08); border-color: rgba(0, 229, 255, 0.25); color: var(--primary);">LIVE MATCH</span>
                         </div>
+                        
+                        <!-- Live Video Feed Monitor -->
+                        <div class="sports-video-monitor">
+                            <div class="sports-video-controls">
+                                <span class="sports-video-live-badge"><span class="live-blink-dot"></span> LIVE VIDEO TELECAST</span>
+                                <div class="sports-video-chips">
+                                    <button class="sports-vid-chip active" data-fifa-vid="live" onclick="switchFIFAVideo('live')">📡 Live Feed</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="intro" onclick="switchFIFAVideo('intro')">🎬 Brand Launch</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="highlights" onclick="switchFIFAVideo('highlights')">🏆 Replay Highlights</button>
+                                </div>
+                            </div>
+                            <div class="live-stream-wrapper sports-video-wrapper">
+                                <div class="viewport-scanline"></div>
+                                <iframe id="fifa-video-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
                         <div class="live-scorecard-box">
                             <div class="fifa-match-details">
                                 <div class="team-block">
@@ -417,7 +450,7 @@ function generateHTML(briefing, buildTime) {
                         </div>
                         <div class="commentary-panel" id="fifa-commentary-list"></div>
                         <div class="broadcasting-routing-info">
-                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a></span>
+                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a></span>
                             <span class="match-arena-stats" id="fifa-stat-possession">POSSESSION: 50% - 50%</span>
                         </div>
                         <div class="match-arena-stats" id="fifa-stat-shots" style="margin-top: 4px; text-align: right;">SHOTS ON TARGET: 0 - 0</div>
@@ -429,6 +462,23 @@ function generateHTML(briefing, buildTime) {
                             <span class="arena-title">🏏 International Cricket Live Arena</span>
                             <span class="arena-status-badge" style="background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.25); color: var(--secondary);">LIVE SCORE</span>
                         </div>
+
+                        <!-- Live Video Feed Monitor -->
+                        <div class="sports-video-monitor">
+                            <div class="sports-video-controls">
+                                <span class="sports-video-live-badge"><span class="live-blink-dot"></span> LIVE VIDEO TELECAST</span>
+                                <div class="sports-video-chips">
+                                    <button class="sports-vid-chip active" data-cricket-vid="live" onclick="switchCricketVideo('live')">📡 Live Feed</button>
+                                    <button class="sports-vid-chip" data-cricket-vid="highlights" onclick="switchCricketVideo('highlights')">🏆 T20 Highlights</button>
+                                    <button class="sports-vid-chip" data-cricket-vid="bcci" onclick="switchCricketVideo('bcci')">🏏 Classic matches</button>
+                                </div>
+                            </div>
+                            <div class="live-stream-wrapper sports-video-wrapper">
+                                <div class="viewport-scanline"></div>
+                                <iframe id="cricket-video-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
                         <div class="live-scorecard-box cricket-board">
                             <div class="cricket-score-row">
                                 <span class="cricket-main-score" id="cricket-score">IND 0 / 0</span>
@@ -473,7 +523,7 @@ function generateHTML(briefing, buildTime) {
                         </div>
                         <div class="commentary-panel" id="cricket-commentary-list"></div>
                         <div class="broadcasting-routing-info">
-                            <span>Official Broadcast Partners: <a href="https://www.hotstar.com" target="_blank">Hotstar</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a></span>
+                            <span>Official Broadcast Partners: <a href="https://www.hotstar.com" target="_blank">Hotstar</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a> | <a href="https://www.bcci.tv" target="_blank">BCCI.tv</a></span>
                         </div>
                     </div>
                 </div>
