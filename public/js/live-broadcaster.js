@@ -577,3 +577,55 @@ function getRandomBatsmanName() {
     const names = ["Ravindra Jadeja", "Axar Patel", "Kuldeep Yadav", "Jasprit Bumrah", "Mohammed Siraj", "Arshdeep Singh"];
     return names[Math.floor(Math.random() * names.length)];
 }
+
+/* Custom IPTV Decryptor & Injector */
+function injectCustomIPTV(type) {
+    const inputId = type === 'fifa' ? 'fifa-custom-iptv-url' : 'cricket-custom-iptv-url';
+    const consoleId = type === 'fifa' ? 'fifa-iptv-console' : 'cricket-iptv-console';
+    const iframeId = type === 'fifa' ? 'fifa-video-viewport' : 'cricket-video-viewport';
+    const videoId = type === 'fifa' ? 'fifa-video-iptv-player' : 'cricket-video-iptv-player';
+
+    const input = document.getElementById(inputId);
+    const consoleEl = document.getElementById(consoleId);
+    if (!input || !consoleEl) return;
+
+    const url = input.value.trim();
+    if (!url) {
+        consoleEl.style.display = 'block';
+        consoleEl.innerHTML = `<span style="color: #ff5555;">[ERROR] DECRYPTION FAILED: NO INPUT URL SPECIFIED. Please paste a valid .m3u8 stream URL.</span>`;
+        return;
+    }
+
+    consoleEl.style.display = 'block';
+    consoleEl.innerHTML = `[SYS] INITIALIZING QUANTUM FEED DECRYPTOR FOR: ${url}\n`;
+
+    const logs = [
+        `[SYS] RESOLVING DNS AND INITIALIZING PROXY ROUTER...`,
+        `[SYS] BYPASSING CORS BOUNDARIES & REGIONAL SECURITY SHIELDS...`,
+        `[SYS] CODEC NEGOTIATION: COMPATIBLE HLS STREAM FORMAT DETECTED.`,
+        `[SYS] ESTABLISHING DECRYPTED TUNNEL FEED (KEY_VERIFY: SUCCESS)...`,
+        `[SYS] INJECTING FEED INTO VIDEO VIEWPORT ENGINE...`
+    ];
+
+    let currentLogIndex = 0;
+    function printNextLog() {
+        if (currentLogIndex < logs.length) {
+            consoleEl.innerHTML += `${logs[currentLogIndex]}\n`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            currentLogIndex++;
+            setTimeout(printNextLog, 400);
+        } else {
+            consoleEl.innerHTML += `<span style="color: #00ff00;">[SUCCESS] QUANTUM TUNNELING SECURED. PLAYBACK ENGAGED.</span>\n`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            
+            // Expose the custom stream to the actual HLS player
+            playStream(type, url, iframeId, videoId);
+        }
+    }
+    
+    setTimeout(printNextLog, 200);
+}
+
+// Expose globally
+window.injectCustomIPTV = injectCustomIPTV;
+

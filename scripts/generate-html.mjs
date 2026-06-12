@@ -453,6 +453,19 @@ function generateHTML(briefing, buildTime) {
                             </div>
                         </div>
 
+                        <!-- Quantum IPTV Feed Injector (FIFA) -->
+                        <div class="custom-iptv-injector" style="--iptv-color: var(--primary, #00f0ff); --iptv-color-rgb: 0, 240, 255; margin-bottom: 15px;">
+                            <div class="iptv-terminal-header">
+                                <span>🛰️ QUANTUM IPTV FEED DECRYPTOR (FIFA)</span>
+                                <span style="font-size: 0.85em; color: var(--text-muted);">STATUS: STANDBY</span>
+                            </div>
+                            <div class="iptv-input-row">
+                                <input type="text" id="fifa-custom-iptv-url" class="iptv-input-field" placeholder="Input custom live stream URL (.m3u8)...">
+                                <button class="iptv-inject-btn" onclick="injectCustomIPTV('fifa')">DECRYPT FEED</button>
+                            </div>
+                            <div class="iptv-status-console" id="fifa-iptv-console" style="display: none;"></div>
+                        </div>
+
                         <div class="live-scorecard-box">
                             <div class="fifa-match-details">
                                 <div class="team-block">
@@ -516,6 +529,19 @@ function generateHTML(briefing, buildTime) {
                                 <iframe id="cricket-video-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                 <video id="cricket-video-iptv-player" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; border:none; background:#000;" controls muted autoplay></video>
                             </div>
+                        </div>
+
+                        <!-- Quantum IPTV Feed Injector (Cricket) -->
+                        <div class="custom-iptv-injector" style="--iptv-color: var(--secondary, #ffb700); --iptv-color-rgb: 255, 183, 0; margin-bottom: 15px;">
+                            <div class="iptv-terminal-header">
+                                <span>🛰️ QUANTUM IPTV FEED DECRYPTOR (CRICKET)</span>
+                                <span style="font-size: 0.85em; color: var(--text-muted);">STATUS: STANDBY</span>
+                            </div>
+                            <div class="iptv-input-row">
+                                <input type="text" id="cricket-custom-iptv-url" class="iptv-input-field" placeholder="Input custom live stream URL (.m3u8)...">
+                                <button class="iptv-inject-btn" onclick="injectCustomIPTV('cricket')">DECRYPT FEED</button>
+                            </div>
+                            <div class="iptv-status-console" id="cricket-iptv-console" style="display: none;"></div>
                         </div>
 
                         <div class="live-scorecard-box cricket-board">
@@ -1901,6 +1927,83 @@ function generateHTML(briefing, buildTime) {
         }
         .scroll-hud-btn:active {
             transform: scale(0.95);
+        }
+
+        /* Quantum IPTV Injector Styles */
+        .custom-iptv-injector {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(var(--iptv-color-rgb, 0, 240, 255), 0.15);
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: var(--font-mono, monospace);
+        }
+        .iptv-terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: var(--iptv-color, #00f0ff);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(var(--iptv-color-rgb, 0, 240, 255), 0.1);
+            padding-bottom: 4px;
+        }
+        .iptv-input-row {
+            display: flex;
+            gap: 8px;
+        }
+        .iptv-input-field {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(var(--iptv-color-rgb, 0, 240, 255), 0.25);
+            border-radius: 2px;
+            padding: 6px 10px;
+            color: #fff;
+            font-family: var(--font-mono, monospace);
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+        .iptv-input-field:focus {
+            outline: none;
+            border-color: var(--iptv-color, #00f0ff);
+            box-shadow: 0 0 5px rgba(var(--iptv-color-rgb, 0, 240, 255), 0.3);
+        }
+        .iptv-inject-btn {
+            background: transparent;
+            border: 1px solid var(--iptv-color, #00f0ff);
+            color: var(--iptv-color, #00f0ff);
+            padding: 6px 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: var(--font-cyber, sans-serif);
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .iptv-inject-btn:hover {
+            background: rgba(var(--iptv-color-rgb, 0, 240, 255), 0.1);
+            box-shadow: 0 0 8px rgba(var(--iptv-color-rgb, 0, 240, 255), 0.3);
+        }
+        .iptv-inject-btn:active {
+            transform: scale(0.97);
+        }
+        .iptv-status-console {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(var(--iptv-color-rgb, 0, 240, 255), 0.15);
+            border-radius: 2px;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 0.75em;
+            color: var(--iptv-color, #00f0ff);
+            max-height: 100px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
         }
     </style>
 
