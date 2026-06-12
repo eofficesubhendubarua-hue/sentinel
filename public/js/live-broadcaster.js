@@ -12,13 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
 const LIVE_CHANNELS = {
     aljazeera: {
         name: "Al Jazeera English Broadcast",
-        url: "https://www.youtube.com/embed/live_stream?channel=UCnye-wNBqNL5ZzHSJj3l8Bg",
-        badge: "AJE LIVE"
+        url: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8",
+        badge: "AJE IPTV"
     },
     dw: {
         name: "DW News Global Feed",
-        url: "https://www.youtube.com/embed/live_stream?channel=UCMUnYjPscN6N6jZ4w8K30uA",
-        badge: "DW LIVE"
+        url: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/master.m3u8",
+        badge: "DW IPTV"
     },
     skynews: {
         name: "Sky News Live Stream",
@@ -59,7 +59,7 @@ const LIVE_CHANNELS = {
 
 const LIVE_FIFA_VIDEOS = {
     live: {
-        url: "https://www.youtube.com/embed/live_stream?channel=UCpcAaORfUac4vi_KZYboBAA"
+        url: "https://www.youtube.com/embed/R9Kx8bNfG-I"
     },
     intro: {
         url: "https://www.youtube.com/embed/OYg505-5cYU"
@@ -71,7 +71,7 @@ const LIVE_FIFA_VIDEOS = {
 
 const LIVE_CRICKET_VIDEOS = {
     live: {
-        url: "https://www.youtube.com/embed/live_stream?channel=UC15e1QZp1w_8wD9l5gQ1-4A"
+        url: "https://www.youtube.com/embed/videoseries?list=PLw2bX2l_L8vL8-tqY2T71e27aZ97tL9Z8"
     },
     highlights: {
         url: "https://www.youtube.com/embed/videoseries?list=PLw2bX2l_L8vL8-tqY2T71e27aZ97tL9Z8"
@@ -81,14 +81,91 @@ const LIVE_CRICKET_VIDEOS = {
     }
 };
 
+// Global active HLS instances to prevent memory leaks and overlapping playback
+let activeHlsInstances = {
+    news: null,
+    fifa: null,
+    cricket: null
+};
+
+function playStream(type, url, iframeId, videoId) {
+    const iframe = document.getElementById(iframeId);
+    const video = document.getElementById(videoId);
+    if (!iframe || !video) return;
+
+    // Destruct any existing HLS instance for this player
+    if (activeHlsInstances[type]) {
+        try {
+            activeHlsInstances[type].destroy();
+        } catch(e) {
+            console.error("Hls destroy error:", e);
+        }
+        activeHlsInstances[type] = null;
+    }
+
+    const isM3u8 = url.includes('.m3u8');
+
+    if (isM3u8) {
+        // Hide iframe, show video
+        iframe.style.display = 'none';
+        iframe.src = 'about:blank';
+        video.style.display = 'block';
+
+        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            const hls = new Hls({
+                maxMaxBufferLength: 10,
+                enableWorker: true,
+                lowLatencyMode: true
+            });
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.play().catch(e => console.log("HLS Autoplay prevented:", e));
+            });
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            console.warn("IPTV Network Error, Retrying...", data);
+                            hls.startLoad();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            console.warn("IPTV Media Error, Recovering...", data);
+                            hls.recoverMediaError();
+                            break;
+                        default:
+                            console.error("IPTV Fatal Error, stopping.", data);
+                            hls.destroy();
+                            break;
+                    }
+                }
+            });
+            activeHlsInstances[type] = hls;
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Native HLS support (Safari)
+            video.src = url;
+            video.addEventListener('canplay', () => {
+                video.play().catch(e => console.log("Native Autoplay prevented:", e));
+            });
+        }
+    } else {
+        // YouTube embed mode
+        video.style.display = 'none';
+        try {
+            video.pause();
+        } catch(e){}
+        video.src = '';
+        iframe.style.display = 'block';
+        iframe.src = url;
+    }
+}
+
 function initLiveStreamViewport() {
-    const iframe = document.getElementById("live-stream-viewport");
-    if (iframe) {
-        // Set default channel (Al Jazeera English)
+    const newsIframe = document.getElementById("live-stream-viewport");
+    if (newsIframe) {
         switchBroadcastChannel("aljazeera");
     }
 
-    // Set default FIFA and Cricket videos
     const fifaIframe = document.getElementById("fifa-video-viewport");
     if (fifaIframe) {
         switchFIFAVideo("live");
@@ -107,13 +184,15 @@ function switchBroadcastChannel(channelId) {
     const channel = LIVE_CHANNELS[channelId];
     if (!channel) return;
 
-    const iframe = document.getElementById("live-stream-viewport");
     const titleEl = document.getElementById("active-stream-title");
     const badgeEl = document.getElementById("active-stream-badge");
+    const hudChannelEl = document.getElementById("hud-active-channel-name");
 
-    if (iframe) iframe.src = channel.url;
     if (titleEl) titleEl.textContent = channel.name;
     if (badgeEl) badgeEl.textContent = channel.badge;
+    if (hudChannelEl) hudChannelEl.textContent = channel.name.toUpperCase();
+
+    playStream('news', channel.url, 'live-stream-viewport', 'live-stream-iptv-player');
 
     // Toggle active state on buttons
     document.querySelectorAll(".stream-chip").forEach(btn => {
@@ -125,8 +204,7 @@ function switchFIFAVideo(vidType) {
     const video = LIVE_FIFA_VIDEOS[vidType];
     if (!video) return;
 
-    const iframe = document.getElementById("fifa-video-viewport");
-    if (iframe) iframe.src = video.url;
+    playStream('fifa', video.url, 'fifa-video-viewport', 'fifa-video-iptv-player');
 
     // Toggle active class on buttons
     document.querySelectorAll("[data-fifa-vid]").forEach(btn => {
@@ -138,8 +216,7 @@ function switchCricketVideo(vidType) {
     const video = LIVE_CRICKET_VIDEOS[vidType];
     if (!video) return;
 
-    const iframe = document.getElementById("cricket-video-viewport");
-    if (iframe) iframe.src = video.url;
+    playStream('cricket', video.url, 'cricket-video-viewport', 'cricket-video-iptv-player');
 
     // Toggle active class on buttons
     document.querySelectorAll("[data-cricket-vid]").forEach(btn => {

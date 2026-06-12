@@ -334,8 +334,20 @@ function generateHTML(briefing, buildTime) {
                             <span class="active-stream-label">4K QUANTUM STREAM</span>
                         </div>
                         <div class="live-stream-wrapper">
+                            <div class="hud-watermark-grid"></div>
                             <div class="viewport-scanline"></div>
+                            <div class="sports-decryption-overlay">
+                                <div class="hud-top-left">
+                                    <div><span class="hud-label">DECRYPTOR:</span> <span class="hud-val cyan">SAT-DECRYPT-V4.2</span></div>
+                                    <div><span class="hud-label">FEED:</span> <span class="hud-val green" id="hud-active-channel-name">AL JAZEERA English</span></div>
+                                </div>
+                                <div class="hud-bottom-right">
+                                    <div><span class="hud-label">LINK:</span> <span class="hud-val green">STABLE</span></div>
+                                    <div><span class="hud-label">DECODE:</span> <span class="hud-val gold blinking-text">LIVE DECODING</span></div>
+                                </div>
+                            </div>
                             <iframe id="live-stream-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <video id="live-stream-iptv-player" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; border:none; background:#000;" controls muted autoplay></video>
                         </div>
                         <div class="viewport-footer-telemetry">
                             <div class="tel-item">
@@ -423,8 +435,21 @@ function generateHTML(briefing, buildTime) {
                                 </div>
                             </div>
                             <div class="live-stream-wrapper sports-video-wrapper">
+                                <div class="hud-watermark-grid"></div>
                                 <div class="viewport-scanline"></div>
+                                <div class="sports-decryption-overlay">
+                                    <div class="hud-top-left">
+                                        <div><span class="hud-label">SYS_LINK:</span> <span class="hud-val green">ONLINE // SECURE</span></div>
+                                        <div><span class="hud-label">DECRYPTOR:</span> <span class="hud-val cyan">QUANTUM-DECRYPT-V4.2</span></div>
+                                        <div><span class="hud-label">SAT_LINK:</span> <span class="hud-val green">METLIFE_ARENA_NODE_7</span></div>
+                                    </div>
+                                    <div class="hud-bottom-right">
+                                        <div><span class="hud-label">DECODE_STATUS:</span> <span class="hud-val gold blinking-text">STREAMING LIVE FEED</span></div>
+                                        <div><span class="hud-label">KEY_VERIFY:</span> <span class="hud-val cyan">0x9F4B7281DAE9 (SUCCESS)</span></div>
+                                    </div>
+                                </div>
                                 <iframe id="fifa-video-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <video id="fifa-video-iptv-player" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; border:none; background:#000;" controls muted autoplay></video>
                             </div>
                         </div>
 
@@ -474,8 +499,21 @@ function generateHTML(briefing, buildTime) {
                                 </div>
                             </div>
                             <div class="live-stream-wrapper sports-video-wrapper">
+                                <div class="hud-watermark-grid"></div>
                                 <div class="viewport-scanline"></div>
+                                <div class="sports-decryption-overlay">
+                                    <div class="hud-top-left">
+                                        <div><span class="hud-label">SYS_LINK:</span> <span class="hud-val green">ONLINE // SECURE</span></div>
+                                        <div><span class="hud-label">DECRYPTOR:</span> <span class="hud-val cyan">QUANTUM-DECRYPT-V4.2</span></div>
+                                        <div><span class="hud-label">SAT_LINK:</span> <span class="hud-val green">MCG_BROADCAST_NODE_3</span></div>
+                                    </div>
+                                    <div class="hud-bottom-right">
+                                        <div><span class="hud-label">DECODE_STATUS:</span> <span class="hud-val gold blinking-text">STREAMING LIVE FEED</span></div>
+                                        <div><span class="hud-label">KEY_VERIFY:</span> <span class="hud-val cyan">0x2A8B527E583A (SUCCESS)</span></div>
+                                    </div>
+                                </div>
                                 <iframe id="cricket-video-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <video id="cricket-video-iptv-player" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; border:none; background:#000;" controls muted autoplay></video>
                             </div>
                         </div>
 
@@ -728,7 +766,7 @@ function generateHTML(briefing, buildTime) {
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com https://cdn.jsdelivr.net; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com https://cdn.jsdelivr.net https://*.getaj.net https://*.akamaized.net https://*.amagi.tv; media-src 'self' blob: data: https://*.youtube.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -738,6 +776,8 @@ function generateHTML(briefing, buildTime) {
     <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <!-- HLS IPTV Engine SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js" defer></script>
 </head>
 <body>
     <!-- Maincore System Decryption Bootloader Overlay -->
