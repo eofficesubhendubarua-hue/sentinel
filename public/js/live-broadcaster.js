@@ -58,17 +58,39 @@ const LIVE_CHANNELS = {
 };
 
 // ─── Multi-Source Failover Engine ──────────────────────────
-// FIFA Live Feed sources (priority ordered, auto-failover)
+// FIFA World Cup 2026 — Official Broadcaster Streams (priority ordered)
 const FIFA_LIVE_SOURCES = [
-    { name: "beIN SPORTS XTRA", url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
-    { name: "Alkass One (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
-    { name: "DD Sports India", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8" },
-    { name: "Fubo Sports Network", url: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8" },
-    { name: "CazeTV (Brazil)", url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8" },
-    { name: "ESPN8 The Ocho", url: "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8" },
-    { name: "Alkass Two (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
-    { name: "CBS Golazo", url: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" }
+    { name: "DD Sports India (Official FTA)", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8", type: "hls" },
+    { name: "Alkass Sports (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8", type: "hls" },
+    { name: "Alkass Sports 2 (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8", type: "hls" },
+    { name: "Fubo Sports Network (US)", url: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8", type: "hls" },
+    { name: "beIN SPORTS XTRA", url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", type: "hls" },
+    { name: "CBS Golazo Network", url: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8", type: "hls" }
 ];
+
+// YouTube Official Broadcaster Channels (embed via iframe)
+const FIFA_YOUTUBE_CHANNELS = {
+    cazetv: {
+        name: "CazéTV (Brazil Official — All 104 Matches Free)",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCiUpYwU87Q9r1ZtN3x2Pq5Q",
+        badge: "🇧🇷 CazéTV"
+    },
+    foxsports: {
+        name: "FOX Sports (US Official Broadcaster)",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCnvOhBBaIGHkV1RFDjBUFQg",
+        badge: "🇺🇸 FOX Sports"
+    },
+    fifaplus: {
+        name: "FIFA+ Official Channel",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCpcTrCXblq78GZrTUTLWeBw",
+        badge: "⚽ FIFA+"
+    },
+    telemundo: {
+        name: "Telemundo Deportes (US Spanish)",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCRwA1NZjOSNwwOoJNaYruDQ",
+        badge: "🇪🇸 Telemundo"
+    }
+};
 
 let currentFifaSourceIndex = 0;
 let streamHealthCheckInterval = null;
@@ -77,8 +99,17 @@ const LIVE_FIFA_VIDEOS = {
     live: {
         url: FIFA_LIVE_SOURCES[0].url
     },
-    intro: {
-        url: "https://www.youtube.com/embed/OYg505-5cYU"
+    cazetv: {
+        url: FIFA_YOUTUBE_CHANNELS.cazetv.url
+    },
+    foxsports: {
+        url: FIFA_YOUTUBE_CHANNELS.foxsports.url
+    },
+    fifaplus: {
+        url: FIFA_YOUTUBE_CHANNELS.fifaplus.url
+    },
+    telemundo: {
+        url: FIFA_YOUTUBE_CHANNELS.telemundo.url
     },
     highlights: {
         url: "https://www.youtube.com/embed/videoseries?list=PL859A3D063A482A3A"

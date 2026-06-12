@@ -433,10 +433,13 @@ function generateHTML(briefing, buildTime) {
                         <div class="sports-video-monitor">
                             <div class="sports-video-controls">
                                 <span class="sports-video-live-badge"><span class="live-blink-dot"></span> LIVE VIDEO TELECAST</span>
-                                <div class="sports-video-chips">
-                                    <button class="sports-vid-chip active" data-fifa-vid="live" onclick="switchFIFAVideo('live')">📡 Live Feed</button>
-                                    <button class="sports-vid-chip" data-fifa-vid="intro" onclick="switchFIFAVideo('intro')">🎬 Brand Launch</button>
-                                    <button class="sports-vid-chip" data-fifa-vid="highlights" onclick="switchFIFAVideo('highlights')">🏆 Replay Highlights</button>
+                                <div class="sports-video-chips" style="flex-wrap: wrap; gap: 4px;">
+                                    <button class="sports-vid-chip active" data-fifa-vid="live" onclick="switchFIFAVideo('live')">📡 DD Sports (India)</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="cazetv" onclick="switchFIFAVideo('cazetv')">🇧🇷 CazéTV</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="foxsports" onclick="switchFIFAVideo('foxsports')">🇺🇸 FOX Sports</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="fifaplus" onclick="switchFIFAVideo('fifaplus')">⚽ FIFA+</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="telemundo" onclick="switchFIFAVideo('telemundo')">🇪🇸 Telemundo</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="highlights" onclick="switchFIFAVideo('highlights')">🏆 Highlights</button>
                                 </div>
                             </div>
                             <div class="live-stream-wrapper sports-video-wrapper">
