@@ -10,15 +10,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ─── Live News Stream Viewport Switcher ───────────────────
 const LIVE_CHANNELS = {
-    aljazeera: {
-        name: "Al Jazeera English Broadcast",
-        url: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8",
-        badge: "AJE IPTV"
-    },
     dw: {
         name: "DW News Global Feed",
         url: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/master.m3u8",
         badge: "DW IPTV"
+    },
+    aljazeera: {
+        name: "Al Jazeera English Broadcast",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCNye-wNBqNL5ZzHSJj3l8Bg",
+        badge: "AJE LIVE"
     },
     skynews: {
         name: "Sky News Live Stream",
@@ -57,9 +57,25 @@ const LIVE_CHANNELS = {
     }
 };
 
+// ─── Multi-Source Failover Engine ──────────────────────────
+// FIFA Live Feed sources (priority ordered, auto-failover)
+const FIFA_LIVE_SOURCES = [
+    { name: "beIN SPORTS XTRA", url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8" },
+    { name: "Alkass One (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8" },
+    { name: "DD Sports India", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8" },
+    { name: "Fubo Sports Network", url: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8" },
+    { name: "CazeTV (Brazil)", url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8" },
+    { name: "ESPN8 The Ocho", url: "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8" },
+    { name: "Alkass Two (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8" },
+    { name: "CBS Golazo", url: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8" }
+];
+
+let currentFifaSourceIndex = 0;
+let streamHealthCheckInterval = null;
+
 const LIVE_FIFA_VIDEOS = {
     live: {
-        url: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8"
+        url: FIFA_LIVE_SOURCES[0].url
     },
     intro: {
         url: "https://www.youtube.com/embed/OYg505-5cYU"
@@ -116,30 +132,46 @@ function playStream(type, url, iframeId, videoId) {
                 maxMaxBufferLength: 10,
                 enableWorker: true,
                 lowLatencyMode: true,
-                liveSyncDurationCount: 2,       // Start playback closer to live edge (reduces delay)
-                liveMaxLatencyDurationCount: 3.5, // Allow catching up if latency builds up
-                maxLiveSyncPlaybackRate: 1.5,   // Catch up playback rate if lagging
-                backBufferLength: 5             // Keep fewer segments in back buffer to save memory
+                liveSyncDurationCount: 2,
+                liveMaxLatencyDurationCount: 3.5,
+                maxLiveSyncPlaybackRate: 1.5,
+                backBufferLength: 5,
+                manifestLoadingTimeOut: 8000,
+                manifestLoadingMaxRetry: 3,
+                levelLoadingTimeOut: 8000,
+                fragLoadingTimeOut: 15000
             });
             hls.loadSource(url);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 video.play().catch(e => console.log("HLS Autoplay prevented:", e));
+                // Update stream source indicator
+                updateStreamSourceBadge(type, url);
             });
             hls.on(Hls.Events.ERROR, (event, data) => {
                 if (data.fatal) {
                     switch (data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
-                            console.warn("IPTV Network Error, Retrying...", data);
-                            hls.startLoad();
+                            console.warn("IPTV Network Error on", url);
+                            // Auto-failover for FIFA streams
+                            if (type === 'fifa') {
+                                console.warn("[FAILOVER] Attempting next FIFA source...");
+                                failoverToNextFIFASource(iframeId, videoId);
+                            } else {
+                                hls.startLoad();
+                            }
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
                             console.warn("IPTV Media Error, Recovering...", data);
                             hls.recoverMediaError();
                             break;
                         default:
-                            console.error("IPTV Fatal Error, stopping.", data);
-                            hls.destroy();
+                            console.error("IPTV Fatal Error.", data);
+                            if (type === 'fifa') {
+                                failoverToNextFIFASource(iframeId, videoId);
+                            } else {
+                                hls.destroy();
+                            }
                             break;
                     }
                 }
@@ -167,11 +199,13 @@ function playStream(type, url, iframeId, videoId) {
 function initLiveStreamViewport() {
     const newsIframe = document.getElementById("live-stream-viewport");
     if (newsIframe) {
-        switchBroadcastChannel("aljazeera");
+        switchBroadcastChannel("dw");
     }
 
     const fifaIframe = document.getElementById("fifa-video-viewport");
     if (fifaIframe) {
+        // Start with failover-enabled live source
+        currentFifaSourceIndex = 0;
         switchFIFAVideo("live");
     }
 
@@ -182,6 +216,9 @@ function initLiveStreamViewport() {
 
     // Start fluctuating telemetry metadata
     setInterval(updateStreamTelemetry, 3000);
+
+    // Start stream health monitor (checks every 30s)
+    startStreamHealthMonitor();
 }
 
 function switchBroadcastChannel(channelId) {
@@ -255,7 +292,64 @@ function updateStreamTelemetry() {
 
 
 // ─── FIFA World Cup 2026 Live Arena Selector ─────────────
+// Today's matches: Canada vs Bosnia & Herzegovina, USA vs Paraguay (June 12, 2026)
 const FIFA_MATCHES = {
+    canada_bos: {
+        id: "canada_bos",
+        teamHome: "CANADA",
+        teamAway: "BOSNIA & HERZ.",
+        flagHome: "🇨🇦",
+        flagAway: "🇧🇦",
+        scoreHome: 0,
+        scoreAway: 0,
+        minute: "LIVE",
+        isLive: true,
+        scorersHome: [],
+        scorersAway: [],
+        homePossession: 52,
+        homeShots: 0,
+        awayShots: 0,
+        satLink: "TORONTO_STADIUM_NODE_1",
+        videoUrl: FIFA_LIVE_SOURCES[0].url,
+        kickoff: "3:00 PM ET / 12:30 AM IST",
+        venue: "Toronto Stadium",
+        group: "Group B",
+        commentary: [
+            "🏟️ Welcome to Toronto Stadium! Canada opens their home FIFA World Cup 2026 campaign!",
+            "[PRE] The atmosphere is electric in Toronto as co-hosts Canada take center stage.",
+            "[PRE] Bosnia & Herzegovina looking to cause an upset in their first World Cup match as an independent nation.",
+            "[PRE] Alphonso Davies leads Canada out. The crowd rises to their feet!",
+            "[PRE] Edin Džeko captains Bosnia in what could be his World Cup swansong."
+        ]
+    },
+    usa_par: {
+        id: "usa_par",
+        teamHome: "USA",
+        teamAway: "PARAGUAY",
+        flagHome: "🇺🇸",
+        flagAway: "🇵🇾",
+        scoreHome: 0,
+        scoreAway: 0,
+        minute: "UPCOMING",
+        isLive: false,
+        scorersHome: [],
+        scorersAway: [],
+        homePossession: 50,
+        homeShots: 0,
+        awayShots: 0,
+        satLink: "LA_SOFI_ARENA_NODE_4",
+        videoUrl: FIFA_LIVE_SOURCES[0].url,
+        kickoff: "9:00 PM ET / 6:30 AM IST",
+        venue: "SoFi Stadium, Los Angeles",
+        group: "Group D",
+        commentary: [
+            "🏟️ Later tonight at SoFi Stadium! The USA begins their home World Cup journey!",
+            "[PRE] Christian Pulisic will lead the USMNT against a resilient Paraguay side.",
+            "[PRE] Folarin Balogun, Tyler Adams, and Gio Reyna expected in the starting XI.",
+            "[PRE] Paraguay's Miguel Almirón and Julio Enciso bring flair and danger.",
+            "[PRE] Kickoff at 9:00 PM ET. Stay tuned for live coverage!"
+        ]
+    },
     mexico_rsa: {
         id: "mexico_rsa",
         teamHome: "MEXICO",
@@ -265,13 +359,17 @@ const FIFA_MATCHES = {
         scoreHome: 2,
         scoreAway: 0,
         minute: "FT",
+        isLive: false,
         scorersHome: ["H. Lozano 43'", "S. Gimenez 78'"],
         scorersAway: [],
         homePossession: 55,
         homeShots: 14,
         awayShots: 8,
         satLink: "AZTECA_NODE_1",
-        videoUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+        videoUrl: FIFA_LIVE_SOURCES[0].url,
+        kickoff: "June 11 — FT",
+        venue: "Estadio Azteca, Mexico City",
+        group: "Group A",
         commentary: [
             "⚽ Full Time! Mexico secures a dominant 2-0 victory in their opening game.",
             "[90'] 3 minutes of added time announced.",
@@ -290,13 +388,17 @@ const FIFA_MATCHES = {
         scoreHome: 2,
         scoreAway: 1,
         minute: "FT",
+        isLive: false,
         scorersHome: ["Son Heung-min 19' (P)", "Hwang Hee-chan 67'"],
         scorersAway: ["P. Schick 54'"],
         homePossession: 48,
         homeShots: 11,
         awayShots: 13,
         satLink: "GUADALAJARA_NODE_2",
-        videoUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+        videoUrl: FIFA_LIVE_SOURCES[0].url,
+        kickoff: "June 11 — FT",
+        venue: "Estadio Akron, Guadalajara",
+        group: "Group C",
         commentary: [
             "⚽ Full Time! Korea Republic wins a hard-fought battle 2-1 against Czechia.",
             "[88'] Hwang Hee-chan receives a standing ovation as he is substituted.",
@@ -308,7 +410,7 @@ const FIFA_MATCHES = {
     }
 };
 
-let activeFifaMatchId = "mexico_rsa";
+let activeFifaMatchId = "canada_bos";
 
 function switchFIFASelectedMatch(matchId) {
     const match = FIFA_MATCHES[matchId];
@@ -328,10 +430,17 @@ function switchFIFASelectedMatch(matchId) {
     if (homeFlagEl) homeFlagEl.textContent = match.flagHome;
     if (homeNameEl) homeNameEl.textContent = match.teamHome;
     if (scoreEl) scoreEl.textContent = `${match.teamHome} ${match.scoreHome} - ${match.scoreAway} ${match.teamAway}`;
-    if (timeEl) timeEl.textContent = match.minute;
+    if (timeEl) {
+        timeEl.textContent = match.minute;
+        timeEl.className = 'match-time-badge' + (match.isLive ? ' live-pulsing' : '');
+    }
     if (awayFlagEl) awayFlagEl.textContent = match.flagAway;
     if (awayNameEl) awayNameEl.textContent = match.teamAway;
     if (satLinkEl) satLinkEl.textContent = match.satLink;
+
+    // Update venue and match info
+    const venueEl = document.getElementById("fifa-venue-info");
+    if (venueEl) venueEl.textContent = `📍 ${match.venue} | ${match.group} | KO: ${match.kickoff}`;
 
     // Update scorers
     const homeScorersEl = document.getElementById("fifa-scorers-home");
@@ -344,6 +453,10 @@ function switchFIFASelectedMatch(matchId) {
     const statsShotsEl = document.getElementById("fifa-stat-shots");
     if (statsPossEl) statsPossEl.textContent = `POSSESSION: ${match.homePossession}% - ${100 - match.homePossession}%`;
     if (statsShotsEl) statsShotsEl.textContent = `SHOTS ON TARGET: ${match.homeShots} - ${match.awayShots}`;
+
+    // Update stream source indicator
+    const srcBadge = document.getElementById("fifa-stream-source");
+    if (srcBadge) srcBadge.textContent = `📡 ${FIFA_LIVE_SOURCES[currentFifaSourceIndex].name}`;
 
     // Reset commentary list and populate
     const commentaryList = document.getElementById("fifa-commentary-list");
@@ -359,11 +472,16 @@ function switchFIFASelectedMatch(matchId) {
 
     // Load stream URL
     playStream('fifa', match.videoUrl, 'fifa-video-viewport', 'fifa-video-iptv-player');
+
+    // If live match, start the live simulator
+    if (match.isLive) {
+        startFIFALiveSimulator(matchId);
+    }
 }
 
 function initFIFASimulator() {
-    // Initialize default selected match
-    switchFIFASelectedMatch("mexico_rsa");
+    // Initialize default selected match — today's first match
+    switchFIFASelectedMatch("canada_bos");
 }
 
 window.switchFIFASelectedMatch = switchFIFASelectedMatch;
@@ -391,6 +509,144 @@ function getRandomUSAname() {
 function getRandomPARname() {
     const names = ["M. Almiron", "J. Enciso", "A. Sanabria", "R. Sosa", "G. Gomez", "O. Alderete"];
     return names[Math.floor(Math.random() * names.length)];
+}
+
+function getRandomCANname() {
+    const names = ["A. Davies", "J. David", "C. Buchanan", "T. Buchanan", "S. Eustaquio", "A. Larin"];
+    return names[Math.floor(Math.random() * names.length)];
+}
+
+function getRandomBOSname() {
+    const names = ["E. Džeko", "M. Pjanić", "A. Kovačević", "S. Prevljak", "E. Demirović", "D. Šabanović"];
+    return names[Math.floor(Math.random() * names.length)];
+}
+
+// ─── FIFA Live Match Simulator Engine ─────────────────────
+let fifaSimulatorInterval = null;
+let fifaMatchMinute = 0;
+
+function startFIFALiveSimulator(matchId) {
+    if (fifaSimulatorInterval) clearInterval(fifaSimulatorInterval);
+    fifaMatchMinute = 0;
+
+    fifaSimulatorInterval = setInterval(() => {
+        const match = FIFA_MATCHES[matchId];
+        if (!match || !match.isLive) return;
+
+        fifaMatchMinute++;
+        if (fifaMatchMinute > 90) fifaMatchMinute = 1; // Loop back
+
+        match.minute = fifaMatchMinute + "'";
+
+        // Random event simulation
+        const roll = Math.random();
+        let commentText = "";
+
+        if (roll < 0.04 && fifaMatchMinute > 10) {
+            // GOAL for home team
+            match.scoreHome++;
+            const scorer = matchId === 'canada_bos' ? getRandomCANname() : getRandomUSAname();
+            match.scorersHome.push(`${scorer} ${fifaMatchMinute}'`);
+            commentText = `⚽ GOOOAL!!! ${scorer} scores for ${match.teamHome}! The crowd erupts!`;
+        } else if (roll < 0.07 && fifaMatchMinute > 10) {
+            // GOAL for away team
+            match.scoreAway++;
+            const scorer = matchId === 'canada_bos' ? getRandomBOSname() : getRandomPARname();
+            match.scorersAway.push(`${scorer} ${fifaMatchMinute}'`);
+            commentText = `⚽ GOAL!!! ${scorer} equalizes for ${match.teamAway}! What a strike!`;
+        } else if (roll < 0.15) {
+            match.homeShots++;
+            commentText = `[${fifaMatchMinute}'] Shot on goal by ${match.teamHome}! The keeper makes a fine save.`;
+        } else if (roll < 0.22) {
+            match.awayShots++;
+            commentText = `[${fifaMatchMinute}'] ${match.teamAway} with a dangerous attack! Shot goes just wide.`;
+        } else if (roll < 0.35) {
+            match.homePossession = Math.min(65, match.homePossession + Math.floor(Math.random() * 3));
+            commentText = `[${fifaMatchMinute}'] ${match.teamHome} building patiently from the back.`;
+        } else if (roll < 0.45) {
+            match.homePossession = Math.max(35, match.homePossession - Math.floor(Math.random() * 3));
+            commentText = `[${fifaMatchMinute}'] ${match.teamAway} pressing high and winning possession.`;
+        } else if (roll < 0.55) {
+            commentText = `[${fifaMatchMinute}'] Free kick awarded. The wall is set...`;
+        } else if (roll < 0.65) {
+            commentText = `[${fifaMatchMinute}'] Corner kick for ${Math.random() > 0.5 ? match.teamHome : match.teamAway}.`;
+        } else {
+            const events = [
+                `[${fifaMatchMinute}'] Midfield battle, both teams contesting every ball.`,
+                `[${fifaMatchMinute}'] Tactical substitution being prepared on the bench.`,
+                `[${fifaMatchMinute}'] Great defensive clearance prevents a scoring opportunity.`,
+                `[${fifaMatchMinute}'] VAR checking... no issue found, play continues.`,
+                `[${fifaMatchMinute}'] The tempo is relentless. Both sides committed.`
+            ];
+            commentText = events[Math.floor(Math.random() * events.length)];
+        }
+
+        // Update display
+        const scoreEl = document.getElementById("fifa-score");
+        const timeEl = document.getElementById("fifa-time");
+        if (scoreEl) scoreEl.textContent = `${match.teamHome} ${match.scoreHome} - ${match.scoreAway} ${match.teamAway}`;
+        if (timeEl) timeEl.textContent = match.minute;
+
+        const homeScorersEl = document.getElementById("fifa-scorers-home");
+        const awayScorersEl = document.getElementById("fifa-scorers-away");
+        if (homeScorersEl) homeScorersEl.innerHTML = match.scorersHome.map(s => `<span>${s}</span>`).join("<br>");
+        if (awayScorersEl) awayScorersEl.innerHTML = match.scorersAway.map(s => `<span>${s}</span>`).join("<br>");
+
+        const statsPossEl = document.getElementById("fifa-stat-possession");
+        const statsShotsEl = document.getElementById("fifa-stat-shots");
+        if (statsPossEl) statsPossEl.textContent = `POSSESSION: ${match.homePossession}% - ${100 - match.homePossession}%`;
+        if (statsShotsEl) statsShotsEl.textContent = `SHOTS ON TARGET: ${match.homeShots} - ${match.awayShots}`;
+
+        if (commentText) addFIFACommentary(commentText);
+    }, 5000); // Every 5 seconds = simulated minute
+}
+
+// ─── Stream Health Monitor & Auto-Failover ────────────────
+function failoverToNextFIFASource(iframeId, videoId) {
+    currentFifaSourceIndex++;
+    if (currentFifaSourceIndex >= FIFA_LIVE_SOURCES.length) {
+        currentFifaSourceIndex = 0; // Loop back to first
+    }
+    const nextSource = FIFA_LIVE_SOURCES[currentFifaSourceIndex];
+    console.log(`[FAILOVER] Switching to: ${nextSource.name} (${nextSource.url})`);
+    addFIFACommentary(`🔄 STREAM FAILOVER: Switching to ${nextSource.name}...`);
+
+    // Update the live source in LIVE_FIFA_VIDEOS
+    LIVE_FIFA_VIDEOS.live.url = nextSource.url;
+
+    // Also update the current match's videoUrl
+    if (FIFA_MATCHES[activeFifaMatchId]) {
+        FIFA_MATCHES[activeFifaMatchId].videoUrl = nextSource.url;
+    }
+
+    playStream('fifa', nextSource.url, iframeId || 'fifa-video-viewport', videoId || 'fifa-video-iptv-player');
+    updateStreamSourceBadge('fifa', nextSource.url);
+}
+
+function updateStreamSourceBadge(type, url) {
+    if (type !== 'fifa') return;
+    const srcBadge = document.getElementById("fifa-stream-source");
+    const source = FIFA_LIVE_SOURCES.find(s => s.url === url);
+    if (srcBadge && source) {
+        srcBadge.textContent = `📡 ${source.name}`;
+        srcBadge.style.color = '#00ff00';
+    }
+}
+
+function startStreamHealthMonitor() {
+    if (streamHealthCheckInterval) clearInterval(streamHealthCheckInterval);
+    streamHealthCheckInterval = setInterval(() => {
+        // Check if the active FIFA HLS instance is healthy
+        const fifaHls = activeHlsInstances.fifa;
+        if (fifaHls && fifaHls.media) {
+            const video = fifaHls.media;
+            // If video is stalled or errored, trigger failover
+            if (video.readyState < 2 && !video.paused && video.currentTime === 0) {
+                console.warn("[HEALTH] FIFA stream appears stalled, triggering failover...");
+                failoverToNextFIFASource('fifa-video-viewport', 'fifa-video-iptv-player');
+            }
+        }
+    }, 30000); // Check every 30 seconds
 }
 
 
