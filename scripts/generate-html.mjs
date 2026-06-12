@@ -421,7 +421,10 @@ function generateHTML(briefing, buildTime) {
                     <div class="sport-arena-panel">
                         <div class="arena-header">
                             <span class="arena-title">🏆 FIFA World Cup 2026 Arena</span>
-                            <span class="arena-status-badge" style="background: rgba(0, 229, 255, 0.08); border-color: rgba(0, 229, 255, 0.25); color: var(--primary);">LIVE MATCH</span>
+                            <select id="fifa-match-selector" class="arena-selector" onchange="switchFIFASelectedMatch(this.value)" style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; font-family: var(--font-cyber); font-size: 0.85em; padding: 4px 8px; border-radius: 2px; outline: none; cursor: pointer; margin-right: 8px;">
+                                <option value="mexico_rsa">🇲🇽 MEX vs RSA 🇿🇦 (2 - 0 FT)</option>
+                                <option value="korea_cze">🇰🇷 KOR vs CZE 🇨🇿 (2 - 1 FT)</option>
+                            </select>
                         </div>
                         
                         <!-- Live Video Feed Monitor -->
@@ -469,16 +472,16 @@ function generateHTML(briefing, buildTime) {
                         <div class="live-scorecard-box">
                             <div class="fifa-match-details">
                                 <div class="team-block">
-                                    <span class="team-flag">🇺🇸</span>
-                                    <span class="team-name">USA</span>
+                                    <span class="team-flag">🇲🇽</span>
+                                    <span class="team-name">MEXICO</span>
                                 </div>
                                 <div class="match-score-center">
-                                    <span class="score-digits" id="fifa-score">USA 0 - 0 PAR</span>
-                                    <span class="match-time-badge" id="fifa-time">0'</span>
+                                    <span class="score-digits" id="fifa-score">MEXICO 2 - 0 SOUTH AFRICA</span>
+                                    <span class="match-time-badge" id="fifa-time">FT</span>
                                 </div>
                                 <div class="team-block">
-                                    <span class="team-flag">🇵🇾</span>
-                                    <span class="team-name">PARAGUAY</span>
+                                    <span class="team-flag">🇿🇦</span>
+                                    <span class="team-name">SOUTH AFRICA</span>
                                 </div>
                             </div>
                             <div class="scorers-row">

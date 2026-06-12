@@ -254,96 +254,119 @@ function updateStreamTelemetry() {
 }
 
 
-// ─── FIFA World Cup 2026 Live Arena Simulator ─────────────
-let fifaState = {
-    minute: 74,
-    scoreHome: 2,
-    scoreAway: 1,
-    teamHome: "USA",
-    teamAway: "PARAGUAY",
-    scorersHome: ["C. Pulisic 12'", "B. Aaronson 58'"],
-    scorersAway: ["A. Sanabria 34'"],
-    homePossession: 51,
-    homeShots: 9,
-    awayShots: 11
+// ─── FIFA World Cup 2026 Live Arena Selector ─────────────
+const FIFA_MATCHES = {
+    mexico_rsa: {
+        id: "mexico_rsa",
+        teamHome: "MEXICO",
+        teamAway: "SOUTH AFRICA",
+        flagHome: "🇲🇽",
+        flagAway: "🇿🇦",
+        scoreHome: 2,
+        scoreAway: 0,
+        minute: "FT",
+        scorersHome: ["H. Lozano 43'", "S. Gimenez 78'"],
+        scorersAway: [],
+        homePossession: 55,
+        homeShots: 14,
+        awayShots: 8,
+        satLink: "AZTECA_NODE_1",
+        videoUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+        commentary: [
+            "⚽ Full Time! Mexico secures a dominant 2-0 victory in their opening game.",
+            "[90'] 3 minutes of added time announced.",
+            "⚽ GOAL!!! Mexico doubles the lead! Santiago Gimenez taps it in after a low cross!",
+            "[65'] South Africa substitution: Foster comes on.",
+            "⚽ GOAL!!! Hirving Lozano scores! A powerful strike from the edge of the box!",
+            "[1'] Kickoff! Mexico City Stadium erupts as the tournament begins."
+        ]
+    },
+    korea_cze: {
+        id: "korea_cze",
+        teamHome: "KOREA REPUBLIC",
+        teamAway: "CZECHIA",
+        flagHome: "🇰🇷",
+        flagAway: "🇨🇿",
+        scoreHome: 2,
+        scoreAway: 1,
+        minute: "FT",
+        scorersHome: ["Son Heung-min 19' (P)", "Hwang Hee-chan 67'"],
+        scorersAway: ["P. Schick 54'"],
+        homePossession: 48,
+        homeShots: 11,
+        awayShots: 13,
+        satLink: "GUADALAJARA_NODE_2",
+        videoUrl: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+        commentary: [
+            "⚽ Full Time! Korea Republic wins a hard-fought battle 2-1 against Czechia.",
+            "[88'] Hwang Hee-chan receives a standing ovation as he is substituted.",
+            "⚽ GOAL!!! Hwang Hee-chan puts Korea ahead! A brilliant chip over the goalkeeper!",
+            "⚽ GOAL!!! Patrik Schick equalizes! A towering header from a corner kick!",
+            "⚽ GOAL!!! Son Heung-min converts the penalty! Calms his nerves and slots it bottom right.",
+            "[1'] Match starts in Zapopan, Guadalajara. High intensity from both sides."
+        ]
+    }
 };
 
-const FIFA_COMMENTARY_FALLBACKS = [
-    "Paraguay maintains heavy pressure in the final third. Almirón trying to weave through the US backline.",
-    "USA wins a throw-in near the corner flag. Pulisic shielding the ball well.",
-    "A stunning sliding tackle by McKennie stops Enciso in his tracks. Tremendous defensive work rate!",
-    "Great save by Turner! Sanabria fires a volley from the edge of the box, tipped over the crossbar.",
-    "USA breaking on a counter! Weah sprints down the right flank but Balbuena slide tackles cleanly.",
-    "Paraguay looking fatigued in midfield. Villasanti trying to direct play with long diagonal passes.",
-    "Foul by Cubas on Musah in the center circle. Referee issues a verbal warning.",
-    "Yellow Card! Dest gets booked for delaying the restart of play.",
-    "USA substitution: Reyna comes on for Aaronson to consolidate the attacking midfield."
-];
+let activeFifaMatchId = "mexico_rsa";
 
-function initFIFASimulator() {
-    updateFIFADisplay();
-    
-    // Add initial commentary line
-    addFIFACommentary("Match synchronized with satellite feeds. Weather: Clear, 22°C. Stadium: Los Angeles Stadium (SoFi Stadium).");
+function switchFIFASelectedMatch(matchId) {
+    const match = FIFA_MATCHES[matchId];
+    if (!match) return;
 
-    // Advance match minute every 6 seconds
-    setInterval(() => {
-        fifaState.minute++;
-        
-        if (fifaState.minute > 90) {
-            // Reset match for continuous simulation
-            fifaState.minute = 0;
-            fifaState.scoreHome = 0;
-            fifaState.scoreAway = 0;
-            fifaState.scorersHome = [];
-            fifaState.scorersAway = [];
-            addFIFACommentary("⚽ Referee blows the whistle! A brand new FIFA World Cup 2026 simulation begins.");
-        } else {
-            // Check for potential goal events (3% chance per minute)
-            const roll = Math.random();
-            if (roll < 0.03) {
-                // Goal USA!
-                fifaState.scoreHome++;
-                const goalscorer = getRandomUSAname() + ` ${fifaState.minute}'`;
-                fifaState.scorersHome.push(goalscorer);
-                addFIFACommentary(`⚽ GOAL!!! ${fifaState.teamHome} score! A magnificent strike into the top corner by ${goalscorer}! USA fans erupt!`);
-            } else if (roll < 0.055) {
-                // Goal Paraguay!
-                fifaState.scoreAway++;
-                const goalscorer = getRandomPARname() + ` ${fifaState.minute}'`;
-                fifaState.scorersAway.push(goalscorer);
-                addFIFACommentary(`⚽ GOAL!!! ${fifaState.teamAway} score! ${goalscorer} taps it in from close range after a rebound!`);
-            } else {
-                // Regular match play commentary
-                const comment = FIFA_COMMENTARY_FALLBACKS[Math.floor(Math.random() * FIFA_COMMENTARY_FALLBACKS.length)];
-                addFIFACommentary(`[${fifaState.minute}'] ${comment}`);
-            }
-        }
+    activeFifaMatchId = matchId;
 
-        // Fluctuate stats
-        fifaState.homePossession = Math.max(40, Math.min(60, fifaState.homePossession + (Math.random() < 0.5 ? -1 : 1)));
-        if (Math.random() < 0.1) fifaState.homeShots++;
-        if (Math.random() < 0.1) fifaState.awayShots++;
-
-        updateFIFADisplay();
-    }, 6000);
-}
-
-function updateFIFADisplay() {
-    const timeEl = document.getElementById("fifa-time");
+    // Update scorecard labels
+    const homeFlagEl = document.querySelector(".fifa-match-details .team-block:first-child .team-flag");
+    const homeNameEl = document.querySelector(".fifa-match-details .team-block:first-child .team-name");
     const scoreEl = document.getElementById("fifa-score");
+    const timeEl = document.getElementById("fifa-time");
+    const awayFlagEl = document.querySelector(".fifa-match-details .team-block:last-child .team-flag");
+    const awayNameEl = document.querySelector(".fifa-match-details .team-block:last-child .team-name");
+    const satLinkEl = document.querySelector(".sports-video-monitor .hud-top-left div:last-child .hud-val");
+
+    if (homeFlagEl) homeFlagEl.textContent = match.flagHome;
+    if (homeNameEl) homeNameEl.textContent = match.teamHome;
+    if (scoreEl) scoreEl.textContent = `${match.teamHome} ${match.scoreHome} - ${match.scoreAway} ${match.teamAway}`;
+    if (timeEl) timeEl.textContent = match.minute;
+    if (awayFlagEl) awayFlagEl.textContent = match.flagAway;
+    if (awayNameEl) awayNameEl.textContent = match.teamAway;
+    if (satLinkEl) satLinkEl.textContent = match.satLink;
+
+    // Update scorers
     const homeScorersEl = document.getElementById("fifa-scorers-home");
     const awayScorersEl = document.getElementById("fifa-scorers-away");
+    if (homeScorersEl) homeScorersEl.innerHTML = match.scorersHome.map(s => `<span>${s}</span>`).join("<br>");
+    if (awayScorersEl) awayScorersEl.innerHTML = match.scorersAway.map(s => `<span>${s}</span>`).join("<br>");
+
+    // Update stats
     const statsPossEl = document.getElementById("fifa-stat-possession");
     const statsShotsEl = document.getElementById("fifa-stat-shots");
+    if (statsPossEl) statsPossEl.textContent = `POSSESSION: ${match.homePossession}% - ${100 - match.homePossession}%`;
+    if (statsShotsEl) statsShotsEl.textContent = `SHOTS ON TARGET: ${match.homeShots} - ${match.awayShots}`;
 
-    if (timeEl) timeEl.textContent = fifaState.minute + "'";
-    if (scoreEl) scoreEl.textContent = `${fifaState.teamHome} ${fifaState.scoreHome} - ${fifaState.scoreAway} ${fifaState.teamAway}`;
-    if (homeScorersEl) homeScorersEl.innerHTML = fifaState.scorersHome.map(s => `<span>${s}</span>`).join("<br>");
-    if (awayScorersEl) awayScorersEl.innerHTML = fifaState.scorersAway.map(s => `<span>${s}</span>`).join("<br>");
-    if (statsPossEl) statsPossEl.textContent = `POSSESSION: ${fifaState.homePossession}% - ${100 - fifaState.homePossession}%`;
-    if (statsShotsEl) statsShotsEl.textContent = `SHOTS ON TARGET: ${fifaState.homeShots} - ${fifaState.awayShots}`;
+    // Reset commentary list and populate
+    const commentaryList = document.getElementById("fifa-commentary-list");
+    if (commentaryList) {
+        commentaryList.innerHTML = "";
+        match.commentary.forEach(text => {
+            const li = document.createElement("div");
+            li.className = "commentary-item";
+            li.innerHTML = `<span class="commentary-time">[${new Date().toLocaleTimeString('en-IN', { hour12: false })}]</span> ${text}`;
+            commentaryList.appendChild(li);
+        });
+    }
+
+    // Load stream URL
+    playStream('fifa', match.videoUrl, 'fifa-video-viewport', 'fifa-video-iptv-player');
 }
+
+function initFIFASimulator() {
+    // Initialize default selected match
+    switchFIFASelectedMatch("mexico_rsa");
+}
+
+window.switchFIFASelectedMatch = switchFIFASelectedMatch;
 
 function addFIFACommentary(text) {
     const list = document.getElementById("fifa-commentary-list");
