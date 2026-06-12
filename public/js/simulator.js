@@ -187,7 +187,7 @@
         const proxyUrl = base + apiPath;
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 1200);
+          const timeoutId = setTimeout(() => controller.abort(), 700);
           const r = await fetch(proxyUrl, {
             headers: { 'Accept': 'application/json' },
             signal: controller.signal
@@ -207,7 +207,7 @@
     // 2. Direct fetch as fallback
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const timeoutId = setTimeout(() => controller.abort(), 700);
       const r = await fetch(url, {
         headers: { 'Accept': 'application/json' },
         signal: controller.signal

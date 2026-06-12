@@ -59,7 +59,7 @@ const LIVE_CHANNELS = {
 
 const LIVE_FIFA_VIDEOS = {
     live: {
-        url: "https://www.youtube.com/embed/R9Kx8bNfG-I"
+        url: "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8"
     },
     intro: {
         url: "https://www.youtube.com/embed/OYg505-5cYU"
@@ -71,7 +71,7 @@ const LIVE_FIFA_VIDEOS = {
 
 const LIVE_CRICKET_VIDEOS = {
     live: {
-        url: "https://www.youtube.com/embed/videoseries?list=PLw2bX2l_L8vL8-tqY2T71e27aZ97tL9Z8"
+        url: "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/manifest.m3u8"
     },
     highlights: {
         url: "https://www.youtube.com/embed/videoseries?list=PLw2bX2l_L8vL8-tqY2T71e27aZ97tL9Z8"
@@ -115,7 +115,11 @@ function playStream(type, url, iframeId, videoId) {
             const hls = new Hls({
                 maxMaxBufferLength: 10,
                 enableWorker: true,
-                lowLatencyMode: true
+                lowLatencyMode: true,
+                liveSyncDurationCount: 2,       // Start playback closer to live edge (reduces delay)
+                liveMaxLatencyDurationCount: 3.5, // Allow catching up if latency builds up
+                maxLiveSyncPlaybackRate: 1.5,   // Catch up playback rate if lagging
+                backBufferLength: 5             // Keep fewer segments in back buffer to save memory
             });
             hls.loadSource(url);
             hls.attachMedia(video);
