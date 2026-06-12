@@ -441,7 +441,7 @@ function generateHTML(briefing, buildTime) {
                                     <div class="hud-top-left">
                                         <div><span class="hud-label">SYS_LINK:</span> <span class="hud-val green">ONLINE // SECURE</span></div>
                                         <div><span class="hud-label">DECRYPTOR:</span> <span class="hud-val cyan">QUANTUM-DECRYPT-V4.2</span></div>
-                                        <div><span class="hud-label">SAT_LINK:</span> <span class="hud-val green">METLIFE_ARENA_NODE_7</span></div>
+                                        <div><span class="hud-label">SAT_LINK:</span> <span class="hud-val green">SOFI_ARENA_NODE_4</span></div>
                                     </div>
                                     <div class="hud-bottom-right">
                                         <div><span class="hud-label">DECODE_STATUS:</span> <span class="hud-val gold blinking-text">STREAMING LIVE FEED</span></div>
@@ -460,12 +460,12 @@ function generateHTML(briefing, buildTime) {
                                     <span class="team-name">USA</span>
                                 </div>
                                 <div class="match-score-center">
-                                    <span class="score-digits" id="fifa-score">USA 0 - 0 GER</span>
+                                    <span class="score-digits" id="fifa-score">USA 0 - 0 PAR</span>
                                     <span class="match-time-badge" id="fifa-time">0'</span>
                                 </div>
                                 <div class="team-block">
-                                    <span class="team-flag">🇩🇪</span>
-                                    <span class="team-name">GERMANY</span>
+                                    <span class="team-flag">🇵🇾</span>
+                                    <span class="team-name">PARAGUAY</span>
                                 </div>
                             </div>
                             <div class="scorers-row">
@@ -475,7 +475,8 @@ function generateHTML(briefing, buildTime) {
                         </div>
                         <div class="commentary-panel" id="fifa-commentary-list"></div>
                         <div class="broadcasting-routing-info">
-                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a></span>
+                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY'S TOURNAMENT SCHEDULE (JUNE 12):</strong> Canada vs. Bosnia &amp; Herzegovina (3 PM ET / 12:30 AM IST) | USA vs. Paraguay (9 PM ET / 6:30 AM IST)</span>
+                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a> | <a href="https://www.telemundo.com" target="_blank">Telemundo</a></span>
                             <span class="match-arena-stats" id="fifa-stat-possession">POSSESSION: 50% - 50%</span>
                         </div>
                         <div class="match-arena-stats" id="fifa-stat-shots" style="margin-top: 4px; text-align: right;">SHOTS ON TARGET: 0 - 0</div>

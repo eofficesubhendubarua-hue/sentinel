@@ -260,22 +260,22 @@ let fifaState = {
     scoreHome: 2,
     scoreAway: 1,
     teamHome: "USA",
-    teamAway: "GERMANY",
+    teamAway: "PARAGUAY",
     scorersHome: ["C. Pulisic 12'", "B. Aaronson 58'"],
-    scorersAway: ["K. Havertz 34'"],
+    scorersAway: ["A. Sanabria 34'"],
     homePossession: 51,
     homeShots: 9,
     awayShots: 11
 };
 
 const FIFA_COMMENTARY_FALLBACKS = [
-    "Germany maintains heavy pressure in the final third. Musiala trying to weave through the US backline.",
+    "Paraguay maintains heavy pressure in the final third. Almirón trying to weave through the US backline.",
     "USA wins a throw-in near the corner flag. Pulisic shielding the ball well.",
-    "A stunning sliding tackle by McKennie stops Wirtz in his tracks. Tremendous defensive work rate!",
-    "Great save by Turner! Havertz fires a volley from the edge of the box, tipped over the crossbar.",
-    "USA breaking on a counter! Weah sprints down the right flank but Rudiger slide tackles cleanly.",
-    "Germany looking fatigued in midfield. Kimmich trying to direct play with long diagonal passes.",
-    "Foul by Gundogan on Musah in the center circle. Referee issues a verbal warning.",
+    "A stunning sliding tackle by McKennie stops Enciso in his tracks. Tremendous defensive work rate!",
+    "Great save by Turner! Sanabria fires a volley from the edge of the box, tipped over the crossbar.",
+    "USA breaking on a counter! Weah sprints down the right flank but Balbuena slide tackles cleanly.",
+    "Paraguay looking fatigued in midfield. Villasanti trying to direct play with long diagonal passes.",
+    "Foul by Cubas on Musah in the center circle. Referee issues a verbal warning.",
     "Yellow Card! Dest gets booked for delaying the restart of play.",
     "USA substitution: Reyna comes on for Aaronson to consolidate the attacking midfield."
 ];
@@ -284,7 +284,7 @@ function initFIFASimulator() {
     updateFIFADisplay();
     
     // Add initial commentary line
-    addFIFACommentary("Match synchronized with satellite feeds. Weather: Clear, 22°C. Stadium: MetLife Stadium, New Jersey.");
+    addFIFACommentary("Match synchronized with satellite feeds. Weather: Clear, 22°C. Stadium: Los Angeles Stadium (SoFi Stadium).");
 
     // Advance match minute every 6 seconds
     setInterval(() => {
@@ -308,9 +308,9 @@ function initFIFASimulator() {
                 fifaState.scorersHome.push(goalscorer);
                 addFIFACommentary(`⚽ GOAL!!! ${fifaState.teamHome} score! A magnificent strike into the top corner by ${goalscorer}! USA fans erupt!`);
             } else if (roll < 0.055) {
-                // Goal Germany!
+                // Goal Paraguay!
                 fifaState.scoreAway++;
-                const goalscorer = getRandomGERname() + ` ${fifaState.minute}'`;
+                const goalscorer = getRandomPARname() + ` ${fifaState.minute}'`;
                 fifaState.scorersAway.push(goalscorer);
                 addFIFACommentary(`⚽ GOAL!!! ${fifaState.teamAway} score! ${goalscorer} taps it in from close range after a rebound!`);
             } else {
@@ -365,8 +365,8 @@ function getRandomUSAname() {
     return names[Math.floor(Math.random() * names.length)];
 }
 
-function getRandomGERname() {
-    const names = ["L. Sane", "F. Wirtz", "J. Musiala", "N. Fullkrug", "T. Muller", "I. Gundogan"];
+function getRandomPARname() {
+    const names = ["M. Almiron", "J. Enciso", "A. Sanabria", "R. Sosa", "G. Gomez", "O. Alderete"];
     return names[Math.floor(Math.random() * names.length)];
 }
 
