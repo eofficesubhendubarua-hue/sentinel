@@ -311,6 +311,174 @@ function generateHTML(briefing, buildTime) {
                 </div>
             </section>`;
 
+  // ─── Live Broadcasting & Sports Hub ─────────────────────────
+  const liveBroadcastsWidget = `
+            <section class="category-section hidden" id="section-live-broadcasts" data-category="live-broadcasts">
+                <div class="section-header">
+                    <h2>📡 Live Telecast Command & Sports Hub</h2>
+                    <span class="arena-status-badge">SAT_FEED_ACTIVE</span>
+                </div>
+                <p class="section-desc">Live international news broadcasts paired with real-time match centers and live scoreboards for FIFA World Cup 2026 and cricket matches.</p>
+
+                <div class="live-telecast-grid">
+                    <!-- Livestream Monitor Viewport -->
+                    <div class="main-viewport-panel">
+                        <div class="viewport-header">
+                            <div class="viewport-title-area">
+                                <div class="live-indicator">
+                                    <span class="live-blink-dot"></span>
+                                    <span id="active-stream-badge">LIVE</span>
+                                </div>
+                                <span class="viewport-title" id="active-stream-title">Satellite Feed Viewport</span>
+                            </div>
+                            <span class="active-stream-label">4K QUANTUM STREAM</span>
+                        </div>
+                        <div class="live-stream-wrapper">
+                            <div class="viewport-scanline"></div>
+                            <iframe id="live-stream-viewport" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="viewport-footer-telemetry">
+                            <div class="tel-item">
+                                <span class="tel-label">STREAM STATUS</span>
+                                <span class="tel-value" style="color: var(--accent-emerald);">CONNECTED // SYNCHRONIZED</span>
+                            </div>
+                            <div class="tel-item">
+                                <span class="tel-label">BANDWIDTH BITRATE</span>
+                                <span class="tel-value" id="telemetry-bitrate">4.62 Gb/s</span>
+                            </div>
+                            <div class="tel-item">
+                                <span class="tel-label">LINK LATENCY</span>
+                                <span class="tel-value" id="telemetry-latency">14 ms</span>
+                            </div>
+                            <div class="tel-item">
+                                <span class="tel-label">PACKET LOSS</span>
+                                <span class="tel-value" id="telemetry-packet-loss">0.00%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Channel Switcher Panel -->
+                    <div class="channel-switcher-panel">
+                        <h3 class="switcher-title">◈ Select Live News Stream</h3>
+                        <div class="stream-chips-list">
+                            <button class="stream-chip active" data-channel="aljazeera" onclick="switchBroadcastChannel('aljazeera')">
+                                <span>🌐 Al Jazeera English Live</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="dw" onclick="switchBroadcastChannel('dw')">
+                                <span>🇩🇪 DW News Live Global</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="skynews" onclick="switchBroadcastChannel('skynews')">
+                                <span>🇬🇧 Sky News Live UK</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="france24" onclick="switchBroadcastChannel('france24')">
+                                <span>🇫🇷 France 24 English Live</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                            <button class="stream-chip" data-channel="nasatv" onclick="switchBroadcastChannel('nasatv')">
+                                <span>🚀 NASA TV Spacecast</span>
+                                <span class="chip-status-dot"></span>
+                            </button>
+                        </div>
+                        <div class="broadcasting-routing-info">
+                            <span>REGIONAL STREAM DECRYPT STATUS: <strong style="color: var(--primary);">SECURE</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sports-match-center">
+                    <!-- FIFA World Cup 2026 Match Center -->
+                    <div class="sport-arena-panel">
+                        <div class="arena-header">
+                            <span class="arena-title">🏆 FIFA World Cup 2026 Arena</span>
+                            <span class="arena-status-badge" style="background: rgba(0, 229, 255, 0.08); border-color: rgba(0, 229, 255, 0.25); color: var(--primary);">LIVE MATCH</span>
+                        </div>
+                        <div class="live-scorecard-box">
+                            <div class="fifa-match-details">
+                                <div class="team-block">
+                                    <span class="team-flag">🇺🇸</span>
+                                    <span class="team-name">USA</span>
+                                </div>
+                                <div class="match-score-center">
+                                    <span class="score-digits" id="fifa-score">USA 0 - 0 GER</span>
+                                    <span class="match-time-badge" id="fifa-time">0'</span>
+                                </div>
+                                <div class="team-block">
+                                    <span class="team-flag">🇩🇪</span>
+                                    <span class="team-name">GERMANY</span>
+                                </div>
+                            </div>
+                            <div class="scorers-row">
+                                <div class="scorers-col left" id="fifa-scorers-home"></div>
+                                <div class="scorers-col right" id="fifa-scorers-away"></div>
+                            </div>
+                        </div>
+                        <div class="commentary-panel" id="fifa-commentary-list"></div>
+                        <div class="broadcasting-routing-info">
+                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a></span>
+                            <span class="match-arena-stats" id="fifa-stat-possession">POSSESSION: 50% - 50%</span>
+                        </div>
+                        <div class="match-arena-stats" id="fifa-stat-shots" style="margin-top: 4px; text-align: right;">SHOTS ON TARGET: 0 - 0</div>
+                    </div>
+
+                    <!-- Cricket Live Arena -->
+                    <div class="sport-arena-panel">
+                        <div class="arena-header">
+                            <span class="arena-title">🏏 International Cricket Live Arena</span>
+                            <span class="arena-status-badge" style="background: rgba(255, 183, 0, 0.08); border-color: rgba(255, 183, 0, 0.25); color: var(--secondary);">LIVE SCORE</span>
+                        </div>
+                        <div class="live-scorecard-box cricket-board">
+                            <div class="cricket-score-row">
+                                <span class="cricket-main-score" id="cricket-score">IND 0 / 0</span>
+                                <span class="cricket-sub-score" id="cricket-overs">Overs: 0.0</span>
+                            </div>
+                            <div class="cricket-target" id="cricket-target">TARGET: 298</div>
+                            <table class="cricket-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Batsman</th>
+                                        <th>R</th>
+                                        <th>B</th>
+                                        <th>4s</th>
+                                        <th>6s</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="cricket-b1-name">Batsman 1</td>
+                                        <td id="cricket-b1-runs">0</td>
+                                        <td id="cricket-b1-balls">0</td>
+                                        <td id="cricket-b1-fours">0</td>
+                                        <td id="cricket-b1-sixes">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td id="cricket-b2-name">Batsman 2</td>
+                                        <td id="cricket-b2-runs">0</td>
+                                        <td id="cricket-b2-balls">0</td>
+                                        <td id="cricket-b2-fours">0</td>
+                                        <td id="cricket-b2-sixes">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="display:flex; justify-content:space-between; margin-top:8px; font-family:var(--font-terminal); font-size:11px;">
+                                <span>Bowler: <strong id="cricket-bowl-name">Bowler</strong></span>
+                                <span>Overs: <strong id="cricket-bowl-overs">0.0</strong> | R: <strong id="cricket-bowl-runs">0</strong> | W: <strong id="cricket-bowl-wkts">0</strong></span>
+                            </div>
+                            <div class="cricket-balls-history">
+                                <span>Last balls: </span>
+                                <div id="cricket-balls-trend"></div>
+                            </div>
+                        </div>
+                        <div class="commentary-panel" id="cricket-commentary-list"></div>
+                        <div class="broadcasting-routing-info">
+                            <span>Official Broadcast Partners: <a href="https://www.hotstar.com" target="_blank">Hotstar</a> | <a href="https://www.jiocinema.com" target="_blank">JioCinema</a></span>
+                        </div>
+                    </div>
+                </div>
+            </section>`;
+
   // ─── AI Stock Analysis Simulator ────────────────────────────
   const aiSimulatorWidget = `
             <section class="category-section sim-widget-section hidden" id="section-ai-analyzer" data-category="ai-analyzer">
@@ -510,7 +678,7 @@ function generateHTML(briefing, buildTime) {
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -613,6 +781,7 @@ function generateHTML(briefing, buildTime) {
         <div class="cat-scroll">
             <button class="cat-btn active" data-category="all" onclick="filterCategory('all')">🌐 All</button>
             ${categoryNav}
+            <button class="cat-btn" data-category="live-broadcasts" onclick="filterCategory('live-broadcasts')" style="background:linear-gradient(135deg,#1b0d2a,#0f091f);border-color:rgba(0, 229, 255, 0.3);color:var(--primary)">📡 Live Telecast Hub</button>
             <button class="cat-btn" data-category="ai-analyzer" onclick="filterCategory('ai-analyzer')" style="background:linear-gradient(135deg,#0d2a1a,#0a1a2e);border-color:#00ff8855;color:#00ff88">🤖 Stock Analyzer (Advanced)</button>
             <button class="cat-btn telemetry-toggle-btn" id="telemetryToggleBtn" onclick="toggleTelemetryHUD()">
                 <span>⚙️ TELEMETRY SYSTEM</span> <span id="telemetry-arrow">▼</span>
@@ -747,6 +916,7 @@ function generateHTML(briefing, buildTime) {
         </div>
 
         ${categorySections}
+        ${liveBroadcastsWidget}
         ${aiSimulatorWidget}
         ${marketWidget}
         ${upscWidget}
@@ -1502,6 +1672,7 @@ function generateHTML(briefing, buildTime) {
     <script src="js/agent.js?v=${Date.now()}"></script>
     <script src="js/simulator.js?v=${Date.now()}"></script>
     <script src="js/realtime-market.js?v=${Date.now()}"></script>
+    <script src="js/live-broadcaster.js?v=${Date.now()}"></script>
 
     <!-- Smart HUD Scroll Navigator -->
     <style>

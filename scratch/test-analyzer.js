@@ -2,7 +2,10 @@ import puppeteer from 'puppeteer';
 
 (async () => {
   console.log("Launching browser...");
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--proxy-server=direct://']
+  });
   const page = await browser.newPage();
   
   // Capture console messages
@@ -15,7 +18,7 @@ import puppeteer from 'puppeteer';
   });
 
   console.log("Navigating to local site...");
-  await page.goto('http://localhost:3000/', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://127.0.0.1:3000/', { waitUntil: 'domcontentloaded' });
   
   // Switch to Stock Analyzer (Advanced) tab if needed, wait, runAnalysis does it or we can run it directly
   console.log("Testing Stock search: RELIANCE...");
@@ -103,6 +106,17 @@ import puppeteer from 'puppeteer';
   console.log(`VERIFICATION - MF chart container rendered: ${mfChartExists}`);
   if (!mfChartExists) {
     throw new Error('Mutual Fund chart failed to render in Stock Analyzer (Advanced)!');
+  }
+
+  // Verify Live Telecast button exists
+  console.log("Verifying Live Telecast button exists...");
+  const liveBtnExists = await page.evaluate(() => {
+    const btn = document.querySelector('button[data-category="live-broadcasts"]');
+    return !!btn && btn.textContent.includes("Live Telecast Hub");
+  });
+  console.log(`VERIFICATION - Live Telecast button exists: ${liveBtnExists}`);
+  if (!liveBtnExists) {
+    throw new Error('Live Telecast Hub button failed to render!');
   }
 
   console.log("Closing browser...");

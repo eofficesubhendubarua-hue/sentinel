@@ -21,8 +21,8 @@ function filterCategory(categoryId) {
   const sections = document.querySelectorAll(".category-section");
   sections.forEach((section) => {
     if (categoryId === "all") {
-      // Hide Stock Analyzer (Advanced) from the global 'All' view to avoid cluttering the news feed
-      if (section.id === "section-ai-analyzer") {
+      // Hide Stock Analyzer and Live Broadcasts from the global 'All' view to avoid cluttering the news feed
+      if (section.id === "section-ai-analyzer" || section.id === "section-live-broadcasts") {
         section.classList.add("hidden");
       } else {
         section.classList.remove("hidden");
