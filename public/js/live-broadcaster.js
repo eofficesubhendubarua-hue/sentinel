@@ -58,14 +58,19 @@ const LIVE_CHANNELS = {
 };
 
 // ─── Multi-Source Failover Engine ──────────────────────────
-// FIFA World Cup 2026 — Official Broadcaster Streams (priority ordered)
+// FIFA World Cup 2026 — Live IPTV Broadcast Sources (verified working)
+// Alkass (Qatar) = Official FIFA WC 2026 broadcaster for Arab World
+// DD Sports (India) = Official free-to-air for select matches
 const FIFA_LIVE_SOURCES = [
+    { name: "Alkass One — FIFA WC Live (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8", type: "hls" },
     { name: "DD Sports India (Official FTA)", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8", type: "hls" },
-    { name: "Alkass Sports (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8", type: "hls" },
-    { name: "Alkass Sports 2 (Qatar)", url: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8", type: "hls" },
-    { name: "Fubo Sports Network (US)", url: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8", type: "hls" },
+    { name: "Alkass Two (Alternate Match)", url: "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8", type: "hls" },
+    { name: "Alkass Three (Studio/Pre-Match)", url: "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8", type: "hls" },
+    { name: "Alkass SHOOF (Live WC Coverage)", url: "https://liveeu-gcp.alkassdigital.net/shooflive/main.m3u8", type: "hls" },
+    { name: "Alkass Four (Extended)", url: "https://liveeu-gcp.alkassdigital.net/alkass4-p/main.m3u8", type: "hls" },
+    { name: "RTP Internacional (Portugal FTA)", url: "https://streaming-live.rtp.pt/liverepeater/smil:rtpi.smil/chunklist.m3u8", type: "hls" },
     { name: "beIN SPORTS XTRA", url: "https://bein-xtra-bein.amagi.tv/playlist.m3u8", type: "hls" },
-    { name: "CBS Golazo Network", url: "https://proped3fhg87.airspace-cdn.cbsivideo.com/golazo-live-dai/master/golazo-live-dai.m3u8", type: "hls" }
+    { name: "Fubo Sports Network (US)", url: "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8", type: "hls" }
 ];
 
 // YouTube Official Broadcaster Channels (embed via iframe)
@@ -75,15 +80,15 @@ const FIFA_YOUTUBE_CHANNELS = {
         url: "https://www.youtube.com/embed/live_stream?channel=UCiUpYwU87Q9r1ZtN3x2Pq5Q",
         badge: "🇧🇷 CazéTV"
     },
-    foxsports: {
-        name: "FOX Sports (US Official Broadcaster)",
-        url: "https://www.youtube.com/embed/live_stream?channel=UCnvOhBBaIGHkV1RFDjBUFQg",
-        badge: "🇺🇸 FOX Sports"
-    },
     fifaplus: {
         name: "FIFA+ Official Channel",
         url: "https://www.youtube.com/embed/live_stream?channel=UCpcTrCXblq78GZrTUTLWeBw",
         badge: "⚽ FIFA+"
+    },
+    foxsports: {
+        name: "FOX Sports (US Official Broadcaster)",
+        url: "https://www.youtube.com/embed/live_stream?channel=UCnvOhBBaIGHkV1RFDjBUFQg",
+        badge: "🇺🇸 FOX Sports"
     },
     telemundo: {
         name: "Telemundo Deportes (US Spanish)",
@@ -99,17 +104,17 @@ const LIVE_FIFA_VIDEOS = {
     live: {
         url: FIFA_LIVE_SOURCES[0].url
     },
+    alkass2: {
+        url: FIFA_LIVE_SOURCES[2].url
+    },
+    ddsports: {
+        url: FIFA_LIVE_SOURCES[1].url
+    },
     cazetv: {
         url: FIFA_YOUTUBE_CHANNELS.cazetv.url
     },
-    foxsports: {
-        url: FIFA_YOUTUBE_CHANNELS.foxsports.url
-    },
     fifaplus: {
         url: FIFA_YOUTUBE_CHANNELS.fifaplus.url
-    },
-    telemundo: {
-        url: FIFA_YOUTUBE_CHANNELS.telemundo.url
     },
     highlights: {
         url: "https://www.youtube.com/embed/videoseries?list=PL859A3D063A482A3A"
@@ -323,125 +328,121 @@ function updateStreamTelemetry() {
 
 
 // ─── FIFA World Cup 2026 Live Arena Selector ─────────────
-// Today's matches: Canada vs Bosnia & Herzegovina, USA vs Paraguay (June 12, 2026)
+// Today's matches: June 17, 2026 (Day 7 of Group Stage)
 const FIFA_MATCHES = {
-    canada_bos: {
-        id: "canada_bos",
-        teamHome: "CANADA",
-        teamAway: "BOSNIA & HERZ.",
-        flagHome: "🇨🇦",
-        flagAway: "🇧🇦",
+    portugal_drc: {
+        id: "portugal_drc",
+        teamHome: "PORTUGAL",
+        teamAway: "DR CONGO",
+        flagHome: "🇵🇹",
+        flagAway: "🇨🇩",
         scoreHome: 0,
         scoreAway: 0,
         minute: "LIVE",
         isLive: true,
         scorersHome: [],
         scorersAway: [],
-        homePossession: 52,
+        homePossession: 58,
         homeShots: 0,
         awayShots: 0,
-        satLink: "TORONTO_STADIUM_NODE_1",
+        satLink: "METLIFE_STADIUM_NODE_1",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "3:00 PM ET / 12:30 AM IST",
-        venue: "Toronto Stadium",
-        group: "Group B",
+        kickoff: "1:00 PM ET / 10:30 PM IST",
+        venue: "MetLife Stadium, New York",
+        group: "Group K",
         commentary: [
-            "🏟️ Welcome to Toronto Stadium! Canada opens their home FIFA World Cup 2026 campaign!",
-            "[PRE] The atmosphere is electric in Toronto as co-hosts Canada take center stage.",
-            "[PRE] Bosnia & Herzegovina looking to cause an upset in their first World Cup match as an independent nation.",
-            "[PRE] Alphonso Davies leads Canada out. The crowd rises to their feet!",
-            "[PRE] Edin Džeko captains Bosnia in what could be his World Cup swansong."
+            "🏟️ Welcome to MetLife Stadium! Portugal begin their World Cup 2026 campaign!",
+            "[PRE] Cristiano Ronaldo leads Portugal out for what could be his final World Cup.",
+            "[PRE] DR Congo looking to make their mark in only their 2nd ever World Cup.",
+            "[PRE] Bruno Fernandes and Bernardo Silva in midfield for Portugal.",
+            "[PRE] The Leopards are fearless! Cédric Bakambu leads the DR Congo attack."
         ]
     },
-    usa_par: {
-        id: "usa_par",
-        teamHome: "USA",
-        teamAway: "PARAGUAY",
-        flagHome: "🇺🇸",
-        flagAway: "🇵🇾",
+    england_croatia: {
+        id: "england_croatia",
+        teamHome: "ENGLAND",
+        teamAway: "CROATIA",
+        flagHome: "🏴‍☠️",
+        flagAway: "🇭🇷",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "UPCOMING",
+        minute: "4:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "LA_SOFI_ARENA_NODE_4",
+        satLink: "PHILADELPHIA_NODE_2",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "9:00 PM ET / 6:30 AM IST",
-        venue: "SoFi Stadium, Los Angeles",
-        group: "Group D",
+        kickoff: "4:00 PM ET / 1:30 AM IST (Jun 18)",
+        venue: "Lincoln Financial Field, Philadelphia",
+        group: "Group L",
         commentary: [
-            "🏟️ Later tonight at SoFi Stadium! The USA begins their home World Cup journey!",
-            "[PRE] Christian Pulisic will lead the USMNT against a resilient Paraguay side.",
-            "[PRE] Folarin Balogun, Tyler Adams, and Gio Reyna expected in the starting XI.",
-            "[PRE] Paraguay's Miguel Almirón and Julio Enciso bring flair and danger.",
-            "[PRE] Kickoff at 9:00 PM ET. Stay tuned for live coverage!"
+            "🏟️ A blockbuster clash at Lincoln Financial Field! England vs Croatia!",
+            "[PRE] Jude Bellingham, Harry Kane, and Bukayo Saka in England's starting XI.",
+            "[PRE] Croatia's Luka Modrić begins his farewell World Cup journey.",
+            "[PRE] A rematch of the 2018 World Cup semi-final. Kickoff at 4 PM ET.",
+            "[PRE] Phil Foden and Cole Palmer provide creative flair for the Three Lions."
         ]
     },
-    mexico_rsa: {
-        id: "mexico_rsa",
-        teamHome: "MEXICO",
-        teamAway: "SOUTH AFRICA",
-        flagHome: "🇲🇽",
-        flagAway: "🇿🇦",
-        scoreHome: 2,
+    ghana_panama: {
+        id: "ghana_panama",
+        teamHome: "GHANA",
+        teamAway: "PANAMA",
+        flagHome: "🇬🇭",
+        flagAway: "🇵🇦",
+        scoreHome: 0,
         scoreAway: 0,
-        minute: "FT",
+        minute: "7:00 PM ET",
         isLive: false,
-        scorersHome: ["H. Lozano 43'", "S. Gimenez 78'"],
+        scorersHome: [],
         scorersAway: [],
-        homePossession: 55,
-        homeShots: 14,
-        awayShots: 8,
-        satLink: "AZTECA_NODE_1",
+        homePossession: 50,
+        homeShots: 0,
+        awayShots: 0,
+        satLink: "ATLANTA_BENZ_NODE_3",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "June 11 — FT",
-        venue: "Estadio Azteca, Mexico City",
-        group: "Group A",
+        kickoff: "7:00 PM ET / 4:30 AM IST (Jun 18)",
+        venue: "Mercedes-Benz Stadium, Atlanta",
+        group: "Group L",
         commentary: [
-            "⚽ Full Time! Mexico secures a dominant 2-0 victory in their opening game.",
-            "[90'] 3 minutes of added time announced.",
-            "⚽ GOAL!!! Mexico doubles the lead! Santiago Gimenez taps it in after a low cross!",
-            "[65'] South Africa substitution: Foster comes on.",
-            "⚽ GOAL!!! Hirving Lozano scores! A powerful strike from the edge of the box!",
-            "[1'] Kickoff! Mexico City Stadium erupts as the tournament begins."
+            "🏟️ Ghana face Panama in Atlanta! The Black Stars aim for glory.",
+            "[PRE] Mohammed Kudus leads Ghana's attack. A player on fire this season.",
+            "[PRE] Panama making their 3rd consecutive World Cup appearance.",
+            "[PRE] Kickoff at 7 PM ET. Both teams need a result to progress."
         ]
     },
-    korea_cze: {
-        id: "korea_cze",
-        teamHome: "KOREA REPUBLIC",
-        teamAway: "CZECHIA",
-        flagHome: "🇰🇷",
-        flagAway: "🇨🇿",
-        scoreHome: 2,
-        scoreAway: 1,
-        minute: "FT",
+    uzbekistan_colombia: {
+        id: "uzbekistan_colombia",
+        teamHome: "UZBEKISTAN",
+        teamAway: "COLOMBIA",
+        flagHome: "🇺🇿",
+        flagAway: "🇨🇴",
+        scoreHome: 0,
+        scoreAway: 0,
+        minute: "10:00 PM ET",
         isLive: false,
-        scorersHome: ["Son Heung-min 19' (P)", "Hwang Hee-chan 67'"],
-        scorersAway: ["P. Schick 54'"],
-        homePossession: 48,
-        homeShots: 11,
-        awayShots: 13,
-        satLink: "GUADALAJARA_NODE_2",
+        scorersHome: [],
+        scorersAway: [],
+        homePossession: 50,
+        homeShots: 0,
+        awayShots: 0,
+        satLink: "SEATTLE_LUMEN_NODE_4",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "June 11 — FT",
-        venue: "Estadio Akron, Guadalajara",
-        group: "Group C",
+        kickoff: "10:00 PM ET / 7:30 AM IST (Jun 18)",
+        venue: "Lumen Field, Seattle",
+        group: "Group K",
         commentary: [
-            "⚽ Full Time! Korea Republic wins a hard-fought battle 2-1 against Czechia.",
-            "[88'] Hwang Hee-chan receives a standing ovation as he is substituted.",
-            "⚽ GOAL!!! Hwang Hee-chan puts Korea ahead! A brilliant chip over the goalkeeper!",
-            "⚽ GOAL!!! Patrik Schick equalizes! A towering header from a corner kick!",
-            "⚽ GOAL!!! Son Heung-min converts the penalty! Calms his nerves and slots it bottom right.",
-            "[1'] Match starts in Zapopan, Guadalajara. High intensity from both sides."
+            "🏟️ Uzbekistan make their World Cup debut against Colombia in Seattle!",
+            "[PRE] Historic moment for Uzbek football. The White Wolves are here.",
+            "[PRE] Colombia's Luis Díaz and James Rodríguez bring the samba magic.",
+            "[PRE] Kickoff at 10 PM ET. The late-night showdown in the Pacific Northwest."
         ]
     }
 };
 
-let activeFifaMatchId = "canada_bos";
+let activeFifaMatchId = "portugal_drc";
 
 function switchFIFASelectedMatch(matchId) {
     const match = FIFA_MATCHES[matchId];
@@ -512,7 +513,7 @@ function switchFIFASelectedMatch(matchId) {
 
 function initFIFASimulator() {
     // Initialize default selected match — today's first match
-    switchFIFASelectedMatch("canada_bos");
+    switchFIFASelectedMatch("portugal_drc");
 }
 
 window.switchFIFASelectedMatch = switchFIFASelectedMatch;

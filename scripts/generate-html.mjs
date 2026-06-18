@@ -422,10 +422,10 @@ function generateHTML(briefing, buildTime) {
                         <div class="arena-header">
                             <span class="arena-title">🏆 FIFA World Cup 2026 Arena</span>
                             <select id="fifa-match-selector" class="arena-selector" onchange="switchFIFASelectedMatch(this.value)" style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; font-family: var(--font-cyber); font-size: 0.85em; padding: 4px 8px; border-radius: 2px; outline: none; cursor: pointer; margin-right: 8px;">
-                                <option value="canada_bos">🇨🇦 CAN vs BOS 🇧🇦 (🔴 LIVE)</option>
-                                <option value="usa_par">🇺🇸 USA vs PAR 🇵🇾 (9 PM ET)</option>
-                                <option value="mexico_rsa">🇲🇽 MEX vs RSA 🇿🇦 (2 - 0 FT)</option>
-                                <option value="korea_cze">🇰🇷 KOR vs CZE 🇨🇿 (2 - 1 FT)</option>
+                                <option value="portugal_drc">🇵🇹 POR vs COD 🇨🇩 (🔴 LIVE)</option>
+                                <option value="england_croatia">🏴‍☠️ ENG vs CRO 🇭🇷 (4 PM ET)</option>
+                                <option value="ghana_panama">🇬🇭 GHA vs PAN 🇵🇦 (7 PM ET)</option>
+                                <option value="uzbekistan_colombia">🇺🇿 UZB vs COL 🇨🇴 (10 PM ET)</option>
                             </select>
                         </div>
                         
@@ -434,11 +434,11 @@ function generateHTML(briefing, buildTime) {
                             <div class="sports-video-controls">
                                 <span class="sports-video-live-badge"><span class="live-blink-dot"></span> LIVE VIDEO TELECAST</span>
                                 <div class="sports-video-chips" style="flex-wrap: wrap; gap: 4px;">
-                                    <button class="sports-vid-chip active" data-fifa-vid="live" onclick="switchFIFAVideo('live')">📡 DD Sports (India)</button>
+                                    <button class="sports-vid-chip active" data-fifa-vid="live" onclick="switchFIFAVideo('live')">📡 Alkass Live (Qatar)</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="ddsports" onclick="switchFIFAVideo('ddsports')">🇮🇳 DD Sports</button>
+                                    <button class="sports-vid-chip" data-fifa-vid="alkass2" onclick="switchFIFAVideo('alkass2')">📡 Alkass 2</button>
                                     <button class="sports-vid-chip" data-fifa-vid="cazetv" onclick="switchFIFAVideo('cazetv')">🇧🇷 CazéTV</button>
-                                    <button class="sports-vid-chip" data-fifa-vid="foxsports" onclick="switchFIFAVideo('foxsports')">🇺🇸 FOX Sports</button>
                                     <button class="sports-vid-chip" data-fifa-vid="fifaplus" onclick="switchFIFAVideo('fifaplus')">⚽ FIFA+</button>
-                                    <button class="sports-vid-chip" data-fifa-vid="telemundo" onclick="switchFIFAVideo('telemundo')">🇪🇸 Telemundo</button>
                                     <button class="sports-vid-chip" data-fifa-vid="highlights" onclick="switchFIFAVideo('highlights')">🏆 Highlights</button>
                                 </div>
                             </div>
@@ -477,19 +477,19 @@ function generateHTML(briefing, buildTime) {
                         <div class="live-scorecard-box">
                             <div class="fifa-match-details">
                                 <div class="team-block">
-                                    <span class="team-flag">🇨🇦</span>
-                                    <span class="team-name">CANADA</span>
+                                    <span class="team-flag">🇵🇹</span>
+                                    <span class="team-name">PORTUGAL</span>
                                 </div>
                                 <div class="match-score-center">
-                                    <span class="score-digits" id="fifa-score">CANADA 0 - 0 BOSNIA & HERZ.</span>
+                                    <span class="score-digits" id="fifa-score">PORTUGAL 0 - 0 DR CONGO</span>
                                     <span class="match-time-badge live-pulsing" id="fifa-time">LIVE</span>
                                 </div>
                                 <div class="team-block">
-                                    <span class="team-flag">🇧🇦</span>
-                                    <span class="team-name">BOSNIA & HERZ.</span>
+                                    <span class="team-flag">🇨🇩</span>
+                                    <span class="team-name">DR CONGO</span>
                                 </div>
                             </div>
-                            <div class="venue-info" id="fifa-venue-info" style="text-align: center; font-size: 0.8em; color: var(--text-muted); padding: 3px 0; border-bottom: 1px dashed rgba(0,240,255,0.1);">📍 Toronto Stadium | Group B | KO: 3:00 PM ET / 12:30 AM IST</div>
+                            <div class="venue-info" id="fifa-venue-info" style="text-align: center; font-size: 0.8em; color: var(--text-muted); padding: 3px 0; border-bottom: 1px dashed rgba(0,240,255,0.1);">📍 MetLife Stadium, New York | Group K | KO: 1:00 PM ET / 10:30 PM IST</div>
                             <div class="scorers-row">
                                 <div class="scorers-col left" id="fifa-scorers-home"></div>
                                 <div class="scorers-col right" id="fifa-scorers-away"></div>
@@ -497,9 +497,9 @@ function generateHTML(briefing, buildTime) {
                         </div>
                         <div class="commentary-panel" id="fifa-commentary-list"></div>
                         <div class="broadcasting-routing-info">
-                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY'S TOURNAMENT SCHEDULE (JUNE 12):</strong> 🇨🇦 Canada vs. Bosnia & Herzegovina (3 PM ET / 12:30 AM IST) | 🇺🇸 USA vs. Paraguay (9 PM ET / 6:30 AM IST)</span>
-                            <span id="fifa-stream-source" style="display: block; font-size: 0.8em; color: #00ff00; margin-bottom: 3px;">📡 beIN SPORTS XTRA</span>
-                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a> | <a href="https://www.telemundo.com" target="_blank">Telemundo</a></span>
+                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY’S SCHEDULE (JUNE 17):</strong> 🇵🇹 Portugal vs DR Congo (1 PM ET) | 🏴‍☠️ England vs Croatia (4 PM ET) | 🇬🇭 Ghana vs Panama (7 PM ET) | 🇺🇿 Uzbekistan vs Colombia (10 PM ET)</span>
+                            <span id="fifa-stream-source" style="display: block; font-size: 0.8em; color: #00ff00; margin-bottom: 3px;">📡 Alkass One — FIFA WC Live (Qatar)</span>
+                            <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a> | <a href="https://www.zee5.com" target="_blank">ZEE5 India</a></span>
                             <span class="match-arena-stats" id="fifa-stat-possession">POSSESSION: 52% - 48%</span>
                         </div>
                         <div class="match-arena-stats" id="fifa-stat-shots" style="margin-top: 4px; text-align: right;">SHOTS ON TARGET: 0 - 0</div>
@@ -838,7 +838,7 @@ function generateHTML(briefing, buildTime) {
     <meta name="description" content="Automated intelligence briefing covering world news, cybersecurity, AI, markets, OSINT, and more. Updated daily at 8 AM and 10 PM IST.">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com https://cdn.jsdelivr.net; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com https://cdn.jsdelivr.net https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv https://*.alkassdigital.net https://*.cbsivideo.com https://*.cdn77.org; media-src 'self' blob: data: https://*.youtube.com https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv https://*.alkassdigital.net https://*.cbsivideo.com https://*.cdn77.org; worker-src 'self' blob:; child-src 'self' blob:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://s3.tradingview.com https://*.tradingview.com https://cdn.jsdelivr.net; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://text.pollinations.ai https://*.googleapis.com https://*.firebaseio.com https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://api.mfapi.in https://*.netlify.app https://*.vercel.app https://*.tradingview.com wss://*.tradingview.com https://cdn.jsdelivr.net https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv https://*.alkassdigital.net https://*.cbsivideo.com https://*.cdn77.org https://*.rtp.pt; media-src 'self' blob: data: https://*.youtube.com https://*.getaj.net https://*.akamaized.net https://*.amagi.tv https://*.cloudfront.net https://*.wurl.com https://*.sofast.tv https://*.alkassdigital.net https://*.cbsivideo.com https://*.cdn77.org https://*.rtp.pt; worker-src 'self' blob:; child-src 'self' blob:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src * data:; frame-src 'self' https://*.firebaseapp.com https://*.tradingview.com https://*.youtube.com; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
