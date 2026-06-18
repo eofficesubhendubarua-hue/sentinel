@@ -328,121 +328,127 @@ function updateStreamTelemetry() {
 
 
 // ─── FIFA World Cup 2026 Live Arena Selector ─────────────
-// Today's matches: June 17, 2026 (Day 7 of Group Stage)
+// Today's matches: June 18, 2026
 const FIFA_MATCHES = {
-    portugal_drc: {
-        id: "portugal_drc",
-        teamHome: "PORTUGAL",
-        teamAway: "DR CONGO",
-        flagHome: "🇵🇹",
-        flagAway: "🇨🇩",
+    czechia_southafrica: {
+        id: "czechia_southafrica",
+        teamHome: "CZECHIA",
+        teamAway: "SOUTH AFRICA",
+        flagHome: "🇨🇿",
+        flagAway: "🇿🇦",
         scoreHome: 0,
         scoreAway: 0,
         minute: "LIVE",
         isLive: true,
         scorersHome: [],
         scorersAway: [],
-        homePossession: 58,
+        scorersPoolHome: ["P. Schick", "T. Souček", "V. Coufal", "A. Hložek", "V. Černý", "L. Provod"],
+        scorersPoolAway: ["P. Tau", "T. Zwane", "T. Mokoena", "K. Mudau", "A. Modiba", "E. Makgopa"],
+        homePossession: 52,
         homeShots: 0,
         awayShots: 0,
-        satLink: "METLIFE_STADIUM_NODE_1",
+        satLink: "ATLANTA_STADIUM_NODE_1",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "1:00 PM ET / 10:30 PM IST",
-        venue: "MetLife Stadium, New York",
-        group: "Group K",
+        kickoff: "12:00 PM ET / 9:30 PM IST",
+        venue: "Atlanta Stadium, Atlanta",
+        group: "Group A",
         commentary: [
-            "🏟️ Welcome to MetLife Stadium! Portugal begin their World Cup 2026 campaign!",
-            "[PRE] Cristiano Ronaldo leads Portugal out for what could be his final World Cup.",
-            "[PRE] DR Congo looking to make their mark in only their 2nd ever World Cup.",
-            "[PRE] Bruno Fernandes and Bernardo Silva in midfield for Portugal.",
-            "[PRE] The Leopards are fearless! Cédric Bakambu leads the DR Congo attack."
+            "🏟️ Welcome to Atlanta Stadium! Group A action is underway as Czechia faces South Africa!",
+            "[PRE] Patrik Schick leads the line for Czechia, looking to start strong.",
+            "[PRE] Bafana Bafana back on the biggest stage! Percy Tau starts for South Africa.",
+            "[PRE] A crucial match for both sides in Group A. Kickoff is imminent."
         ]
     },
-    england_croatia: {
-        id: "england_croatia",
-        teamHome: "ENGLAND",
-        teamAway: "CROATIA",
-        flagHome: "🏴‍☠️",
-        flagAway: "🇭🇷",
+    switzerland_bosnia: {
+        id: "switzerland_bosnia",
+        teamHome: "SWITZERLAND",
+        teamAway: "BOSNIA",
+        flagHome: "🇨🇭",
+        flagAway: "🇧🇦",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "4:00 PM ET",
+        minute: "3:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
+        scorersPoolHome: ["B. Embolo", "X. Shaqiri", "G. Xhaka", "R. Freuler", "M. Akanji", "D. Ndoye"],
+        scorersPoolAway: ["E. Džeko", "M. Pjanić", "E. Demirović", "H. Duljević", "A. Kovačević", "A. Dedić"],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "PHILADELPHIA_NODE_2",
+        satLink: "LOS_ANGELES_NODE_2",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "4:00 PM ET / 1:30 AM IST (Jun 18)",
-        venue: "Lincoln Financial Field, Philadelphia",
-        group: "Group L",
+        kickoff: "3:00 PM ET / 12:30 AM IST (Jun 19)",
+        venue: "Los Angeles Stadium, Los Angeles",
+        group: "Group B",
         commentary: [
-            "🏟️ A blockbuster clash at Lincoln Financial Field! England vs Croatia!",
-            "[PRE] Jude Bellingham, Harry Kane, and Bukayo Saka in England's starting XI.",
-            "[PRE] Croatia's Luka Modrić begins his farewell World Cup journey.",
-            "[PRE] A rematch of the 2018 World Cup semi-final. Kickoff at 4 PM ET.",
-            "[PRE] Phil Foden and Cole Palmer provide creative flair for the Three Lions."
+            "🏟️ A major Group B battle at Los Angeles Stadium! Switzerland vs Bosnia and Herzegovina!",
+            "[PRE] Granit Xhaka captains Switzerland. His tournament experience will be vital.",
+            "[PRE] Edin Džeko leads Bosnia's attack in his final World Cup campaign.",
+            "[PRE] Switzerland has the edge, but Bosnia's physicality makes them a dangerous opponent."
         ]
     },
-    ghana_panama: {
-        id: "ghana_panama",
-        teamHome: "GHANA",
-        teamAway: "PANAMA",
-        flagHome: "🇬🇭",
-        flagAway: "🇵🇦",
+    canada_qatar: {
+        id: "canada_qatar",
+        teamHome: "CANADA",
+        teamAway: "QATAR",
+        flagHome: "🇨🇦",
+        flagAway: "🇶🇦",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "7:00 PM ET",
+        minute: "6:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
+        scorersPoolHome: ["A. Davies", "J. David", "C. Larin", "T. Buchanan", "S. Eustáquio", "J. Shaffelburg"],
+        scorersPoolAway: ["Almoez Ali", "Akram Afif", "H. Al-Haydos", "K. Boudiaf", "B. Khoukhi", "A. Hatem"],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "ATLANTA_BENZ_NODE_3",
+        satLink: "VANCOUVER_BC_NODE_3",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "7:00 PM ET / 4:30 AM IST (Jun 18)",
-        venue: "Mercedes-Benz Stadium, Atlanta",
-        group: "Group L",
+        kickoff: "6:00 PM ET / 3:30 AM IST (Jun 19)",
+        venue: "BC Place, Vancouver",
+        group: "Group B",
         commentary: [
-            "🏟️ Ghana face Panama in Atlanta! The Black Stars aim for glory.",
-            "[PRE] Mohammed Kudus leads Ghana's attack. A player on fire this season.",
-            "[PRE] Panama making their 3rd consecutive World Cup appearance.",
-            "[PRE] Kickoff at 7 PM ET. Both teams need a result to progress."
+            "🏟️ Vancouver's BC Place is rocking! Canada takes on Qatar!",
+            "[PRE] Alphonso Davies and Jonathan David star in Canada's home World Cup opener.",
+            "[PRE] Qatar looking to rebound after their opening group match.",
+            "[PRE] Massive home advantage for Canada in Vancouver. Kickoff at 6:00 PM ET."
         ]
     },
-    uzbekistan_colombia: {
-        id: "uzbekistan_colombia",
-        teamHome: "UZBEKISTAN",
-        teamAway: "COLOMBIA",
-        flagHome: "🇺🇿",
-        flagAway: "🇨🇴",
+    mexico_southkorea: {
+        id: "mexico_southkorea",
+        teamHome: "MEXICO",
+        teamAway: "KOREA REP",
+        flagHome: "🇲🇽",
+        flagAway: "🇰🇷",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "10:00 PM ET",
+        minute: "9:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
+        scorersPoolHome: ["S. Giménez", "H. Lozano", "E. Álvarez", "O. Pineda", "U. Antuna", "L. Chávez"],
+        scorersPoolAway: ["Son Heung-min", "Hwang Hee-chan", "Lee Kang-in", "Cho Gue-sung", "Lee Jae-sung", "Hwang In-beom"],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "SEATTLE_LUMEN_NODE_4",
+        satLink: "GUADALAJARA_NODE_4",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "10:00 PM ET / 7:30 AM IST (Jun 18)",
-        venue: "Lumen Field, Seattle",
-        group: "Group K",
+        kickoff: "9:00 PM ET / 6:30 AM IST (Jun 19)",
+        venue: "Estadio Guadalajara, Guadalajara",
+        group: "Group A",
         commentary: [
-            "🏟️ Uzbekistan make their World Cup debut against Colombia in Seattle!",
-            "[PRE] Historic moment for Uzbek football. The White Wolves are here.",
-            "[PRE] Colombia's Luis Díaz and James Rodríguez bring the samba magic.",
-            "[PRE] Kickoff at 10 PM ET. The late-night showdown in the Pacific Northwest."
+            "🏟️ High tension in Guadalajara! Mexico faces South Korea!",
+            "[PRE] Santiago Giménez starts up front for El Tri in front of a passionate home crowd.",
+            "[PRE] Son Heung-min captains South Korea in what promises to be a thrilling encounter.",
+            "[PRE] Group A heavyweights collide. Kickoff at 9:00 PM ET under the lights."
         ]
     }
 };
 
-let activeFifaMatchId = "portugal_drc";
+let activeFifaMatchId = "czechia_southafrica";
 
 function switchFIFASelectedMatch(matchId) {
     const match = FIFA_MATCHES[matchId];
@@ -513,7 +519,7 @@ function switchFIFASelectedMatch(matchId) {
 
 function initFIFASimulator() {
     // Initialize default selected match — today's first match
-    switchFIFASelectedMatch("portugal_drc");
+    switchFIFASelectedMatch("czechia_southafrica");
 }
 
 window.switchFIFASelectedMatch = switchFIFASelectedMatch;
@@ -531,26 +537,6 @@ function addFIFACommentary(text) {
     if (list.children.length > 30) {
         list.removeChild(list.lastChild);
     }
-}
-
-function getRandomUSAname() {
-    const names = ["F. Balogun", "T. Weah", "G. Reyna", "Y. Musah", "W. McKennie", "C. Richards"];
-    return names[Math.floor(Math.random() * names.length)];
-}
-
-function getRandomPARname() {
-    const names = ["M. Almiron", "J. Enciso", "A. Sanabria", "R. Sosa", "G. Gomez", "O. Alderete"];
-    return names[Math.floor(Math.random() * names.length)];
-}
-
-function getRandomCANname() {
-    const names = ["A. Davies", "J. David", "C. Buchanan", "T. Buchanan", "S. Eustaquio", "A. Larin"];
-    return names[Math.floor(Math.random() * names.length)];
-}
-
-function getRandomBOSname() {
-    const names = ["E. Džeko", "M. Pjanić", "A. Kovačević", "S. Prevljak", "E. Demirović", "D. Šabanović"];
-    return names[Math.floor(Math.random() * names.length)];
 }
 
 // ─── FIFA Live Match Simulator Engine ─────────────────────
@@ -577,13 +563,15 @@ function startFIFALiveSimulator(matchId) {
         if (roll < 0.04 && fifaMatchMinute > 10) {
             // GOAL for home team
             match.scoreHome++;
-            const scorer = matchId === 'canada_bos' ? getRandomCANname() : getRandomUSAname();
+            const pool = match.scorersPoolHome || ["Home Player"];
+            const scorer = pool[Math.floor(Math.random() * pool.length)];
             match.scorersHome.push(`${scorer} ${fifaMatchMinute}'`);
             commentText = `⚽ GOOOAL!!! ${scorer} scores for ${match.teamHome}! The crowd erupts!`;
         } else if (roll < 0.07 && fifaMatchMinute > 10) {
             // GOAL for away team
             match.scoreAway++;
-            const scorer = matchId === 'canada_bos' ? getRandomBOSname() : getRandomPARname();
+            const pool = match.scorersPoolAway || ["Away Player"];
+            const scorer = pool[Math.floor(Math.random() * pool.length)];
             match.scorersAway.push(`${scorer} ${fifaMatchMinute}'`);
             commentText = `⚽ GOAL!!! ${scorer} equalizes for ${match.teamAway}! What a strike!`;
         } else if (roll < 0.15) {

@@ -422,10 +422,10 @@ function generateHTML(briefing, buildTime) {
                         <div class="arena-header">
                             <span class="arena-title">🏆 FIFA World Cup 2026 Arena</span>
                             <select id="fifa-match-selector" class="arena-selector" onchange="switchFIFASelectedMatch(this.value)" style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; font-family: var(--font-cyber); font-size: 0.85em; padding: 4px 8px; border-radius: 2px; outline: none; cursor: pointer; margin-right: 8px;">
-                                <option value="portugal_drc">🇵🇹 POR vs COD 🇨🇩 (🔴 LIVE)</option>
-                                <option value="england_croatia">🏴‍☠️ ENG vs CRO 🇭🇷 (4 PM ET)</option>
-                                <option value="ghana_panama">🇬🇭 GHA vs PAN 🇵🇦 (7 PM ET)</option>
-                                <option value="uzbekistan_colombia">🇺🇿 UZB vs COL 🇨🇴 (10 PM ET)</option>
+                                <option value="czechia_southafrica">🇨🇿 CZE vs RSA 🇿🇦 (🔴 LIVE)</option>
+                                <option value="switzerland_bosnia">🇨🇭 SUI vs BIH 🇧🇦 (3 PM ET)</option>
+                                <option value="canada_qatar">🇨🇦 CAN vs QAT 🇶🇦 (6 PM ET)</option>
+                                <option value="mexico_southkorea">🇲🇽 MEX vs KOR 🇰🇷 (9 PM ET)</option>
                             </select>
                         </div>
                         
@@ -477,19 +477,19 @@ function generateHTML(briefing, buildTime) {
                         <div class="live-scorecard-box">
                             <div class="fifa-match-details">
                                 <div class="team-block">
-                                    <span class="team-flag">🇵🇹</span>
-                                    <span class="team-name">PORTUGAL</span>
+                                    <span class="team-flag">🇨🇿</span>
+                                    <span class="team-name">CZECHIA</span>
                                 </div>
                                 <div class="match-score-center">
-                                    <span class="score-digits" id="fifa-score">PORTUGAL 0 - 0 DR CONGO</span>
+                                    <span class="score-digits" id="fifa-score">CZECHIA 0 - 0 SOUTH AFRICA</span>
                                     <span class="match-time-badge live-pulsing" id="fifa-time">LIVE</span>
                                 </div>
                                 <div class="team-block">
-                                    <span class="team-flag">🇨🇩</span>
-                                    <span class="team-name">DR CONGO</span>
+                                    <span class="team-flag">🇿🇦</span>
+                                    <span class="team-name">SOUTH AFRICA</span>
                                 </div>
                             </div>
-                            <div class="venue-info" id="fifa-venue-info" style="text-align: center; font-size: 0.8em; color: var(--text-muted); padding: 3px 0; border-bottom: 1px dashed rgba(0,240,255,0.1);">📍 MetLife Stadium, New York | Group K | KO: 1:00 PM ET / 10:30 PM IST</div>
+                            <div class="venue-info" id="fifa-venue-info" style="text-align: center; font-size: 0.8em; color: var(--text-muted); padding: 3px 0; border-bottom: 1px dashed rgba(0,240,255,0.1);">📍 Atlanta Stadium, Atlanta | Group A | KO: 12:00 PM ET / 9:30 PM IST</div>
                             <div class="scorers-row">
                                 <div class="scorers-col left" id="fifa-scorers-home"></div>
                                 <div class="scorers-col right" id="fifa-scorers-away"></div>
@@ -497,7 +497,7 @@ function generateHTML(briefing, buildTime) {
                         </div>
                         <div class="commentary-panel" id="fifa-commentary-list"></div>
                         <div class="broadcasting-routing-info">
-                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY’S SCHEDULE (JUNE 17):</strong> 🇵🇹 Portugal vs DR Congo (1 PM ET) | 🏴‍☠️ England vs Croatia (4 PM ET) | 🇬🇭 Ghana vs Panama (7 PM ET) | 🇺🇿 Uzbekistan vs Colombia (10 PM ET)</span>
+                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY’S SCHEDULE (JUNE 18):</strong> 🇨🇿 Czechia vs South Africa (12 PM ET) | 🇨🇭 Switzerland vs Bosnia (3 PM ET) | 🇨🇦 Canada vs Qatar (6 PM ET) | 🇲🇽 Mexico vs South Korea (9 PM ET)</span>
                             <span id="fifa-stream-source" style="display: block; font-size: 0.8em; color: #00ff00; margin-bottom: 3px;">📡 Alkass One — FIFA WC Live (Qatar)</span>
                             <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a> | <a href="https://www.zee5.com" target="_blank">ZEE5 India</a></span>
                             <span class="match-arena-stats" id="fifa-stat-possession">POSSESSION: 52% - 48%</span>
