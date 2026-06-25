@@ -467,32 +467,14 @@ async function generateNiftyReport(indices, indexMap) {
         </div>
         
         <!-- FII / DII Flow Telemetry -->
-        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
-          <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">FII / DII DAILY FLOW METRICS (INR Cr)</div>
-          <table width="100%" style="font-size: 11px; color: var(--text-primary); margin-top: 6px; border-collapse: collapse;">
-            <thead>
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted);">
-                <th>INSTITUTION</th>
-                <th>BUY VALUE</th>
-                <th>SELL VALUE</th>
-                <th>NET VALUE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="font-weight: 700; color: var(--secondary);">FII / FPI</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.fii.buy}</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.fii.sell}</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; ${fiiDii.fii.net >= 0 ? "color: var(--accent-emerald);" : "color: #ff3b30;"}">${fiiDii.fii.net >= 0 ? "+" : ""}${fiiDii.fii.net}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: 700; color: var(--primary);">DII (Domestic)</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.dii.buy}</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.dii.sell}</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; ${fiiDii.dii.net >= 0 ? "color: var(--accent-emerald);" : "color: #ff3b30;"}">${fiiDii.dii.net >= 0 ? "+" : ""}${fiiDii.dii.net}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">FII / DII DAILY FLOW METRICS</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">Real-time FII/DII institutional buy & sell data is available directly from the source. Click below to view live data.</div>
+          </div>
+          <div style="margin-top: 12px;">
+            <a href="https://www.trendlyne.com/equity/fiidii-activity/" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: var(--secondary); color: #000; font-family: var(--font-cyber); font-size: 9px; font-weight: bold; padding: 6px 12px; border-radius: 2px; text-decoration: none; text-shadow: none;">VIEW LIVE FII/DII DATA →</a>
+          </div>
         </div>
 
         <!-- Volatility Diagnostics -->
@@ -560,7 +542,7 @@ async function generateNiftyReport(indices, indexMap) {
 
       <!-- Predictive Intelligence Forecast Matrix -->
       <div style="margin-bottom: 24px; border: 1px dashed rgba(0, 240, 255, 0.3); padding: 16px; border-radius: 4px; background: rgba(0, 240, 255, 0.02);">
-        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (Nifty 50)</h4>
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">📊 TREND INDICATORS // TECHNICAL_DIRECTIONAL_GRID (Nifty 50)</h4>
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div class="realtime-forecast-block" data-index-symbol="^NSEI" data-forecast-t="t1" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
@@ -772,32 +754,14 @@ async function generateSensexReport(indices, indexMap) {
         </div>
         
         <!-- FII / DII Flow Telemetry -->
-        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
-          <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">BSE FII / DII FLOW ESTIMATES (INR Cr)</div>
-          <table width="100%" style="font-size: 11px; color: var(--text-primary); margin-top: 6px; border-collapse: collapse;">
-            <thead>
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted);">
-                <th>INSTITUTION</th>
-                <th>BUY VALUE</th>
-                <th>SELL VALUE</th>
-                <th>NET VALUE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="font-weight: 700; color: var(--secondary);">FII / FPI</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.fii.buy}</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.fii.sell}</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; ${fiiDii.fii.net >= 0 ? "color: var(--accent-emerald);" : "color: #ff3b30;"}">${fiiDii.fii.net >= 0 ? "+" : ""}${fiiDii.fii.net}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: 700; color: var(--primary);">DII (Domestic)</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.dii.buy}</td>
-                <td style="font-family: var(--font-terminal);">${fiiDii.dii.sell}</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; ${fiiDii.dii.net >= 0 ? "color: var(--accent-emerald);" : "color: #ff3b30;"}">${fiiDii.dii.net >= 0 ? "+" : ""}${fiiDii.dii.net}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">BSE FII / DII FLOW ESTIMATES</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">Real-time FII/DII institutional buy & sell data is available directly from the source. Click below to view live data.</div>
+          </div>
+          <div style="margin-top: 12px;">
+            <a href="https://www.trendlyne.com/equity/fiidii-activity/" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: var(--secondary); color: #000; font-family: var(--font-cyber); font-size: 9px; font-weight: bold; padding: 6px 12px; border-radius: 2px; text-decoration: none; text-shadow: none;">VIEW LIVE FII/DII DATA →</a>
+          </div>
         </div>
 
         <!-- Volatility Diagnostics -->
@@ -840,7 +804,7 @@ async function generateSensexReport(indices, indexMap) {
 
       <!-- Predictive Intelligence Forecast Matrix -->
       <div style="margin-bottom: 24px; border: 1px dashed rgba(255, 0, 127, 0.3); padding: 16px; border-radius: 4px; background: rgba(255, 0, 127, 0.02);">
-        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(255, 0, 127, 1); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (BSE Sensex)</h4>
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(255, 0, 127, 1); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">📊 TREND INDICATORS // TECHNICAL_DIRECTIONAL_GRID (BSE Sensex)</h4>
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div class="realtime-forecast-block" data-index-symbol="^BSESN" data-forecast-t="t1" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(255, 0, 127, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
@@ -1058,32 +1022,14 @@ async function generateUSReport(usIndices, usIndexMap) {
         </div>
         
         <!-- Institutional vs Retail Flows -->
-        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
-          <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">US INSTITUTIONAL vs RETAIL NET FLOWS (USD Mn)</div>
-          <table width="100%" style="font-size: 11px; color: var(--text-primary); margin-top: 6px; border-collapse: collapse;">
-            <thead>
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted);">
-                <th>TRADER CLASS</th>
-                <th>BUY VALUE</th>
-                <th>SELL VALUE</th>
-                <th>NET VALUE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="font-weight: 700; color: var(--secondary);">Institutions</td>
-                <td style="font-family: var(--font-terminal);">${flows.inst.buy}</td>
-                <td style="font-family: var(--font-terminal);">${flows.inst.sell}</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; ${flows.inst.net >= 0 ? "color: var(--accent-emerald);" : "color: #ff3b30;"}">${flows.inst.net >= 0 ? "+" : ""}${flows.inst.net}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: 700; color: var(--primary);">Retail Accounts</td>
-                <td style="font-family: var(--font-terminal);">${flows.retail.buy}</td>
-                <td style="font-family: var(--font-terminal);">${flows.retail.sell}</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; ${flows.retail.net >= 0 ? "color: var(--accent-emerald);" : "color: #ff3b30;"}">${flows.retail.net >= 0 ? "+" : ""}${flows.retail.net}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">US INSTITUTIONAL vs RETAIL NET FLOWS</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">Real-time US market flow metrics and insider transactions data is available from major SEC data aggregators. Click below to view live data.</div>
+          </div>
+          <div style="margin-top: 12px;">
+            <a href="https://openinsider.com/" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: var(--secondary); color: #000; font-family: var(--font-cyber); font-size: 9px; font-weight: bold; padding: 6px 12px; border-radius: 2px; text-decoration: none; text-shadow: none;">VIEW LIVE SEC INSIDER DATA →</a>
+          </div>
         </div>
       </div>
 
@@ -1139,7 +1085,7 @@ async function generateUSReport(usIndices, usIndexMap) {
 
       <!-- Predictive Intelligence Forecast Matrix -->
       <div style="margin-bottom: 24px; border: 1px dashed rgba(0, 230, 118, 0.3); padding: 16px; border-radius: 4px; background: rgba(0, 230, 118, 0.02);">
-        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(0, 230, 118, 1); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (S&P 500)</h4>
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: rgba(0, 230, 118, 1); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">📊 TREND INDICATORS // TECHNICAL_DIRECTIONAL_GRID (S&P 500)</h4>
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div class="realtime-forecast-block" data-index-symbol="^GSPC" data-forecast-t="t1" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>

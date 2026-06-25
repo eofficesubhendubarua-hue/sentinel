@@ -168,11 +168,185 @@ function generateHTML(briefing, buildTime) {
                 </div>
                 <p class="section-desc">Free, comprehensive market tools — Indian & international markets, stocks, mutual funds, ETFs, insider data. No login required.</p>
 
-                <div class="cyber-ticker-container">
+                <div class="cyber-ticker-container" style="padding: 0; background: rgba(0, 0, 0, 0.4); border-bottom: 1px solid rgba(0, 240, 255, 0.15); margin-bottom: 20px;">
                     <div class="ticker-header">LIVE_MARKET_TELEMETRY</div>
-                    <div class="cyber-ticker-wrap">
-                        <div class="cyber-ticker-track" id="cyber-ticker-track-el">
-                            <!-- Populated & updated continuously by app.js -->
+                    <!-- TradingView Widget BEGIN -->
+                    <div class="tradingview-widget-container" style="background: transparent;">
+                        <div class="tradingview-widget-container__widget"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                        {
+                        "symbols": [
+                            {
+                            "proName": "NSE:NIFTY",
+                            "title": "Nifty 50"
+                            },
+                            {
+                            "proName": "BSE:SENSEX",
+                            "title": "Sensex"
+                            },
+                            {
+                            "proName": "NSE:BANKNIFTY",
+                            "title": "Bank Nifty"
+                            },
+                            {
+                            "proName": "FOREXCOM:DJI",
+                            "title": "Dow Jones"
+                            },
+                            {
+                            "proName": "FOREXCOM:SPX500",
+                            "title": "S&P 500"
+                            },
+                            {
+                            "proName": "FOREXCOM:NSXUSD",
+                            "title": "NASDAQ 100"
+                            },
+                            {
+                            "proName": "OANDA:XAUUSD",
+                            "title": "Gold"
+                            },
+                            {
+                            "proName": "BINANCE:BTCUSDT",
+                            "title": "Bitcoin"
+                            }
+                        ],
+                        "showSymbolLogo": true,
+                        "colorTheme": "dark",
+                        "isTransparent": true,
+                        "displayMode": "adaptive",
+                        "locale": "en"
+                        }
+                        </script>
+                    </div>
+                    <!-- TradingView Widget END -->
+                </div>
+
+                <div class="market-widgets-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px; margin-top: 20px; margin-bottom: 30px;">
+                    <!-- Market Overview Widget Card -->
+                    <div class="hud-panel" style="background: rgba(1, 4, 9, 0.75); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 15px;">
+                        <div class="hud-panel-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="hud-panel-title" style="color: var(--primary); font-family: var(--font-cyber); font-size: 11px; letter-spacing: 1px; font-weight: bold;">📊 MARKET OVERVIEW TELEMETRY</span>
+                            <span class="hud-pulse-dot" style="background: var(--accent-emerald);"></span>
+                        </div>
+                        <div style="height: 500px;">
+                            <!-- TradingView Widget BEGIN -->
+                            <div class="tradingview-widget-container">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+                                {
+                                "colorTheme": "dark",
+                                "dateRange": "12M",
+                                "showChart": true,
+                                "locale": "en",
+                                "largeChartUrl": "",
+                                "isTransparent": true,
+                                "showSymbolLogo": true,
+                                "showFloatingTooltip": false,
+                                "width": "100%",
+                                "height": "100%",
+                                "tabs": [
+                                    {
+                                    "title": "Indices",
+                                    "symbols": [
+                                        {
+                                        "s": "NSE:NIFTY",
+                                        "d": "Nifty 50"
+                                        },
+                                        {
+                                        "s": "BSE:SENSEX",
+                                        "d": "Sensex"
+                                        },
+                                        {
+                                        "s": "NSE:BANKNIFTY",
+                                        "d": "Bank Nifty"
+                                        },
+                                        {
+                                        "s": "FOREXCOM:DJI",
+                                        "d": "Dow Jones"
+                                        },
+                                        {
+                                        "s": "FOREXCOM:SPX500",
+                                        "d": "S&P 500"
+                                        },
+                                        {
+                                        "s": "FOREXCOM:NSXUSD",
+                                        "d": "Nasdaq 100"
+                                        }
+                                    ],
+                                    "originalTitle": "Indices"
+                                    },
+                                    {
+                                    "title": "Crypto",
+                                    "symbols": [
+                                        {
+                                        "s": "BINANCE:BTCUSDT",
+                                        "d": "Bitcoin"
+                                        },
+                                        {
+                                        "s": "BINANCE:ETHUSDT",
+                                        "d": "Ethereum"
+                                        },
+                                        {
+                                        "s": "BINANCE:SOLUSDT",
+                                        "d": "Solana"
+                                        }
+                                    ]
+                                    },
+                                    {
+                                    "title": "Commodities",
+                                    "symbols": [
+                                        {
+                                        "s": "OANDA:XAUUSD",
+                                        "d": "Gold"
+                                        },
+                                        {
+                                        "s": "OANDA:XAGUSD",
+                                        "d": "Silver"
+                                        },
+                                        {
+                                        "s": "NYMEX:CL1!",
+                                        "d": "Crude Oil"
+                                        }
+                                    ]
+                                    }
+                                ]
+                                }
+                                </script>
+                            </div>
+                            <!-- TradingView Widget END -->
+                        </div>
+                    </div>
+
+                    <!-- Advanced Chart Widget Card -->
+                    <div class="hud-panel" style="background: rgba(1, 4, 9, 0.75); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 15px;">
+                        <div class="hud-panel-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="hud-panel-title" style="color: var(--primary); font-family: var(--font-cyber); font-size: 11px; letter-spacing: 1px; font-weight: bold;">📈 INTERACTIVE TECHNICAL CHART</span>
+                            <span class="hud-pulse-dot" style="background: var(--primary);"></span>
+                        </div>
+                        <div style="height: 500px; width: 100%;">
+                            <!-- TradingView Widget BEGIN -->
+                            <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
+                                <div id="tradingview_advanced_chart" style="height: 100%; width: 100%;"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                                <script type="text/javascript">
+                                new TradingView.widget(
+                                {
+                                "width": "100%",
+                                "height": "100%",
+                                "symbol": "NSE:NIFTY",
+                                "interval": "D",
+                                "timezone": "Asia/Kolkata",
+                                "theme": "dark",
+                                "style": "1",
+                                "locale": "en",
+                                "enable_publishing": false,
+                                "hide_side_toolbar": false,
+                                "allow_symbol_change": true,
+                                "container_id": "tradingview_advanced_chart"
+                                }
+                                );
+                                </script>
+                            </div>
+                            <!-- TradingView Widget END -->
                         </div>
                     </div>
                 </div>
@@ -422,10 +596,12 @@ function generateHTML(briefing, buildTime) {
                         <div class="arena-header">
                             <span class="arena-title">🏆 FIFA World Cup 2026 Arena</span>
                             <select id="fifa-match-selector" class="arena-selector" onchange="switchFIFASelectedMatch(this.value)" style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; font-family: var(--font-cyber); font-size: 0.85em; padding: 4px 8px; border-radius: 2px; outline: none; cursor: pointer; margin-right: 8px;">
-                                <option value="czechia_southafrica">🇨🇿 CZE vs RSA 🇿🇦 (🔴 LIVE)</option>
-                                <option value="switzerland_bosnia">🇨🇭 SUI vs BIH 🇧🇦 (3 PM ET)</option>
-                                <option value="canada_qatar">🇨🇦 CAN vs QAT 🇶🇦 (6 PM ET)</option>
-                                <option value="mexico_southkorea">🇲🇽 MEX vs KOR 🇰🇷 (9 PM ET)</option>
+                                <option value="ecuador_germany">🇪🇨 ECU vs GER 🇩🇪 (🔴 LIVE)</option>
+                                <option value="curacao_cote_divoire">🇨🇼 CUW vs CIV 🇨🇮 (🔴 LIVE)</option>
+                                <option value="japan_sweden">🇯🇵 JPN vs SWE 🇸🇪 (7 PM ET)</option>
+                                <option value="tunisia_netherlands">🇹🇳 TUN vs NED 🇳🇱 (7 PM ET)</option>
+                                <option value="turkey_usa">🇹🇷 TUR vs USA 🇺🇸 (10 PM ET)</option>
+                                <option value="paraguay_australia">🇵🇾 PAR vs AUS 🇦🇺 (10 PM ET)</option>
                             </select>
                         </div>
                         
@@ -477,19 +653,19 @@ function generateHTML(briefing, buildTime) {
                         <div class="live-scorecard-box">
                             <div class="fifa-match-details">
                                 <div class="team-block">
-                                    <span class="team-flag">🇨🇿</span>
-                                    <span class="team-name">CZECHIA</span>
+                                    <span class="team-flag">🇪🇨</span>
+                                    <span class="team-name">ECUADOR</span>
                                 </div>
                                 <div class="match-score-center">
-                                    <span class="score-digits" id="fifa-score">CZECHIA 0 - 0 SOUTH AFRICA</span>
+                                    <span class="score-digits" id="fifa-score">ECUADOR 0 - 0 GERMANY</span>
                                     <span class="match-time-badge live-pulsing" id="fifa-time">LIVE</span>
                                 </div>
                                 <div class="team-block">
-                                    <span class="team-flag">🇿🇦</span>
-                                    <span class="team-name">SOUTH AFRICA</span>
+                                    <span class="team-flag">🇩🇪</span>
+                                    <span class="team-name">GERMANY</span>
                                 </div>
                             </div>
-                            <div class="venue-info" id="fifa-venue-info" style="text-align: center; font-size: 0.8em; color: var(--text-muted); padding: 3px 0; border-bottom: 1px dashed rgba(0,240,255,0.1);">📍 Atlanta Stadium, Atlanta | Group A | KO: 12:00 PM ET / 9:30 PM IST</div>
+                            <div class="venue-info" id="fifa-venue-info" style="text-align: center; font-size: 0.8em; color: var(--text-muted); padding: 3px 0; border-bottom: 1px dashed rgba(0,240,255,0.1);">📍 Hard Rock Stadium, Miami | Group E | KO: 4:00 PM ET / 1:30 AM IST (Jun 26)</div>
                             <div class="scorers-row">
                                 <div class="scorers-col left" id="fifa-scorers-home"></div>
                                 <div class="scorers-col right" id="fifa-scorers-away"></div>
@@ -497,7 +673,7 @@ function generateHTML(briefing, buildTime) {
                         </div>
                         <div class="commentary-panel" id="fifa-commentary-list"></div>
                         <div class="broadcasting-routing-info">
-                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY’S SCHEDULE (JUNE 18):</strong> 🇨🇿 Czechia vs South Africa (12 PM ET) | 🇨🇭 Switzerland vs Bosnia (3 PM ET) | 🇨🇦 Canada vs Qatar (6 PM ET) | 🇲🇽 Mexico vs South Korea (9 PM ET)</span>
+                            <span class="schedule-details" style="display: block; margin-bottom: 4px; font-size: 0.85em; color: var(--gold); border-bottom: 1px dashed rgba(255, 215, 0, 0.15); padding-bottom: 4px;">📅 <strong>TODAY’S SCHEDULE (JUNE 25):</strong> 🇪🇨 Ecuador vs Germany (4 PM ET) | 🇨🇼 Curaçao vs Côte d'Ivoire (4 PM ET) | 🇯🇵 Japan vs Sweden (7 PM ET) | 🇹🇳 Tunisia vs Netherlands (7 PM ET) | 🇹🇷 Turkey vs USA (10 PM ET) | 🇵🇾 Paraguay vs Australia (10 PM ET)</span>
                             <span id="fifa-stream-source" style="display: block; font-size: 0.8em; color: #00ff00; margin-bottom: 3px;">📡 Alkass One — FIFA WC Live (Qatar)</span>
                             <span>Official Broadcast Partners: <a href="https://www.fifa.com" target="_blank">FIFA.com</a> | <a href="https://www.foxsports.com" target="_blank">Fox Sports</a> | <a href="https://www.zee5.com" target="_blank">ZEE5 India</a></span>
                             <span class="match-arena-stats" id="fifa-stat-possession">POSSESSION: 52% - 48%</span>

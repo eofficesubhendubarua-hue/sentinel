@@ -328,127 +328,185 @@ function updateStreamTelemetry() {
 
 
 // ─── FIFA World Cup 2026 Live Arena Selector ─────────────
-// Today's matches: June 18, 2026
+// Today's matches: June 25, 2026
 const FIFA_MATCHES = {
-    czechia_southafrica: {
-        id: "czechia_southafrica",
-        teamHome: "CZECHIA",
-        teamAway: "SOUTH AFRICA",
-        flagHome: "🇨🇿",
-        flagAway: "🇿🇦",
+    ecuador_germany: {
+        id: "ecuador_germany",
+        teamHome: "ECUADOR",
+        teamAway: "GERMANY",
+        flagHome: "🇪🇨",
+        flagAway: "🇩🇪",
         scoreHome: 0,
         scoreAway: 0,
         minute: "LIVE",
         isLive: true,
         scorersHome: [],
         scorersAway: [],
-        scorersPoolHome: ["P. Schick", "T. Souček", "V. Coufal", "A. Hložek", "V. Černý", "L. Provod"],
-        scorersPoolAway: ["P. Tau", "T. Zwane", "T. Mokoena", "K. Mudau", "A. Modiba", "E. Makgopa"],
-        homePossession: 52,
+        scorersPoolHome: ["E. Valencia", "K. Rodríguez", "M. Caicedo", "P. Estupiñán", "K. Paéz"],
+        scorersPoolAway: ["N. Füllkrug", "J. Musiala", "F. Wirtz", "K. Havertz", "L. Sané", "I. Gündoğan"],
+        homePossession: 45,
         homeShots: 0,
         awayShots: 0,
-        satLink: "ATLANTA_STADIUM_NODE_1",
+        satLink: "MIAMI_NODE_5",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "12:00 PM ET / 9:30 PM IST",
-        venue: "Atlanta Stadium, Atlanta",
-        group: "Group A",
+        kickoff: "4:00 PM ET / 1:30 AM IST (Jun 26)",
+        venue: "Hard Rock Stadium, Miami",
+        group: "Group E",
         commentary: [
-            "🏟️ Welcome to Atlanta Stadium! Group A action is underway as Czechia faces South Africa!",
-            "[PRE] Patrik Schick leads the line for Czechia, looking to start strong.",
-            "[PRE] Bafana Bafana back on the biggest stage! Percy Tau starts for South Africa.",
-            "[PRE] A crucial match for both sides in Group A. Kickoff is imminent."
+            "🏟️ Hard Rock Stadium is electric as Ecuador meets Germany in a crucial Group E clash!",
+            "[PRE] Enner Valencia starts up front for Ecuador, looking to breach the German defence.",
+            "[PRE] Musiala and Wirtz start in tandem behind Kai Havertz for Germany.",
+            "[PRE] Both teams need points to secure progress. Kickoff is next."
         ]
     },
-    switzerland_bosnia: {
-        id: "switzerland_bosnia",
-        teamHome: "SWITZERLAND",
-        teamAway: "BOSNIA",
-        flagHome: "🇨🇭",
-        flagAway: "🇧🇦",
+    curacao_cote_divoire: {
+        id: "curacao_cote_divoire",
+        teamHome: "CURACAO",
+        teamAway: "COTE D'IVOIRE",
+        flagHome: "🇨🇼",
+        flagAway: "🇨🇮",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "3:00 PM ET",
+        minute: "LIVE",
+        isLive: true,
+        scorersHome: [],
+        scorersAway: [],
+        scorersPoolHome: ["J. Bacuna", "G. Kastaneer", "R. Martina", "K. Felida", "J. Gaari"],
+        scorersPoolAway: ["S. Haller", "S. Adingra", "F. Kessié", "I. Sangaré", "O. Diakité", "J. Boga"],
+        homePossession: 40,
+        homeShots: 0,
+        awayShots: 0,
+        satLink: "METLIFE_NODE_6",
+        videoUrl: FIFA_LIVE_SOURCES[2].url,
+        kickoff: "4:00 PM ET / 1:30 AM IST (Jun 26)",
+        venue: "MetLife Stadium, East Rutherford",
+        group: "Group E",
+        commentary: [
+            "🏟️ Massive crowd at MetLife Stadium! Curaçao faces the African champions Côte d'Ivoire!",
+            "[PRE] Juninho Bacuna captains Curaçao in their dream tournament appearance.",
+            "[PRE] Sebastien Haller leads the line for the Elephants of Côte d'Ivoire.",
+            "[PRE] Underdogs Curaçao looking to write history. Kickoff is moments away."
+        ]
+    },
+    japan_sweden: {
+        id: "japan_sweden",
+        teamHome: "JAPAN",
+        teamAway: "SWEDEN",
+        flagHome: "🇯🇵",
+        flagAway: "🇸🇪",
+        scoreHome: 0,
+        scoreAway: 0,
+        minute: "7:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
-        scorersPoolHome: ["B. Embolo", "X. Shaqiri", "G. Xhaka", "R. Freuler", "M. Akanji", "D. Ndoye"],
-        scorersPoolAway: ["E. Džeko", "M. Pjanić", "E. Demirović", "H. Duljević", "A. Kovačević", "A. Dedić"],
+        scorersPoolHome: ["K. Mitoma", "R. Doan", "A. Ayase", "T. Kubo", "W. Endo", "T. Minamino"],
+        scorersPoolAway: ["A. Isak", "V. Gyökeres", "D. Kulusevski", "E. Forsberg", "J. Larsson", "V. Lindelöf"],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "LOS_ANGELES_NODE_2",
+        satLink: "DALLAS_NODE_7",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "3:00 PM ET / 12:30 AM IST (Jun 19)",
-        venue: "Los Angeles Stadium, Los Angeles",
-        group: "Group B",
+        kickoff: "7:00 PM ET / 4:30 AM IST (Jun 26)",
+        venue: "AT&T Stadium, Arlington",
+        group: "Group F",
         commentary: [
-            "🏟️ A major Group B battle at Los Angeles Stadium! Switzerland vs Bosnia and Herzegovina!",
-            "[PRE] Granit Xhaka captains Switzerland. His tournament experience will be vital.",
-            "[PRE] Edin Džeko leads Bosnia's attack in his final World Cup campaign.",
-            "[PRE] Switzerland has the edge, but Bosnia's physicality makes them a dangerous opponent."
+            "🏟️ Arlington's AT&T Stadium hosts a huge Group F match: Japan vs Sweden!",
+            "[PRE] Kaoru Mitoma and Takefusa Kubo start on the wings for the Samurai Blue.",
+            "[PRE] Sweden's fearsome strike duo Alexander Isak and Viktor Gyökeres are both in the lineup.",
+            "[PRE] A clash of high technical speed versus physical power. Kickoff at 7:00 PM ET."
         ]
     },
-    canada_qatar: {
-        id: "canada_qatar",
-        teamHome: "CANADA",
-        teamAway: "QATAR",
-        flagHome: "🇨🇦",
-        flagAway: "🇶🇦",
+    tunisia_netherlands: {
+        id: "tunisia_netherlands",
+        teamHome: "TUNISIA",
+        teamAway: "NETHERLANDS",
+        flagHome: "🇹🇳",
+        flagAway: "🇳🇱",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "6:00 PM ET",
+        minute: "7:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
-        scorersPoolHome: ["A. Davies", "J. David", "C. Larin", "T. Buchanan", "S. Eustáquio", "J. Shaffelburg"],
-        scorersPoolAway: ["Almoez Ali", "Akram Afif", "H. Al-Haydos", "K. Boudiaf", "B. Khoukhi", "A. Hatem"],
+        scorersPoolHome: ["Y. Msakni", "E. Skhiri", "A. Laidouni", "N. Sliti", "S. Jaziri"],
+        scorersPoolAway: ["C. Gakpo", "M. Depay", "X. Simons", "D. Dumfries", "T. Reijnders", "V. van Dijk"],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "VANCOUVER_BC_NODE_3",
+        satLink: "HOUSTON_NODE_8",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "6:00 PM ET / 3:30 AM IST (Jun 19)",
-        venue: "BC Place, Vancouver",
-        group: "Group B",
+        kickoff: "7:00 PM ET / 4:30 AM IST (Jun 26)",
+        venue: "NRG Stadium, Houston",
+        group: "Group F",
         commentary: [
-            "🏟️ Vancouver's BC Place is rocking! Canada takes on Qatar!",
-            "[PRE] Alphonso Davies and Jonathan David star in Canada's home World Cup opener.",
-            "[PRE] Qatar looking to rebound after their opening group match.",
-            "[PRE] Massive home advantage for Canada in Vancouver. Kickoff at 6:00 PM ET."
+            "🏟️ Live from NRG Stadium, Houston! Tunisia takes on the Oranje of Netherlands!",
+            "[PRE] Ellyes Skhiri anchors the Tunisian midfield, bracing for a tough test.",
+            "[PRE] Cody Gakpo and Xavi Simons provide the creative spark for the Dutch side.",
+            "[PRE] Netherlands are heavy favorites, but Tunisia is known for their resilience. Kickoff at 7:00 PM."
         ]
     },
-    mexico_southkorea: {
-        id: "mexico_southkorea",
-        teamHome: "MEXICO",
-        teamAway: "KOREA REP",
-        flagHome: "🇲🇽",
-        flagAway: "🇰🇷",
+    turkey_usa: {
+        id: "turkey_usa",
+        teamHome: "TURKEY",
+        teamAway: "USA",
+        flagHome: "🇹🇷",
+        flagAway: "🇺🇸",
         scoreHome: 0,
         scoreAway: 0,
-        minute: "9:00 PM ET",
+        minute: "10:00 PM ET",
         isLive: false,
         scorersHome: [],
         scorersAway: [],
-        scorersPoolHome: ["S. Giménez", "H. Lozano", "E. Álvarez", "O. Pineda", "U. Antuna", "L. Chávez"],
-        scorersPoolAway: ["Son Heung-min", "Hwang Hee-chan", "Lee Kang-in", "Cho Gue-sung", "Lee Jae-sung", "Hwang In-beom"],
+        scorersPoolHome: ["B. Yılmaz", "H. Çalhanoğlu", "A. Güler", "K. Aktürkoğlu", "C. Under"],
+        scorersPoolAway: ["C. Pulisic", "F. Balogun", "T. Weah", "W. McKennie", "G. Reyna", "T. Adams"],
         homePossession: 50,
         homeShots: 0,
         awayShots: 0,
-        satLink: "GUADALAJARA_NODE_4",
+        satLink: "LOS_ANGELES_NODE_9",
         videoUrl: FIFA_LIVE_SOURCES[0].url,
-        kickoff: "9:00 PM ET / 6:30 AM IST (Jun 19)",
-        venue: "Estadio Guadalajara, Guadalajara",
-        group: "Group A",
+        kickoff: "10:00 PM ET / 7:30 AM IST (Jun 26)",
+        venue: "SoFi Stadium, Inglewood",
+        group: "Group D",
         commentary: [
-            "🏟️ High tension in Guadalajara! Mexico faces South Korea!",
-            "[PRE] Santiago Giménez starts up front for El Tri in front of a passionate home crowd.",
-            "[PRE] Son Heung-min captains South Korea in what promises to be a thrilling encounter.",
-            "[PRE] Group A heavyweights collide. Kickoff at 9:00 PM ET under the lights."
+            "🏟️ Midnight blockbuster at SoFi Stadium! Turkey vs USA!",
+            "[PRE] Real Madrid starlet Arda Güler starts for Turkey, looking to make his mark.",
+            "[PRE] Christian Pulisic captains the USMNT on home soil in front of a sold-out stadium.",
+            "[PRE] High stakes in Group D as these two sides face off. Kickoff at 10:00 PM ET."
+        ]
+    },
+    paraguay_australia: {
+        id: "paraguay_australia",
+        teamHome: "PARAGUAY",
+        teamAway: "AUSTRALIA",
+        flagHome: "🇵🇾",
+        flagAway: "🇦🇺",
+        scoreHome: 0,
+        scoreAway: 0,
+        minute: "10:00 PM ET",
+        isLive: false,
+        scorersHome: [],
+        scorersAway: [],
+        scorersPoolHome: ["M. Almirón", "A. Sanabria", "J. Enciso", "M. Gómez", "R. Sosa"],
+        scorersPoolAway: ["M. Boyle", "M. Duke", "J. Irvine", "C. Goodwin", "H. Souttar"],
+        homePossession: 50,
+        homeShots: 0,
+        awayShots: 0,
+        satLink: "SAN_FRANCISCO_NODE_10",
+        videoUrl: FIFA_LIVE_SOURCES[0].url,
+        kickoff: "10:00 PM ET / 7:30 AM IST (Jun 26)",
+        venue: "Levi's Stadium, Santa Clara",
+        group: "Group D",
+        commentary: [
+            "🏟️ The final match of today's slate from Levi's Stadium! Paraguay meets Australia!",
+            "[PRE] Miguel Almirón is the key man for La Albirroja in Santa Clara.",
+            "[PRE] The Socceroos line up with Mitchell Duke up front, backed by Jackson Irvine.",
+            "[PRE] A crucial tie in Group D to close out a massive day of World Cup football. Kickoff at 10:00 PM."
         ]
     }
 };
 
-let activeFifaMatchId = "czechia_southafrica";
+let activeFifaMatchId = "ecuador_germany";
 
 function switchFIFASelectedMatch(matchId) {
     const match = FIFA_MATCHES[matchId];
@@ -519,7 +577,7 @@ function switchFIFASelectedMatch(matchId) {
 
 function initFIFASimulator() {
     // Initialize default selected match — today's first match
-    switchFIFASelectedMatch("czechia_southafrica");
+    switchFIFASelectedMatch("ecuador_germany");
 }
 
 window.switchFIFASelectedMatch = switchFIFASelectedMatch;

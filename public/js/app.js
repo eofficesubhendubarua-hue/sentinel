@@ -1159,149 +1159,7 @@ function initMaincoreBootloader() {
   }, 30);
 }
 
-// ─── Continuous Futuristic Live Market Ticker tape ────────
-function initLiveTicker() {
-  const track = document.getElementById("cyber-ticker-track-el");
-  if (!track) return;
 
-  // Real-time market indices starting state matching real benchmarks
-  const marketIndices = [
-    { id: "nifty50", name: "NIFTY 50", price: 22475.85, change: 124.50, pct: 0.56, base: 22475.85 },
-    { id: "sensex", name: "SENSEX", price: 73910.45, change: 350.20, pct: 0.48, base: 73910.45 },
-    { id: "banknifty", name: "BANK NIFTY", price: 47924.90, change: -180.40, pct: -0.37, base: 47924.90 },
-    { id: "niftyit", name: "NIFTY IT", price: 34150.15, change: 245.80, pct: 0.72, base: 34150.15 },
-    { id: "sp500", name: "S&P 500", price: 5120.35, change: 18.90, pct: 0.37, base: 5120.35 },
-    { id: "nasdaq", name: "NASDAQ", price: 16185.20, change: 85.60, pct: 0.53, base: 16185.20 },
-    { id: "usdinr", name: "USD / INR", price: 83.4250, change: -0.0150, pct: -0.018, base: 83.4250 }
-  ];
-
-  // Function to build HTML for index list (single copy)
-  function renderIndexHtml(item, index) {
-    const isUp = item.change >= 0;
-    const changeClass = isUp ? "tick-up" : "tick-down";
-    const changeSign = isUp ? "+" : "";
-    const changeArrow = isUp ? "▲" : "▼";
-    const formattedPrice = item.price.toLocaleString("en-IN", {
-      minimumFractionDigits: item.id === "usdinr" ? 4 : 2,
-      maximumFractionDigits: item.id === "usdinr" ? 4 : 2
-    });
-    const formattedChange = Math.abs(item.change).toLocaleString("en-IN", {
-      minimumFractionDigits: item.id === "usdinr" ? 4 : 2,
-      maximumFractionDigits: item.id === "usdinr" ? 4 : 2
-    });
-    const formattedPct = Math.abs(item.pct).toFixed(2);
-
-    return `
-      <div class="ticker-item" data-index-id="${item.id}" data-item-idx="${index}">
-        <span class="ticker-item-name">${item.name}</span>
-        <span class="ticker-item-price">${formattedPrice}</span>
-        <span class="ticker-item-change ${changeClass}">
-          <span>${changeArrow}</span>
-          <span>${changeSign}${formattedChange} (${changeSign}${formattedPct}%)</span>
-        </span>
-      </div>
-    `;
-  }
-
-  // Render both copies side by side for infinite marquee loop
-  function renderTicker() {
-    let html = "";
-    // Copy 1
-    marketIndices.forEach((item, idx) => {
-      html += renderIndexHtml(item, idx);
-    });
-    // Copy 2 (identical duplicate for seamless scroll)
-    marketIndices.forEach((item, idx) => {
-      html += renderIndexHtml(item, idx);
-    });
-    track.innerHTML = html;
-  }
-
-  // Initial render
-  renderTicker();
-
-  // High-frequency continuous tick simulation engine
-  setInterval(() => {
-    // Randomly pick 1 to 3 indices to update on this tick
-    const countToUpdate = Math.floor(Math.random() * 3) + 1;
-    const updatedIndices = [];
-
-    for (let i = 0; i < countToUpdate; i++) {
-      const idx = Math.floor(Math.random() * marketIndices.length);
-      if (updatedIndices.includes(idx)) continue;
-      updatedIndices.push(idx);
-
-      const item = marketIndices[idx];
-      const isUpTick = Math.random() > 0.45; // slightly bullish bias
-      
-      // Calculate micro-change percentage (e.g., between 0.005% and 0.03%)
-      const tickPct = (Math.random() * 0.025 + 0.005) / 100;
-      const priceDelta = item.price * tickPct * (isUpTick ? 1 : -1);
-      
-      // Update price
-      item.price += priceDelta;
-      
-      // Update overall day's change relative to base price
-      item.change += priceDelta;
-      item.pct = (item.change / item.base) * 100;
-
-      // Find matching items in DOM (both copies) and animate/flash them
-      const tickerElements = track.querySelectorAll(`.ticker-item[data-index-id="${item.id}"]`);
-      tickerElements.forEach((el) => {
-        const priceEl = el.querySelector(".ticker-item-price");
-        const changeEl = el.querySelector(".ticker-item-change");
-
-        // Format values
-        const formattedPrice = item.price.toLocaleString("en-IN", {
-          minimumFractionDigits: item.id === "usdinr" ? 4 : 2,
-          maximumFractionDigits: item.id === "usdinr" ? 4 : 2
-        });
-        const isUp = item.change >= 0;
-        const changeClass = isUp ? "tick-up" : "tick-down";
-        const changeSign = isUp ? "+" : "";
-        const changeArrow = isUp ? "▲" : "▼";
-        const formattedChange = Math.abs(item.change).toLocaleString("en-IN", {
-          minimumFractionDigits: item.id === "usdinr" ? 4 : 2,
-          maximumFractionDigits: item.id === "usdinr" ? 4 : 2
-        });
-        const formattedPct = Math.abs(item.pct).toFixed(2);
-
-        // Instantly update values
-        if (priceEl) {
-          priceEl.textContent = formattedPrice;
-          
-          // Flash tick direction styling
-          priceEl.classList.remove("tick-up", "tick-down");
-          priceEl.classList.add(isUpTick ? "tick-up" : "tick-down");
-          
-          // Glow animation on ticker item
-          el.classList.remove("flash-up", "flash-down");
-          // Force layout reflow to restart animation
-          void el.offsetWidth;
-          el.classList.add(isUpTick ? "flash-up" : "flash-down");
-
-          // Play subtle micro cyber-click audio chime on live change if sound is enabled!
-          if (sysAudioEnabled && typeof playCyberClick === "function" && Math.random() > 0.7) {
-            playCyberClick();
-          }
-
-          // Reset price text styling after a brief delay
-          setTimeout(() => {
-            priceEl.classList.remove("tick-up", "tick-down");
-          }, 400);
-        }
-
-        if (changeEl) {
-          changeEl.className = `ticker-item-change ${changeClass}`;
-          changeEl.innerHTML = `
-            <span>${changeArrow}</span>
-            <span>${changeSign}${formattedChange} (${changeSign}${formattedPct}%)</span>
-          `;
-        }
-      });
-    }
-  }, 1200); // 1.2 second tick intervals
-}
 
 // ─── Load Trigger ─────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -1332,8 +1190,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTemporalDivergenceHUD();
   initMaincoreBootloader();
   
-  // Initialize continuous live indices ticker tape
-  initLiveTicker();
+
 });
 
 // ─── Telemetry HUD Collapsible Toggle ─────────────────────

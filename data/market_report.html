@@ -10,7 +10,7 @@
           <span class="realtime-status-dot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00ff00; box-shadow: 0 0 8px #00ff00;"></span>
           <div>
             <div class="realtime-status-label" style="font-family: var(--font-terminal); font-size: 12px; color: var(--primary); font-weight: 700;">TELEMETRY: CLOSED // OUT_OF_HOURS</div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Refreshed at: 2026-06-25 15:45:23 UTC</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Refreshed at: 2026-06-25 16:41:44 UTC</div>
           </div>
         </div>
       </div>
@@ -24,32 +24,14 @@
         </div>
         
         <!-- FII / DII Flow Telemetry -->
-        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
-          <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">FII / DII DAILY FLOW METRICS (INR Cr)</div>
-          <table width="100%" style="font-size: 11px; color: var(--text-primary); margin-top: 6px; border-collapse: collapse;">
-            <thead>
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted);">
-                <th>INSTITUTION</th>
-                <th>BUY VALUE</th>
-                <th>SELL VALUE</th>
-                <th>NET VALUE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="font-weight: 700; color: var(--secondary);">FII / FPI</td>
-                <td style="font-family: var(--font-terminal);">14520.80</td>
-                <td style="font-family: var(--font-terminal);">15536.81</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-1016.01</td>
-              </tr>
-              <tr>
-                <td style="font-weight: 700; color: var(--primary);">DII (Domestic)</td>
-                <td style="font-family: var(--font-terminal);">14001.65</td>
-                <td style="font-family: var(--font-terminal);">12479.95</td>
-                <td style="font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+1521.70</td>
-              </tr>
-            </tbody>
-          </table>
+        <div style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--secondary); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">FII / DII DAILY FLOW METRICS</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">Real-time FII/DII institutional buy & sell data is available directly from the source. Click below to view live data.</div>
+          </div>
+          <div style="margin-top: 12px;">
+            <a href="https://www.trendlyne.com/equity/fiidii-activity/" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: var(--secondary); color: #000; font-family: var(--font-cyber); font-size: 9px; font-weight: bold; padding: 6px 12px; border-radius: 2px; text-decoration: none; text-shadow: none;">VIEW LIVE FII/DII DATA →</a>
+          </div>
         </div>
 
         <!-- Volatility Diagnostics -->
@@ -286,7 +268,7 @@
 
       <!-- Predictive Intelligence Forecast Matrix -->
       <div style="margin-bottom: 24px; border: 1px dashed rgba(0, 240, 255, 0.3); padding: 16px; border-radius: 4px; background: rgba(0, 240, 255, 0.02);">
-        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">🔮 FORECAST MATRIX // PREDICTIVE_INTELLIGENCE_GRID (Nifty 50)</h4>
+        <h4 style="font-family: var(--font-cyber); font-size: 11px; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800;">📊 TREND INDICATORS // TECHNICAL_DIRECTIONAL_GRID (Nifty 50)</h4>
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div class="realtime-forecast-block" data-index-symbol="^NSEI" data-forecast-t="t1" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
