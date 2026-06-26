@@ -216,6 +216,30 @@
       if (r.ok) return await r.json();
     } catch (_) {}
 
+    // 2.5 Public CORS Proxies as fallback (vital for GitHub Pages / static hosting)
+    const publicProxies = [
+      target => `https://corsproxy.io/?${encodeURIComponent(target)}`,
+      target => `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`
+    ];
+    for (const makeProxyUrl of publicProxies) {
+      try {
+        const proxyUrl = makeProxyUrl(url);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500); // give public CORS proxy slightly more time
+        const r = await fetch(proxyUrl, {
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (r.ok) {
+          const json = await r.json();
+          if (json && !json.error) {
+            return json;
+          }
+        }
+      } catch (_) {}
+    }
+
     // 3. Resilient AMFI Mock Fallback for local testing or API downtime
     if (url.includes('api.mfapi.in/mf/search') || (apiPath && apiPath.includes('mf-search'))) {
       console.warn("⚠️ AMFI API search failed/timed out. Yielding fallback mock list...");

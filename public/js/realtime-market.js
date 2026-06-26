@@ -9,6 +9,32 @@
     let syncTimer = null;
     let liveQuotes = {};
     const visibleSymbols = new Set();
+
+    const path = window.location.pathname;
+    let baseDir = '/';
+    if (path.startsWith('/sentinel')) {
+        baseDir = '/sentinel/';
+    } else {
+        baseDir = path.substring(0, path.lastIndexOf('/') + 1);
+    }
+
+    const DEFAULT_NETLIFY = 'https://leafy-granita-bc2649.netlify.app';
+    const DEFAULT_VERCEL = 'https://sentinel-eofficesubhendubarua-hues-projects.vercel.app';
+    const CUSTOM_PROXY = localStorage.getItem('SENTINEL_PROXY_URL') || '';
+    
+    const isNetlify = window.location.hostname.includes('netlify.app');
+    const isVercel = window.location.hostname.includes('vercel.app');
+    
+    const PROXY_BASES = [];
+    if (CUSTOM_PROXY) {
+      PROXY_BASES.push(CUSTOM_PROXY.replace(/\/$/, ''));
+    }
+    if (isNetlify || isVercel) {
+      PROXY_BASES.push('');
+    } else {
+      PROXY_BASES.push(DEFAULT_VERCEL);
+      PROXY_BASES.push(DEFAULT_NETLIFY);
+    }
     
     // Core Indices & ETFs to refresh on every cycle
     const CORE_SYMBOLS = [
@@ -71,31 +97,67 @@
 
     // ─── Yahoo Finance Chart Client-Side Fetch ─────────────
     async function fetchLiveQuote(symbol) {
-        // Build direct path mapped via Netlify/Vercel redirects and query timestamp to bypass browser/CDN caching
-        const url = `/api/yahoo-chart/${symbol}?interval=1d&range=1d&_=${Date.now()}`;
-        try {
-            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-            if (!res.ok) return null;
-            const data = await res.json();
-            const result = data.chart?.result?.[0];
-            if (!result) return null;
-            
-            const price = result.meta.regularMarketPrice;
-            const prevClose = result.meta.chartPreviousClose;
-            const change = price - prevClose;
-            const changePct = (change / prevClose) * 100;
-            const shortName = result.meta.shortName || symbol;
-            
-            const quote = result.indicators?.quote?.[0];
-            const open = quote?.open?.[0] || result.meta.regularMarketOpen || price;
-            const high = quote?.high?.[0] || result.meta.regularMarketDayHigh || price;
-            const low = quote?.low?.[0] || result.meta.regularMarketDayLow || price;
-            
-            return { symbol, price, prevClose, change, changePct, shortName, open, high, low };
-        } catch (err) {
-            console.error(`Error fetching quote for ${symbol}:`, err);
-            return null;
+        // Try proxy bases first
+        const apiPath = `/api/yahoo-chart/${symbol}?interval=1d&range=1d&_=${Date.now()}`;
+        for (const base of PROXY_BASES) {
+            const url = base + apiPath;
+            try {
+                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) continue;
+                const data = await res.json();
+                const result = data.chart?.result?.[0];
+                if (!result) continue;
+                
+                const price = result.meta.regularMarketPrice;
+                const prevClose = result.meta.chartPreviousClose;
+                const change = price - prevClose;
+                const changePct = (change / prevClose) * 100;
+                const shortName = result.meta.shortName || symbol;
+                
+                const quote = result.indicators?.quote?.[0];
+                const open = quote?.open?.[0] || result.meta.regularMarketOpen || price;
+                const high = quote?.high?.[0] || result.meta.regularMarketDayHigh || price;
+                const low = quote?.low?.[0] || result.meta.regularMarketDayLow || price;
+                
+                return { symbol, price, prevClose, change, changePct, shortName, open, high, low };
+            } catch (err) {
+                console.warn(`Error fetching quote for ${symbol} via proxy base ${base || 'relative'}:`, err);
+            }
         }
+
+        // If proxy bases fail, try public CORS proxies as fallback
+        const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d&_=${Date.now()}`;
+        const publicProxies = [
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+        ];
+        
+        for (const proxyUrl of publicProxies) {
+            try {
+                const res = await fetch(proxyUrl, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) continue;
+                const data = await res.json();
+                const result = data.chart?.result?.[0];
+                if (!result) continue;
+                
+                const price = result.meta.regularMarketPrice;
+                const prevClose = result.meta.chartPreviousClose;
+                const change = price - prevClose;
+                const changePct = (change / prevClose) * 100;
+                const shortName = result.meta.shortName || symbol;
+                
+                const quote = result.indicators?.quote?.[0];
+                const open = quote?.open?.[0] || result.meta.regularMarketOpen || price;
+                const high = quote?.high?.[0] || result.meta.regularMarketDayHigh || price;
+                const low = quote?.low?.[0] || result.meta.regularMarketDayLow || price;
+                
+                return { symbol, price, prevClose, change, changePct, shortName, open, high, low };
+            } catch (err) {
+                console.warn(`Error fetching quote for ${symbol} via public CORS proxy:`, err);
+            }
+        }
+        
+        return null;
     }
 
     // ─── DOM Updates & Calculations ─────────────────────────
@@ -512,7 +574,7 @@
     
     async function checkForUpdates() {
         try {
-            const res = await fetch(`/data/build-time.json?_=${Date.now()}`);
+            const res = await fetch(`${baseDir}data/build-time.json?_=${Date.now()}`);
             if (!res.ok) return;
             const data = await res.json();
             const serverBuildTime = parseInt(data.timestamp);
@@ -532,7 +594,7 @@
         showSyncHUD("📡 NEW SYSTEM BRIEFING INCOMING — SYNCHRONIZING...");
         
         try {
-            const res = await fetch(`/index.html?_=${Date.now()}`);
+            const res = await fetch(`${baseDir}index.html?_=${Date.now()}`);
             if (!res.ok) throw new Error('Failed to fetch new index.html');
             const htmlText = await res.text();
             

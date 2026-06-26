@@ -177,16 +177,20 @@ function generateHTML(briefing, buildTime) {
                         {
                         "symbols": [
                             {
-                            "proName": "NSE:NIFTY",
-                            "title": "Nifty 50"
+                            "proName": "CAPITALCOM:INDIA50",
+                            "title": "Nifty 50 (CFD)"
+                            },
+                            {
+                            "proName": "BSE:SENSEX50",
+                            "title": "Sensex 50"
                             },
                             {
                             "proName": "BSE:SENSEX",
                             "title": "Sensex"
                             },
                             {
-                            "proName": "NSE:BANKNIFTY",
-                            "title": "Bank Nifty"
+                            "proName": "BSE:BANKEX",
+                            "title": "BSE Bankex"
                             },
                             {
                             "proName": "FOREXCOM:DJI",
@@ -248,16 +252,20 @@ function generateHTML(briefing, buildTime) {
                                     "title": "Indices",
                                     "symbols": [
                                         {
-                                        "s": "NSE:NIFTY",
-                                        "d": "Nifty 50"
+                                        "s": "CAPITALCOM:INDIA50",
+                                        "d": "Nifty 50 (CFD)"
+                                        },
+                                        {
+                                        "s": "BSE:SENSEX50",
+                                        "d": "Sensex 50"
                                         },
                                         {
                                         "s": "BSE:SENSEX",
                                         "d": "Sensex"
                                         },
                                         {
-                                        "s": "NSE:BANKNIFTY",
-                                        "d": "Bank Nifty"
+                                        "s": "BSE:BANKEX",
+                                        "d": "BSE Bankex"
                                         },
                                         {
                                         "s": "FOREXCOM:DJI",
@@ -322,7 +330,7 @@ function generateHTML(briefing, buildTime) {
                             <span class="hud-panel-title" style="color: var(--primary); font-family: var(--font-cyber); font-size: 11px; letter-spacing: 1px; font-weight: bold;">📈 INTERACTIVE TECHNICAL CHART</span>
                             <span class="hud-pulse-dot" style="background: var(--primary);"></span>
                         </div>
-                        <div style="height: 500px; width: 100%;">
+                        <div style="height: 440px; width: 100%;">
                             <!-- TradingView Widget BEGIN -->
                             <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
                                 <div id="tradingview_advanced_chart" style="height: 100%; width: 100%;"></div>
@@ -332,7 +340,7 @@ function generateHTML(briefing, buildTime) {
                                 {
                                 "width": "100%",
                                 "height": "100%",
-                                "symbol": "NSE:NIFTY",
+                                "symbol": "BSE:SENSEX",
                                 "interval": "D",
                                 "timezone": "Asia/Kolkata",
                                 "theme": "dark",
@@ -347,6 +355,10 @@ function generateHTML(briefing, buildTime) {
                                 </script>
                             </div>
                             <!-- TradingView Widget END -->
+                        </div>
+                        <div style="margin-top: 10px; font-size: 11px; color: var(--text-secondary); font-family: var(--font-cyber); display: flex; align-items: flex-start; gap: 8px; padding: 8px; background: rgba(255, 183, 0, 0.04); border-left: 2px solid var(--secondary); border-radius: 2px; line-height: 1.4;">
+                            <span style="font-size: 13px;">⚠️</span>
+                            <span><strong>PRO TIP // TELEMETRY LINKAGE:</strong> If a symbol search returns <em>"This symbol is only available on TradingView"</em> (due to NSE/BSE embed restrictions), search for its BSE equivalent (e.g. <strong>BSE:SENSEX</strong>, <strong>BSE:SENSEX50</strong>, or prefix stocks with <strong>BSE:</strong> instead of <strong>NSE:</strong> like <strong>BSE:PICCADIL</strong>) to view them live without login.</span>
                         </div>
                     </div>
                 </div>
