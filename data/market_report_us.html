@@ -9,18 +9,18 @@
         <div style="text-align: right; display: flex; align-items: center; gap: 8px;">
           <span class="realtime-status-dot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00ff00; box-shadow: 0 0 8px #00ff00;"></span>
           <div>
-            <div class="realtime-status-label" style="font-family: var(--font-terminal); font-size: 12px; color: rgba(0, 230, 118, 1); font-weight: 700;">TELEMETRY: CLOSED // OUT_OF_HOURS</div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Refreshed at: 2026-10-26 06:39:18 UTC</div>
+            <div class="realtime-status-label" style="font-family: var(--font-terminal); font-size: 12px; color: rgba(0, 230, 118, 1); font-weight: 700;">TELEMETRY: LIVE // OPEN</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Refreshed at: 2026-10-26 13:34:19 UTC</div>
           </div>
         </div>
       </div>
 
       <!-- Overview Header -->
       <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 24px;">
-        <div class="realtime-sentiment-card" data-symbol="^GSPC" style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid #ff3b30; padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
+        <div class="realtime-sentiment-card" data-symbol="^GSPC" style="flex: 1; min-width: 250px; background: rgba(1, 4, 9, 0.75); border-left: 3px solid var(--accent-emerald); padding: 14px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left-width: 3px;">
           <div style="font-family: var(--font-cyber); font-size: 9px; color: var(--text-muted); letter-spacing: 1px;">US MARKET SENTIMENT</div>
-          <div class="realtime-sentiment-trend" style="font-family: var(--font-cyber); font-size: 22px; font-weight: 900; color: #ff3b30; margin-top: 4px;">🔵 BEARISH</div>
-          <div class="realtime-sentiment-desc" style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">S&P 500 registers a broadly bearish swing today, moving 0.52% lower with S&P LTP at 7623.68.</div>
+          <div class="realtime-sentiment-trend" style="font-family: var(--font-cyber); font-size: 22px; font-weight: 900; color: var(--accent-emerald); margin-top: 4px;">🔴 BULLISH</div>
+          <div class="realtime-sentiment-desc" style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">S&P 500 registers a broadly bullish swing today, moving 0.36% higher with S&P LTP at 7651.19.</div>
         </div>
         
         <!-- Institutional vs Retail Flows -->
@@ -57,39 +57,39 @@
               
       <tr class="realtime-row" data-symbol="^GSPC" data-type="index" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 12px 14px; font-family: var(--font-cyber); font-weight: 700;">S&P 500 (^GSPC)</td>
-        <td class="realtime-ltp" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">7623.68</td>
-        <td class="realtime-open" style="padding: 12px 14px; font-family: var(--font-terminal);">7637.18</td>
-        <td class="realtime-prevclose" style="padding: 12px 14px; font-family: var(--font-terminal);">7663.43</td>
-        <td class="realtime-range" style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">7612.07 - 7660.15</td>
-        <td class="realtime-change" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-39.75</td>
-        <td class="realtime-pct" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-0.52%</td>
-        <td class="realtime-outlook" style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">Moderate correction triggered by profit booking in tech giants and cautious inflation notes.</td>
+        <td class="realtime-ltp" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">7651.19</td>
+        <td class="realtime-open" style="padding: 12px 14px; font-family: var(--font-terminal);">7639.70</td>
+        <td class="realtime-prevclose" style="padding: 12px 14px; font-family: var(--font-terminal);">7623.68</td>
+        <td class="realtime-range" style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">7639.70 - 7654.53</td>
+        <td class="realtime-change" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+27.51</td>
+        <td class="realtime-pct" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+0.36%</td>
+        <td class="realtime-outlook" style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">Stable performance supported by positive Treasury yield adjustments and moderate small-cap inflows.</td>
         <td style="padding: 12px 14px; text-align: right;">
           <button onclick="openChartModal('^GSPC', 'S&P 500')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
         </td>
       </tr>
       <tr class="realtime-row" data-symbol="^IXIC" data-type="index" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 12px 14px; font-family: var(--font-cyber); font-weight: 700;">NASDAQ COMPOSITE (^IXIC)</td>
-        <td class="realtime-ltp" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">25955.34</td>
-        <td class="realtime-open" style="padding: 12px 14px; font-family: var(--font-terminal);">25893.95</td>
-        <td class="realtime-prevclose" style="padding: 12px 14px; font-family: var(--font-terminal);">26008.90</td>
-        <td class="realtime-range" style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">25866.15 - 26111.62</td>
-        <td class="realtime-change" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-53.56</td>
-        <td class="realtime-pct" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-0.21%</td>
-        <td class="realtime-outlook" style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">Moderate correction triggered by profit booking in tech giants and cautious inflation notes.</td>
+        <td class="realtime-ltp" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">26041.64</td>
+        <td class="realtime-open" style="padding: 12px 14px; font-family: var(--font-terminal);">26026.87</td>
+        <td class="realtime-prevclose" style="padding: 12px 14px; font-family: var(--font-terminal);">25955.34</td>
+        <td class="realtime-range" style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">25986.56 - 26052.63</td>
+        <td class="realtime-change" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+86.30</td>
+        <td class="realtime-pct" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+0.33%</td>
+        <td class="realtime-outlook" style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">Stable performance supported by positive Treasury yield adjustments and moderate small-cap inflows.</td>
         <td style="padding: 12px 14px; text-align: right;">
           <button onclick="openChartModal('^IXIC', 'NASDAQ COMPOSITE')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
         </td>
       </tr>
       <tr class="realtime-row" data-symbol="^DJI" data-type="index" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 12px 14px; font-family: var(--font-cyber); font-weight: 700;">DOW JONES 30 (^DJI)</td>
-        <td class="realtime-ltp" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">52215.16</td>
-        <td class="realtime-open" style="padding: 12px 14px; font-family: var(--font-terminal);">52696.70</td>
-        <td class="realtime-prevclose" style="padding: 12px 14px; font-family: var(--font-terminal);">52868.00</td>
-        <td class="realtime-range" style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">52055.10 - 52696.70</td>
-        <td class="realtime-change" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-652.84</td>
-        <td class="realtime-pct" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: #ff3b30;">-1.23%</td>
-        <td class="realtime-outlook" style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">Substantial sell-off sparked by disappointing tech guidance, geopolitical escalations, or hot inflation indices.</td>
+        <td class="realtime-ltp" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700;">52407.49</td>
+        <td class="realtime-open" style="padding: 12px 14px; font-family: var(--font-terminal);">52320.45</td>
+        <td class="realtime-prevclose" style="padding: 12px 14px; font-family: var(--font-terminal);">52215.16</td>
+        <td class="realtime-range" style="padding: 12px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">52320.45 - 52468.94</td>
+        <td class="realtime-change" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+192.33</td>
+        <td class="realtime-pct" style="padding: 12px 14px; font-family: var(--font-terminal); font-weight: 700; color: var(--accent-emerald);">+0.37%</td>
+        <td class="realtime-outlook" style="padding: 12px 14px; font-size: 11px; color: var(--text-secondary);">Stable performance supported by positive Treasury yield adjustments and moderate small-cap inflows.</td>
         <td style="padding: 12px 14px; text-align: right;">
           <button onclick="openChartModal('^DJI', 'DOW JONES 30')" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--primary); padding: 4px 10px; font-family: var(--font-cyber); font-size: 9px; border-radius: 3px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='#000'; this.style.boxShadow='0 0 10px var(--primary)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.color='var(--primary)'; this.style.boxShadow='none';">📈 CHART</button>
         </td>
@@ -121,25 +121,25 @@
               
       <tr class="realtime-row" data-symbol="SPY" data-type="etf" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">SPDR S&P 500 ETF Trust (SPY)</td>
-        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">759.97</td>
+        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">762.58</td>
         <td class="realtime-open" style="padding: 10px 14px; font-family: var(--font-terminal);">759.90</td>
-        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">763.96</td>
-        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">758.68 - 763.47</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-0.52%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">🔴 CORR_PULLBACK</td>
-        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Bearish: Dragged down by broader US equity liquidation and risk-off asset shifts.</td>
+        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">759.96</td>
+        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">761.64 - 763.06</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.34%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">🟢 GAINING</td>
+        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Flat consolidation matching narrow sector index parameters.</td>
         <td style="padding: 10px 14px; text-align: right;">
           <button onclick="openChartModal('SPY', 'SPDR S&P 500 ETF Trust')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📈</button>
         </td>
       </tr>
       <tr class="realtime-row" data-symbol="QQQ" data-type="etf" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">Invesco QQQ Trust Nasdaq 100 (QQQ)</td>
-        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">704.40</td>
-        <td class="realtime-open" style="padding: 10px 14px; font-family: var(--font-terminal);">702.20</td>
-        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">704.47</td>
-        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">701.16 - 709.30</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-0.01%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">🔴 CORR_PULLBACK</td>
+        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">707.44</td>
+        <td class="realtime-open" style="padding: 10px 14px; font-family: var(--font-terminal);">707.06</td>
+        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">704.40</td>
+        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">705.58 - 707.93</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.43%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">🟢 GAINING</td>
         <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Flat consolidation matching narrow sector index parameters.</td>
         <td style="padding: 10px 14px; text-align: right;">
           <button onclick="openChartModal('QQQ', 'Invesco QQQ Trust Nasdaq 100')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📈</button>
@@ -147,37 +147,37 @@
       </tr>
       <tr class="realtime-row" data-symbol="DIA" data-type="etf" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">SPDR Dow Jones Industrial Average ETF (DIA)</td>
-        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">521.37</td>
+        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">523.36</td>
         <td class="realtime-open" style="padding: 10px 14px; font-family: var(--font-terminal);">522.74</td>
-        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">527.89</td>
-        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">519.88 - 523.70</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-1.24%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">🔴 CORR_PULLBACK</td>
-        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Bearish: Dragged down by broader US equity liquidation and risk-off asset shifts.</td>
+        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">521.41</td>
+        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">523.29 - 524.19</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.37%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">🟢 GAINING</td>
+        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Flat consolidation matching narrow sector index parameters.</td>
         <td style="padding: 10px 14px; text-align: right;">
           <button onclick="openChartModal('DIA', 'SPDR Dow Jones Industrial Average ETF')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📈</button>
         </td>
       </tr>
       <tr class="realtime-row" data-symbol="GLD" data-type="etf" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">SPDR Gold Shares (GLD)</td>
-        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">366.61</td>
+        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">366.79</td>
         <td class="realtime-open" style="padding: 10px 14px; font-family: var(--font-terminal);">368.95</td>
-        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">369.00</td>
-        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">364.33 - 369.25</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-0.65%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">🔴 CORR_PULLBACK</td>
-        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Bearish: Dragged down by broader US equity liquidation and risk-off asset shifts.</td>
+        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">366.61</td>
+        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">366.72 - 367.49</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.05%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">🟢 GAINING</td>
+        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Flat consolidation matching narrow sector index parameters.</td>
         <td style="padding: 10px 14px; text-align: right;">
           <button onclick="openChartModal('GLD', 'SPDR Gold Shares')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📈</button>
         </td>
       </tr>
       <tr class="realtime-row" data-symbol="SLV" data-type="etf" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">iShares Silver Trust (SLV)</td>
-        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">48.72</td>
+        <td class="realtime-ltp" style="padding: 10px 14px; font-family: var(--font-terminal);">48.42</td>
         <td class="realtime-open" style="padding: 10px 14px; font-family: var(--font-terminal);">48.60</td>
-        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">49.34</td>
-        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">47.87 - 48.98</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-1.26%</td>
+        <td class="realtime-prevclose" style="padding: 10px 14px; font-family: var(--font-terminal);">48.72</td>
+        <td class="realtime-range" style="padding: 10px 14px; font-family: var(--font-terminal); font-size: 11px; color: var(--text-secondary);">48.40 - 48.59</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-0.61%</td>
         <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">🔴 CORR_PULLBACK</td>
         <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Bearish: Dragged down by broader US equity liquidation and risk-off asset shifts.</td>
         <td style="padding: 10px 14px; text-align: right;">
@@ -195,18 +195,18 @@
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
           <div class="realtime-forecast-block" data-index-symbol="^GSPC" data-forecast-t="t1" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+1 (NEXT DAY FORECAST)</div>
-            <div class="realtime-forecast-value" style="font-size: 18px; font-weight: 900; color: #ff3b30; font-family: var(--font-terminal); margin-top: 6px;">7607.86 <span style="font-size: 12px;">(-0.21%)</span></div>
-            <div class="realtime-forecast-status" style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: BEARISH_CONSOLIDATION</div>
+            <div class="realtime-forecast-value" style="font-size: 18px; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-terminal); margin-top: 6px;">7662.23 <span style="font-size: 12px;">(+0.14%)</span></div>
+            <div class="realtime-forecast-status" style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: BULLISH_MOMENTUM</div>
           </div>
           <div class="realtime-forecast-block" data-index-symbol="^GSPC" data-forecast-t="t2" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">T+2 (TWO DAY FORECAST)</div>
-            <div class="realtime-forecast-value" style="font-size: 18px; font-weight: 900; color: #ff3b30; font-family: var(--font-terminal); margin-top: 6px;">7590.07 <span style="font-size: 12px;">(-0.44%)</span></div>
-            <div class="realtime-forecast-status" style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: GRID_SUPPORT_CONSOLIDATION</div>
+            <div class="realtime-forecast-value" style="font-size: 18px; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-terminal); margin-top: 6px;">7674.66 <span style="font-size: 12px;">(+0.31%)</span></div>
+            <div class="realtime-forecast-status" style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: LIQUIDITY_ACCUMULATION</div>
           </div>
           <div class="realtime-forecast-block" data-index-symbol="^GSPC" data-forecast-t="wk1" style="flex: 1; min-width: 220px; background: rgba(1, 4, 9, 0.7); padding: 12px; border-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.1);">
             <div style="font-size: 8px; color: var(--text-muted); font-family: var(--font-cyber); letter-spacing: 1px;">1-WK (1 WEEK FORECAST)</div>
-            <div class="realtime-forecast-value" style="font-size: 18px; font-weight: 900; color: #ff3b30; font-family: var(--font-terminal); margin-top: 6px;">7564.36 <span style="font-size: 12px;">(-0.78%)</span></div>
-            <div class="realtime-forecast-status" style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: WEEKLY_DIVERGENCE_RECOVERY</div>
+            <div class="realtime-forecast-value" style="font-size: 18px; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-terminal); margin-top: 6px;">7692.60 <span style="font-size: 12px;">(+0.54%)</span></div>
+            <div class="realtime-forecast-status" style="font-size: 10px; color: var(--text-secondary); font-family: var(--font-cyber); margin-top: 6px; letter-spacing: 0.5px;">GRID MODE: MACRO_UPTREND_SYNCHRONIZED</div>
           </div>
         </div>
       </div>
@@ -228,20 +228,20 @@
               
       <tr class="realtime-row-mf" data-index-symbol="^IXIC" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">US Technology Sector (XLK)</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-0.21%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">DECLINING</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.33%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">SURGING</td>
         <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Moderate consolidation: Standard portfolio rotation keeps major sector NAV swings narrow.</td>
       </tr>
       <tr class="realtime-row-mf" data-index-symbol="^DJI" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">US Financial Services Sector (XLF)</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-1.23%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">DECLINING</td>
-        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Decline: Pressured by core large-cap outflows and defensive index hedging.</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.37%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">SURGING</td>
+        <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Moderate consolidation: Standard portfolio rotation keeps major sector NAV swings narrow.</td>
       </tr>
       <tr class="realtime-row-mf" data-index-symbol="^GSPC" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
         <td style="padding: 10px 14px; font-family: var(--font-cyber); font-weight: 700;">US S&P 500 Large-Cap Categories (SPY)</td>
-        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: #ff3b30;">-0.52%</td>
-        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: #ff3b30;">DECLINING</td>
+        <td class="realtime-pct" style="padding: 10px 14px; font-family: var(--font-terminal); color: var(--accent-emerald);">+0.36%</td>
+        <td class="realtime-status" style="padding: 10px 14px; font-weight: 700; font-size: 10px; color: var(--accent-emerald);">SURGING</td>
         <td class="realtime-outlook" style="padding: 10px 14px; font-size: 11px; color: var(--text-secondary);">Moderate consolidation: Standard portfolio rotation keeps major sector NAV swings narrow.</td>
       </tr>
             </tbody>
@@ -259,110 +259,110 @@
               <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 11px;">
                 <tbody>
                   
-    <tr class="realtime-row" data-symbol="CVX" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">1. Chevron Corporation</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">233.21</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">227.98-233.74</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+2.88%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('CVX', 'Chevron Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="TSLA" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">1. Tesla, Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">388.61</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">383.84-391.10</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+4.40%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('TSLA', 'Tesla, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="XOM" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">2. ExxonMobil Holdings Corporation</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">183.21</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">179.00-183.75</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+2.79%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('XOM', 'ExxonMobil Holdings Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="JNJ" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">2. Johnson & Johnson</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">268.24</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">265.75-269.08</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+1.67%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('JNJ', 'Johnson & Johnson')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
     <tr class="realtime-row" data-symbol="AMD" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
       <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">3. Advanced Micro Devices, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">516.79</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">508.36-523.92</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+1.74%</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">524.85</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">519.12-525.34</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+1.56%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('AMD', 'Advanced Micro Devices, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="MSFT" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">4. Microsoft Corporation</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">524.51</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">515.70-525.77</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.66%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('MSFT', 'Microsoft Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="ABBV" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">5. AbbVie Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">285.64</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">282.30-286.77</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.16%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('ABBV', 'AbbVie Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="AAPL" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">6. Apple Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">347.73</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">345.75-351.73</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.14%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('AAPL', 'Apple Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="AVGO" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">7. Broadcom Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">321.68</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">320.23-327.70</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.48%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('AVGO', 'Broadcom Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
     <tr class="realtime-row" data-symbol="NVDA" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">8. NVIDIA Corporation</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">210.96</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">210.18-213.85</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.59%</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">4. NVIDIA Corporation</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">214.19</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">212.61-214.31</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+1.53%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('NVDA', 'NVIDIA Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="TSLA" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">9. Tesla, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">372.22</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">365.27-377.32</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.63%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('TSLA', 'Tesla, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="AVGO" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">5. Broadcom Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">325.41</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">323.30-325.70</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+1.16%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('AVGO', 'Broadcom Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="ABBV" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">6. AbbVie Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">288.29</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">286.60-288.85</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.94%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('ABBV', 'AbbVie Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="JPM" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">7. JP Morgan Chase & Co.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">334.36</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">333.16-334.68</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.85%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('JPM', 'JP Morgan Chase & Co.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="BAC" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">8. Bank of America Corporation</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">51.00</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">50.72-51.05</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.85%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('BAC', 'Bank of America Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="LLY" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">9. Eli Lilly and Company</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">1283.15</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">1281.01-1296.90</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.70%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('LLY', 'Eli Lilly and Company')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="WMT" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">10. Walmart Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">120.32</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">119.59-120.48</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.36%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('WMT', 'Walmart Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
     <tr class="realtime-row" data-symbol="CRM" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">10. Salesforce, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">248.57</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">242.30-249.41</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.69%</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">11. Salesforce, Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">249.40</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">247.76-249.96</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.35%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('CRM', 'Salesforce, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="BRK-B" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">11. Berkshire Hathaway Inc. New</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">542.19</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">540.97-548.31</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.87%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('BRK-B', 'Berkshire Hathaway Inc. New')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
     <tr class="realtime-row" data-symbol="AMZN" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
       <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">12. Amazon.com, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">248.00</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">246.45-250.01</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.95%</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">248.74</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">247.77-250.49</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.30%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('AMZN', 'Amazon.com, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="META" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">13. Meta Platforms, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">642.62</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">633.27-648.04</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-0.96%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('META', 'Meta Platforms, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="BRK-B" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">13. Berkshire Hathaway Inc. New</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">543.94</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">542.00-545.00</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.28%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('BRK-B', 'Berkshire Hathaway Inc. New')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="WMT" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">14. Walmart Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">119.89</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">119.12-122.40</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-1.02%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('WMT', 'Walmart Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="PEP" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">14. Pepsico, Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">136.14</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">135.50-136.44</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.27%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('PEP', 'Pepsico, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="BAC" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">15. Bank of America Corporation</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">50.56</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">50.30-50.92</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+-1.02%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('BAC', 'Bank of America Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="MSFT" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">15. Microsoft Corporation</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">525.55</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">525.00-529.06</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: var(--accent-emerald);">+0.20%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('MSFT', 'Microsoft Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
                 </tbody>
               </table>
@@ -374,110 +374,110 @@
               <table width="100%" style="border-collapse: collapse; text-align: left; font-size: 11px;">
                 <tbody>
                   
-    <tr class="realtime-row" data-symbol="KO" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">1. Coca-Cola Company (The)</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">92.71</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">92.64-95.05</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-2.76%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('KO', 'Coca-Cola Company (The)')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="META" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">1. Meta Platforms, Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">632.08</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">631.33-641.70</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.64%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('META', 'Meta Platforms, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="LLY" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">2. Eli Lilly and Company</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">1273.46</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">1257.62-1307.92</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-2.54%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('LLY', 'Eli Lilly and Company')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="ADBE" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">3. Adobe Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">263.82</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">262.78-271.50</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-2.49%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('ADBE', 'Adobe Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="HD" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">4. Home Depot, Inc. (The)</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">319.83</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">317.55-325.91</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-2.41%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('HD', 'Home Depot, Inc. (The)')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="PEP" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">5. Pepsico, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">135.77</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">134.66-138.28</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-2.20%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('PEP', 'Pepsico, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="PG" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">6. Procter & Gamble Company (The)</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">161.02</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">160.64-164.50</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-2.12%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('PG', 'Procter & Gamble Company (The)')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="AAPL" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">2. Apple Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">343.66</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">342.11-346.21</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.17%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('AAPL', 'Apple Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
     <tr class="realtime-row" data-symbol="NFLX" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">7. Netflix, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">65.85</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">65.78-67.82</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.79%</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">3. Netflix, Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">65.19</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">64.95-65.49</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.01%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('NFLX', 'Netflix, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="UNH" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">8. UnitedHealth Group Incorporated</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">418.09</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">416.37-425.25</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.62%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('UNH', 'UnitedHealth Group Incorporated')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
-    <tr class="realtime-row" data-symbol="V" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">9. Visa Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">407.92</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">406.80-412.58</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.55%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('V', 'Visa Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
-    </tr>
     <tr class="realtime-row" data-symbol="MA" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">10. Mastercard Incorporated</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">623.60</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">619.59-631.12</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.52%</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">4. Mastercard Incorporated</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">618.26</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">617.87-622.65</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.84%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('MA', 'Mastercard Incorporated')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="JPM" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">11. JP Morgan Chase & Co.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">331.58</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">330.40-335.14</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.47%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('JPM', 'JP Morgan Chase & Co.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="ADBE" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">5. Adobe Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">261.87</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">259.57-262.99</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.74%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('ADBE', 'Adobe Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="COST" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">12. Costco Wholesale Corporation</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">1003.32</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">1002.68-1021.45</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.46%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('COST', 'Costco Wholesale Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="XOM" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">6. ExxonMobil Holdings Corporation</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">182.24</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">181.52-182.64</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.52%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('XOM', 'ExxonMobil Holdings Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
-    <tr class="realtime-row" data-symbol="JNJ" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">13. Johnson & Johnson</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">263.81</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">262.40-266.03</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.42%</td>
-      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('JNJ', 'Johnson & Johnson')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    <tr class="realtime-row" data-symbol="V" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">7. Visa Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">406.03</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">405.46-407.53</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.49%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('V', 'Visa Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="CVX" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">8. Chevron Corporation</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">232.26</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">230.53-232.60</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.42%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('CVX', 'Chevron Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="KO" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">9. Coca-Cola Company (The)</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">92.38</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">92.37-92.88</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.35%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('KO', 'Coca-Cola Company (The)')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="PG" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">10. Procter & Gamble Company (The)</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">160.71</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">160.71-161.60</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.25%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('PG', 'Procter & Gamble Company (The)')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
     <tr class="realtime-row" data-symbol="MRK" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">14. Merck & Company, Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">145.27</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">143.41-145.44</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.34%</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">11. Merck & Company, Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">144.98</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">144.83-146.61</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.21%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('MRK', 'Merck & Company, Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
+    <tr class="realtime-row" data-symbol="HD" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">12. Home Depot, Inc. (The)</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">319.04</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">317.78-319.81</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.19%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('HD', 'Home Depot, Inc. (The)')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
     <tr class="realtime-row" data-symbol="GOOGL" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
-      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">15. Alphabet Inc.</td>
-      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">320.21</td>
-      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">320.18-324.53</td>
-      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-1.24%</td>
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">13. Alphabet Inc.</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">319.86</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">319.19-321.34</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.11%</td>
       <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('GOOGL', 'Alphabet Inc.')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="COST" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">14. Costco Wholesale Corporation</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">1002.23</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">999.08-1004.40</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">-0.11%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('COST', 'Costco Wholesale Corporation')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
+    </tr>
+    <tr class="realtime-row" data-symbol="UNH" data-type="stock" style="border-bottom: 1px solid rgba(255, 255, 255, 0.02);">
+      <td style="padding: 6px 8px; font-size: 11px; font-weight:700; color: var(--text-secondary);">15. UnitedHealth Group Incorporated</td>
+      <td class="realtime-ltp" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">418.77</td>
+      <td class="realtime-range" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 10px; color: var(--text-muted);">417.64-420.74</td>
+      <td class="realtime-pct" style="padding: 6px 8px; font-family: var(--font-terminal); font-size: 11px; color: #ff3b30;">0.18%</td>
+      <td style="padding: 6px 8px; text-align: right;"><button onclick="openChartModal('UNH', 'UnitedHealth Group Incorporated')" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">📊</button></td>
     </tr>
                 </tbody>
               </table>
@@ -490,7 +490,7 @@
       <div class="realtime-conclusion-card" data-index-symbol="^GSPC" style="background: rgba(0, 230, 118, 0.02); border: 1px solid rgba(0, 230, 118, 0.1); border-radius: 4px; padding: 16px;">
         <h4 style="font-family: var(--font-cyber); font-size: 10px; color: rgba(0, 230, 118, 1); letter-spacing: 1.5px; margin-bottom: 6px; font-weight: 800;">◈ US SYSTEM COGNITIVE CONCLUSION</h4>
         <p class="realtime-conclusion-text" style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-          The American stock indices are experiencing a <strong>minor consolidation pullback</strong>. Major price actions in mega-cap technology systems like Apple, Microsoft, and Nvidia are highly correlated to global indexing trends. Bond yield stability and currency metrics keep the overall US financial grid securely synchronized.
+          The American stock indices are experiencing a <strong>healthy bullish momentum</strong>. Major price actions in mega-cap technology systems like Apple, Microsoft, and Nvidia are highly correlated to global indexing trends. Bond yield stability and currency metrics keep the overall US financial grid securely synchronized.
         </p>
       </div>
 
